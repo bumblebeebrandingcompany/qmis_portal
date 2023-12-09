@@ -189,7 +189,7 @@
                 </li>
 
                 <li class="list-group-item">
-                    <b>Intake Year</b>
+                    <b>{{ trans('messages.intake_year') }}</b>
                     <a class="float-right">
                         <span class="value-container">
                             <span class="display-value">{{ $lead->intake_year }}</span>
@@ -227,7 +227,7 @@
                     </a>
                 </li>
                 <li class="list-group-item">
-                    <b>Grade Enquired</b>
+                    <b>{{ trans('messages.grade_enquired') }}</b>
                     <a class="float-right">
                         <span class="value-container">
                             <span class="display-value">{{ $lead->grade_enquired }}</span>
@@ -275,7 +275,7 @@
 
 
                 <li class="list-group-item">
-                    <b>Current School</b>
+                    <b>{{ trans('messages.current_school') }}</b>
                     <a class="float-right">
                         <span class="value-container">
                             <span class="display-value"
@@ -734,173 +734,43 @@
     </script>
 
 
-    {{-- <script>
-        function showSubOptions() {
-            var mainDropdown = document.getElementById("mainDropdown");
-            var secondDropdown = document.getElementById("SecondDropdown");
 
-            // Reset second dropdown options
-            secondDropdown.innerHTML = '';
-
-            // Add a default option to the second dropdown
-            addOption(secondDropdown, "default", "Please Select");
-
-            // Add options to the second dropdown based on the selected value
-            var selectedValueMain = mainDropdown.value;
-            if (selectedValueMain === "interested") {
-                addOption(secondDropdown, "subOption1", "SiteVisit");
-                addOption(secondDropdown, "subOption2", "FollowUp");
-                addOption(secondDropdown, "subOption3", "Reschedule");
-                addOption(secondDropdown, "subOption4", "Site Visit Conducted");
-                addOption(secondDropdown, "subOption5", "Application Purchase");
-                addOption(secondDropdown, "subOption6", "Admitted");
-            } else if (selectedValueMain === "notInterested") {
-                addOption(secondDropdown, "subOption7", "Spam");
-                addOption(secondDropdown, "subOption8", "Not Qualified");
-                addOption(secondDropdown, "cancel");
-            } else if (selectedValueMain === "rnr") {
-                addOption(secondDropdown, "subOption5", "RNR");
-            }
-            // Toggle the follow-up content based on the selected value
-            showFollowUpContent();
-            // Toggle the SiteVisitContent based on the selected value
-            showSiteVisitContent();
-            // Toggle the RescheduleContent based on the selected value
-            showRescheduleContent();
-            showSitevisitConducedContent();
-
-        }
-
-        function addOption(selectElement, value, text) {
-            var option = document.createElement("option");
-            option.value = value;
-            option.text = text;
-            selectElement.add(option);
-        }
-
-        function togglePopup() {
-            var popup = document.getElementById("stagesPopup");
-            popup.classList.toggle("show");
-        }
-
-        function saveForm(formId) {
-            // Add logic to submit the form
-            document.getElementById(formId).submit();
-        }
-
-
-        function showFollowUpContent() {
-            var mainDropdown = document.getElementById("mainDropdown");
-            var secondDropdown = document.getElementById("SecondDropdown");
-            var followUpContent = document.getElementById("followUpContent");
-
-            // Check the selected value from the main dropdown and second dropdown
-            var selectedValueMain = mainDropdown.value;
-            var selectedValueSecond = secondDropdown.value;
-
-            // Show or hide the follow-up content based on the selected values
-            if (selectedValueMain === "interested" && selectedValueSecond === "subOption2") {
-                followUpContent.style.display = "block";
-            } else {
-                followUpContent.style.display = "none";
-            }
-        }
-
-        function showSiteVisitContent() {
-            var mainDropdown = document.getElementById("mainDropdown");
-            var secondDropdown = document.getElementById("SecondDropdown");
-            var siteVisitContent = document.getElementById("siteVisitContent");
-
-            // Check the selected value from the main dropdown and second dropdown
-            var selectedValueMain = mainDropdown.value;
-            var selectedValueSecond = secondDropdown.value;
-
-            // Show or hide SiteVisitContent based on the selected values
-            if (selectedValueMain === "interested" && selectedValueSecond === "subOption1") {
-                siteVisitContent.style.display = "block";
-            } else {
-                siteVisitContent.style.display = "none";
-            }
-        }
-
-        function showRescheduleContent() {
-            var mainDropdown = document.getElementById("mainDropdown");
-            var secondDropdown = document.getElementById("SecondDropdown");
-            var rescheduleContent = document.getElementById("rescheduleContent");
-
-            // Check the selected value from the main dropdown and second dropdown
-            var selectedValueMain = mainDropdown.value;
-            var selectedValueSecond = secondDropdown.value;
-
-            // Show or hide the reschedule content based on the selected values
-            if (selectedValueMain === "interested" && selectedValueSecond === "subOption3") {
-                rescheduleContent.style.display = "block";
-            } else {
-                rescheduleContent.style.display = "none";
-            }
-        }
-
-        function showSitevisitConducedContent() {
-            var mainDropdown = document.getElementById("mainDropdown");
-            var secondDropdown = document.getElementById("SecondDropdown");
-            var rescheduleContent = document.getElementById("sitevisitconductedContent");
-
-            // Check the selected value from the main dropdown and second dropdown
-            var selectedValueMain = mainDropdown.value;
-            var selectedValueSecond = secondDropdown.value;
-
-            // Show or hide the reschedule content based on the selected values
-            if (selectedValueMain === "interested" && selectedValueSecond === "subOption4") {
-                rescheduleContent.style.display = "block";
-            } else {
-                rescheduleContent.style.display = "none";
-            }
-        }
-        // Attach the showSubOptions function to the change event of the main dropdown
-        // Attach the showFollowUpContent, showSiteVisitContent, and showRescheduleContent functions to the change event of the second dropdown
-        document.getElementById("mainDropdown").addEventListener("change", function() {
-            showSubOptions();
-        });
-        document.getElementById("SecondDropdown").addEventListener("change", function() {
-            showFollowUpContent();
-            showSiteVisitContent();
-            showRescheduleContent();
-            showSitevisitConducedContent();
-
-        });
-
-        // Execute showSubOptions once on page load to handle the initial state
-        showSubOptions();
-    </script> --}}
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
 
 <script>
-     function checkParentStageId(selectElement) {
-        var selectedOption = selectElement.options[selectElement.selectedIndex];
-        var selectedName = selectedOption.text; // Get the name of the selected option
 
-        // Check if the selected name is 'FollowUp'
-        if (selectedName.trim().toLowerCase() === 'followup') {
-            // If the selected name is 'FollowUp', display the modal
-            document.getElementById('followupContent').style.display = 'block';
-        } else {
-            // If not, hide the modal
-            document.getElementById('followupContent').style.display = 'none';
-        }
+function checkParentStageId(selectElement) {
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var selectedName = selectedOption.text.trim().toLowerCase();
+
+    // Hide all modals initially
+    document.getElementById('rescheduleContent').style.display = 'none';
+    document.getElementById('followUpContent').style.display = 'none';
+    document.getElementById('siteVisitContent').style.display = 'none';
+
+    // Check the selected option and display the corresponding modal
+    if (selectedName === 'FollowUp') {
+        document.getElementById('followUpContent').style.display = 'block';
+    } else if (selectedName === 'Site Visit Scheduled') {
+        document.getElementById('siteVisitContent').style.display = 'block';
+    } else {
+        document.getElementById('rescheduleContent').style.display = 'block';
     }
+}
 
-    function togglePopup() {
-        // Add any additional logic for closing the popup if needed
-        document.getElementById('followupContent').style.display = 'none';
-    }
+function togglePopup(formId) {
+    // Add any additional logic for closing the popup if needed
+    var contentId = formId + 'Content';
+    document.getElementById(contentId).style.display = 'none';
+}
 
-    // Initially check the value on page load
-    document.addEventListener('DOMContentLoaded', function () {
-        checkParentStageId(document.getElementById('parent_stage_id'));
-    });
+// Initially check the value on page load
+document.addEventListener('DOMContentLoaded', function () {
+    checkParentStageId(document.getElementById('parent_stage_id'));
+});
 
     $(document).ready(function() {
         $('#tag_id').change(function() {
@@ -935,5 +805,5 @@
             }
         });
     });
-
 </script>
+
