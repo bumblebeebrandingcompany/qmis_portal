@@ -49,11 +49,11 @@
             <th>
                 {{ trans('messages.updated_at') }}
             </th>
-            @if(!empty($leads) && !empty($leads[0]['essential_fields']))
+            {{-- @if(!empty($leads) && !empty($leads[0]['essential_fields']))
             @foreach(json_decode($leads[0]['essential_fields'], true) as $key => $value)
                 <th>{{ $key }}</th>
             @endforeach
-        @endif
+        @endif --}}
             <th>
                 &nbsp;
             </th>

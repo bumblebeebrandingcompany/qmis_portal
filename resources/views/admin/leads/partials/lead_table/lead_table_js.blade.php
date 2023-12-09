@@ -75,7 +75,7 @@ let dtOverrideGlobals = {
         { data: 'essential_fields', name: 'essential_fields' },
         { data: 'essential_fields', name: 'essential_fields' }, --}}
 
-        {
+        {{-- {
             data: function(row) {
                 try {
                     // Decode HTML entities in essential_fields
@@ -249,7 +249,7 @@ let dtOverrideGlobals = {
                     return null;
                 }
             },
-        },
+        }, --}}
 
 
 
