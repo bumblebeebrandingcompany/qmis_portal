@@ -106,7 +106,6 @@
                                 <li class="nav-item">
                                     <a href="{{ route("admin.audit-logs.index") }}" class="nav-link {{ request()->is("admin/audit-logs") || request()->is("admin/audit-logs/*") ? "active" : "" }}">
                                         <i class="fa-fw nav-icon fas fa-file-alt">
-
                                         </i>
                                         <p>
                                             {{ trans('cruds.auditLog.title') }}
@@ -120,7 +119,6 @@
                         <li class="nav-item has-treeview {{ request()->is("admin/clients*") ? "menu-open" : "" }}">
                             <a class="nav-link nav-dropdown-toggle {{ request()->is("admin/clients*") ? "active" : "" }}" href="#">
                                 <i class="fa-fw nav-icon fas fa-briefcase">
-
                                 </i>
                                 <p>
                                     {{ trans('cruds.clientManagement.title') }}
@@ -165,8 +163,8 @@
                         </li>
                     @endif
                 @endif
-                @if(!(auth()->user()->is_channel_partner || auth()->user()->is_agency || auth()->user()->is_channel_partner_manager))
-                    <li class="nav-item">
+                @if(auth()->user()->is_superadmin)
+                                    <li class="nav-item">
                         <a href="{{ route("admin.projects.index") }}" class="nav-link {{ request()->is("admin/projects") || request()->is("admin/projects/*") ? "active" : "" }}">
                             <i class="fa-fw nav-icon fas fa-project-diagram">
 
@@ -177,8 +175,8 @@
                         </a>
                     </li>
                 @endif
-                @if(!(auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager))
-                <li class="nav-item">
+                @if(auth()->user()->is_superadmin)
+                                <li class="nav-item">
                     <a href="{{ route("admin.followups.index") }}" class="nav-link {{ request()->is("admin/followups") || request()->is("admin/followups/*") ? "active" : "" }}">
                         <i class="fas fa-fw fa-calendar nav-icon">
 
@@ -189,7 +187,7 @@
                     </a>
                 </li>
             @endif
-            @if(!(auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager))
+            @if(auth()->user()->is_superadmin)
             <li class="nav-item">
                 <a href="{{ route("admin.sitevisit.index") }}" class="nav-link {{ request()->is("admin/sitevisit") || request()->is("admin/sitevisit/*") ? "active" : "" }}">
                     <i class="fas fa-fw fa-calendar nav-icon">
@@ -214,8 +212,8 @@
                         </a>
                     </li>
                 @endif --}}
-                @if(!(auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager))
-                    <li class="nav-item">
+                @if(auth()->user()->is_superadmin)
+                                    <li class="nav-item">
                         <a href="{{ route("admin.campaigns.index") }}" class="nav-link {{ request()->is("admin/campaigns") || request()->is("admin/campaigns/*") ? "active" : "" }}">
                             <i class="fa-fw nav-icon fas fa-bullhorn">
 
@@ -266,8 +264,8 @@
                         </p>
                     </a>
                 </li>
-                @if(!(auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager))
-                    <li class="nav-item">
+                @if(auth()->user()->is_superadmin)
+                                    <li class="nav-item">
                         <a href="{{ route("admin.systemCalendar") }}" class="nav-link {{ request()->is("admin/system-calendar") || request()->is("admin/system-calendar/*") ? "active" : "" }}">
                             <i class="fas fa-fw fa-calendar nav-icon">
 
