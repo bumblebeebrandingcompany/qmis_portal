@@ -1,68 +1,51 @@
 @extends('layouts.admin')
 
 @section('content')
-    <h1>
-        Lead Follow Up List</h1>
+    <h1>Lead Follow Up List</h1>
     <div class="card">
-
         <div class="card-header">
             <h3 class="card-title">Lead Follow-Up Table</h3>
         </div>
         <div class="card-body">
             <div class="row">
-            @if(!(auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager))
-                        <div class="col-md-3 campaigns_div">
-                            <label for="campaign_id">
-campaign                            </label>
-                            <select class="search form-control" id="campaign_id">
-                                <option value>{{ trans('global.all') }}</option>
-                                @foreach($campaigns as $key => $item)
-                                    <option value="{{ $item->id }}" @if(isset($filters['campaign_id']) && $filters['campaign_id'] == $item->id) selected @endif>{{ $item->campaign_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    @endif
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="user_id">Select Staff Member</label>
-                        <select name="user_id" id="user_id" class="form-control{{ $errors->has('user_id') ? ' is-invalid' : '' }}"
-                    rows="3" required>{{ old('user_id') }}
->
-<option value>{{ trans('global.all') }}</option>
-
-                        <!-- <option value="" selected disabled>Please Select</option> -->
-                        @foreach ($agencies as $id => $agency)
-                            @foreach ($agency->agencyUsers as $user)
-                                <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
-                                    {{ $user->representative_name }}
-                                </option>
-                            @endforeach
-                        @endforeach
-                    </select>
+                        <label for="date_range">Select a date</label>
+                        <select class="form-control" id="date_range">
+                            <option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>
+                            <option value="last_week">Last Week</option>
+                            <option value="last_30_days">Last 30 Days</option>
+                            <option value="last_60_days" selected>Last 60 Days</option>
+                            <option value="last_year">Last One Year</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
                     </div>
                 </div>
-            <div class="col-md-3">
-                            <label for="added_on">{{ trans('messages.added_on') }}</label>
-                            <input class="form-control date_range" type="text" name="date" id="added_on" readonly>
-                        </div>
-            <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-Followup">
+                <div class="col-md-4" id="custom_range_container" style="display:none;">
+                    <div class="form-group">
+                        <label for="custom_range">Custom Range</label>
+                        <input class="form-control" type="text" name="custom_range" id="custom_range"
+                            value="{{ old('custom_range') }}">
+                    </div>
+                </div>
+            </div>
+
+            <table class="table" id="followUpTable">
                 <thead>
                     <tr>
-                        <th>{{trans('messages.ref_num')}}</th>
-                        <th>{{trans('messages.campaign')}}</th>
-                        <th>{{trans('messages.follow_up_date')}}</th>
-                        <th>{{trans('messages.follow_up_time')}}</th>
-                        <th>{{trans('messages.follow_up_by')}}</th>
-                        <th>{{trans('messages.notes')}}</th>
-                        <th>{{trans('messages.created_at')}}</th>
-
-                        {{-- <th>{{trans('messages.action')}}</th> --}}
-                        <!-- Add more table headers for other lead follow-up properties -->
+                        <th>Reference Number</th>
+                        <th>Campaign Name</th>
+                        <th>Follow-Up Date</th>
+                        <th>Follow-Up Time</th>
+                        <th>Follow-Up By</th>
+                        <th>Notes</th>
+                        <th>Created At</th>
                     </tr>
                 </thead>
-                <tbody id="followUpTableBody">
+                <tbody>
                     @foreach ($followUps as $followUp)
-                        <tr>
+                        <tr data-created-at="{{ $followUp->created_at->format('Y-m-d') }}">
                             <td>
                                 @foreach ($lead as $leads)
                                     @if ($leads->id === $followUp->lead_id)
@@ -78,20 +61,11 @@ campaign                            </label>
                                 @endforeach
                             </td>
                             <td>
-                                @foreach ($lead as $leads)
-                                    @if ($leads->id === $followUp->lead_id)
-                                        {{ $followUp->follow_up_date }}
-                                    @endif
-                                @endforeach
+                                {{ $followUp->follow_up_date }}
                             </td>
                             <td>
-                                @foreach ($lead as $leads)
-                                    @if ($leads->id === $followUp->lead_id)
-                                        {{ $followUp->follow_up_time }}
-                                    @endif
-                                @endforeach
+                                {{ $followUp->follow_up_time }}
                             </td>
-
                             <td>
                                 {{ $followUp->users->representative_name }}
                             </td>
@@ -103,35 +77,90 @@ campaign                            </label>
                                 @endforeach
                             </td>
                             <td>
-                                @foreach ($lead as $leads)
-                                    @if ($leads->id === $followUp->lead_id)
-                                        {{ $followUp->created_at }}
-                                    @endif
-                                @endforeach
+                                {{ $followUp->created_at->format('Y-m-d') }}
                             </td>
-                            {{-- <td>
-                                <form action="{{ route('admin.followups.destroy', $followUp->id) }}" method="POST"
-                                    onsubmit="return confirmDelete();" style="display: inline-block;">
-                                    <input type="hidden" name="_method" value="DELETE">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <input type="submit" class="btn btn-xs btn-danger"
-                                        value="{{ trans('global.delete') }}">
-                                </form>
-                            </td> --}}
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-        @endsection
+        </div>
+    </div>
+@endsection
 
-        @section('scripts')
-        @parent
+@section('scripts')
+    @parent
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
-        <script>
+    <script>
+        $(document).ready(function () {
+            // Initialize the date range picker
+            $('#custom_range').daterangepicker();
 
-    $(function () {
-       @includeIf('admin.leads.partials.follow_up_js')
-    });
-</script>
+            // Show/hide the custom range container based on the selected option
+            $('#date_range').change(function () {
+                var selectedOption = $(this).val();
+                if (selectedOption === 'custom') {
+                    $('#custom_range_container').show();
+                } else {
+                    $('#custom_range_container').hide();
+                    filterTable(selectedOption);
+                }
+            });
 
+            // Handle filtering when the custom range is selected
+            $('#custom_range').change(function () {
+                var customRange = $(this).val();
+                filterTable('custom', customRange);
+            });
+
+            // Function to filter the table based on the selected date range
+            function filterTable(selectedOption, customRange = null) {
+                var startDate, endDate;
+
+                // Logic to determine the start and end dates based on the selected option
+                switch (selectedOption) {
+                    case 'today':
+                        startDate = moment().startOf('day');
+                        endDate = moment().endOf('day');
+                        break;
+                    case 'yesterday':
+                        startDate = moment().subtract(1, 'days').startOf('day');
+                        endDate = moment().subtract(1, 'days').endOf('day');
+                        break;
+                    case 'last_30_days':
+                        startDate = moment().subtract(29, 'days').startOf('day');
+                        endDate = moment().endOf('day');
+                        break;
+                    case 'last_60_days':
+                        startDate = moment().subtract(59, 'days').startOf('day');
+                        endDate = moment().endOf('day');
+                        break;
+                    case 'last_year':
+                        startDate = moment().subtract(1, 'year').startOf('day');
+                        endDate = moment().endOf('day');
+                        break;
+                        case 'last_week':
+                        startDate = moment().subtract(1, 'week').startOf('week');
+                        endDate = moment().subtract(1, 'week').endOf('week');
+                        break;
+                    case 'custom':
+                        if (customRange) {
+                            var dates = customRange.split(' - ');
+                            startDate = moment(dates[0], 'YYYY-MM-DD').startOf('day');
+                            endDate = moment(dates[1], 'YYYY-MM-DD').endOf('day');
+                        }
+                        break;
+                }
+
+                // Filter the table rows based on the calculated start and end dates
+                $('#followUpTable tbody tr').hide().filter(function () {
+                    var createdDate = $(this).data('created-at');
+                    return moment(createdDate, 'YYYY-MM-DD').isBetween(startDate, endDate, null, '[]');
+                }).show();
+            }
+        });
+    </script>
 @endsection

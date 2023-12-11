@@ -765,39 +765,41 @@
 
 
 <script>
+    function checkParentStageId(selectElement) {
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+        var selectedName = selectedOption.text.trim().toLowerCase();
 
-function checkParentStageId(selectElement) {
-    var selectedOption = selectElement.options[selectElement.selectedIndex];
-    var selectedName = selectedOption.text.trim().toLowerCase();
+        // Hide all modals initially
+        document.getElementById('rescheduleContent').style.display = 'none';
+        document.getElementById('followUpContent').style.display = 'none';
+        document.getElementById('siteVisitContent').style.display = 'none';
 
-    // Hide all modals initially
-    document.getElementById('rescheduleContent').style.display = 'none';
-    document.getElementById('followUpContent').style.display = 'none';
-    document.getElementById('siteVisitContent').style.display = 'none';
-
-    // Check the selected option and display the corresponding modal
-    if (selectedName === 'FollowUp') {
-        document.getElementById('followUpContent').style.display = 'block';
-    } else if (selectedName === 'Site Visit Scheduled') {
-        document.getElementById('siteVisitContent').style.display = 'block';
-    } else {
-        document.getElementById('rescheduleContent').style.display = 'block';
+        // Check the selected option and display the corresponding modal
+        if (selectedName === 'followup') {
+            document.getElementById('followUpContent').style.display = 'block';
+        } else if (selectedName === 'site visitscheduled') {
+            document.getElementById('siteVisitContent').style.display = 'block';
+        } else if (selectedName === 'rescheduled') {
+            document.getElementById('rescheduleContent').style.display = 'block';
+        }
     }
+
+    function togglePopup(formId) {
+        // Add any additional logic for closing the popup if needed
+        var contentId = formId + 'Content';
+        document.getElementById(contentId).style.display = 'none';
+    }
+    function hideStageModal() {
+    // Hide the stagemodel
+    document.getElementById('stageModal').style.display = 'none';
 }
+    // Initially check the value on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        checkParentStageId(document.getElementById('parent_stage_id'));
+    });
 
-function togglePopup(formId) {
-    // Add any additional logic for closing the popup if needed
-    var contentId = formId + 'Content';
-    document.getElementById(contentId).style.display = 'none';
-}
-
-// Initially check the value on page load
-document.addEventListener('DOMContentLoaded', function () {
-    checkParentStageId(document.getElementById('parent_stage_id'));
-});
-
-    $(document).ready(function() {
-        $('#tag_id').change(function() {
+    $(document).ready(function () {
+        $('#tag_id').change(function () {
             var selectedTagId = $('#tag_id option:selected').val();
 
             // Check if childStages is not null
@@ -829,5 +831,4 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
-</script>
-
+    </script>

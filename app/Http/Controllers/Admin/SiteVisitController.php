@@ -78,6 +78,7 @@ class SiteVisitController extends Controller
         if (!$originalSiteVisit) {
             return redirect()->back()->with('error', 'Site visit not found.');
         }
+        $parentStageId = $request->input('parent_stage_id');
 
         // Create a new SiteVisit
         $newSiteVisit = new SiteVisit();
@@ -86,6 +87,7 @@ class SiteVisitController extends Controller
         $newSiteVisit->lead_id = $request->lead_id;
         $newSiteVisit->user_id = $request->user_id;
         $newSiteVisit->notes = $request->notes;
+        $newSiteVisit->lead->update(['parent_stage_id' => $parentStageId]);
         $newSiteVisit->save();
 
         // Update the lead status to "rescheduled"
@@ -101,5 +103,55 @@ class SiteVisitController extends Controller
 
         return redirect()->back()->with('success', 'Site visit rescheduled successfully.');
     }
+
+    public function cancelSiteVisit(Request $request, $sitevisitId)
+{
+    $sitevisit = SiteVisit::findOrFail($sitevisitId);
+
+    if ($sitevisit->lead->parent_stage_id == 10) {
+        $sitevisit->lead->update(['parent_stage_id' => 20]);
+    } elseif ($sitevisit->lead->parent_stage_id == 25) {
+        $sitevisit->lead->update(['parent_stage_id' => 28]);
+    }
+
+    // Your additional logic or redirection here if needed
+
+    return redirect()->back();
+
+    abort(404, 'Lead not found for the given SiteVisit.');
+}
+
+public function conducted(Request $request, $sitevisitId)
+    {
+        $sitevisit = SiteVisit::findOrFail($sitevisitId);
+
+        if ($sitevisit->lead->parent_stage_id == 10) {
+            $sitevisit->lead->update(['parent_stage_id' => 11]);
+        } elseif ($sitevisit->lead->parent_stage_id == 25) {
+            $sitevisit->lead->update(['parent_stage_id' => 27]);
+        }
+
+        // Your additional logic or redirection here if needed
+
+        return redirect()->back();
+    }
+
+public function notVisited(Request $request, $sitevisitId)
+{
+    $sitevisit = SiteVisit::findOrFail($sitevisitId);
+
+    if ($sitevisit->lead->parent_stage_id == 10) {
+        $sitevisit->lead->update(['parent_stage_id' => 12]);
+    } elseif ($sitevisit->lead->parent_stage_id == 25) {
+        $sitevisit->lead->update(['parent_stage_id' => 27]);
+    }
+
+    // Your additional logic or redirection here if needed
+
+    return redirect()->back();
+}
+
+
+
 
 }

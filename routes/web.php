@@ -46,6 +46,12 @@ Route::resource('/followups', 'FollowUpController');
 Route::get('leads/{lead}/initiate-call', 'LeadsController@initiateCall')
 ->name('leads.initiateCall');
 
+Route::put('/admin/sitevisits/{sitevisit}/cancel', 'SiteVisitController@cancelSiteVisit')
+    ->name('sitevisits.cancel');
+    Route::put('/admin/sitevisits/{sitevisit}/conducted', 'SiteVisitController@conducted')
+    ->name('sitevisits.conducted');
+    Route::put('/admin/sitevisits/{sitevisit}/notvisited', 'SiteVisitController@notVisited')
+    ->name('sitevisits.notvisited');
 Route::match(['post', 'put'], '/admin/sitevisits/{id}/reschedule', 'SiteVisitController@reschedule')->name('sitevisits.reschedule');
 // Route::put('sitevisit/{sitevisit}', 'SiteVisitController@update')->name('admin.sitevisit.update');
 

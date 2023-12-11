@@ -33,4 +33,9 @@ class SiteVisit extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function lead()
+{
+    return $this->belongsTo(Lead::class);
+}
+
 }
