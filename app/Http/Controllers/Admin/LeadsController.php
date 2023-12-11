@@ -431,13 +431,16 @@ class LeadsController extends Controller
                   return $query->where('user_id', $user_id);
               })
               ->get();
+              $note = Note::where('lead_id',$lead->id)->when($user_id,function ($query) use ($user_id){
+                return $query->where('user_id',$user_id);
+              })->get();
         //   $note = Note::where('lead_id', $lead->id)
         //       ->when($user_id, function ($query) use ($user_id) {
         //           return $query->where('user_id', $user_id);
         //       })
         //       ->get();
           $campaigns = Campaign::all();
-        return view('admin.leads.show', compact('lead', 'lead_events', 'projects_list', 'parentStages', 'stages', 'tags','agencies', 'user_id', 'followUps', 'campaigns','sitevisit','client','leads'));
+        return view('admin.leads.show', compact('lead', 'lead_events', 'projects_list', 'parentStages', 'stages', 'tags','agencies', 'user_id', 'followUps', 'campaigns','sitevisit','client','leads','note'));
     }
 
     public function destroy(Lead $lead)

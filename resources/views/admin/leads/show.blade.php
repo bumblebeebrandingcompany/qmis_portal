@@ -58,6 +58,34 @@
                                 @lang('messages.webhook_response')
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="lead-sitevisit-tab" data-toggle="tab" href="#lead-sitevisit"
+                                role="tab" aria-controls="lead-sitevisit" aria-selected="false">
+                                <i class="fas fa-sticky-note"></i>
+                               Site Visit
+                            </a>
+                        </li>
+                        {{-- <li class="nav-item">
+                            <a class="nav-link" id="lead-call_logs-tab" data-toggle="tab" href="#lead-call_logs"
+                                role="tab" aria-controls="lead-call_logs" aria-selected="false">
+                                <i class="fas fa-phone fa-flip-horizontal"></i>
+                                @lang('messages.call_logs')
+                            </a>
+                        </li> --}}
+                        <li class="nav-item">
+                            <a class="nav-link" id="lead-notes-tab" data-toggle="tab" href="#lead-notes" role="tab"
+                                aria-controls="lead-notes" aria-selected="false">
+                                <i class="fas fa-sticky-note"></i> <!-- Change the class to your "notes" icon class -->
+                               Notes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="lead-followup-tab" data-toggle="tab" href="#lead-followup"
+                                role="tab" aria-controls="lead-leadfollowup" aria-selected="false">
+                                <i class="fas fa-sticky-calender"></i>
+                                Followup
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <div class="card-body">
@@ -73,6 +101,19 @@
                         </div>
                         <div class="tab-pane fade" id="lead-webhook_response" role="tabpanel" aria-labelledby="lead-webhook_response-tab">
                             @includeIf('admin.leads.partials.webhook_responses')
+                        </div>
+                        <div class="tab-pane fade" id="lead-sitevisit" role="tabpanel" aria-labelledby="lead-call_logs-tab">
+                            @includeIf('admin.leads.partials.sitevisit')
+                        </div>
+                        {{-- <div class="tab-pane fade" id="lead-call_logs" role="tabpanel" aria-labelledby="lead-call_logs-tab">
+                            @includeIf('admin.leads.partials.call_logs')
+                        </div> --}}
+                        <div class="tab-pane fade" id="lead-notes" role="tabpanel" aria-labelledby="lead-notes-tab">
+                            @includeIf('admin.leads.partials.notes')
+                        </div>
+                        <div class="tab-pane fade" id="lead-followup" role="tabpanel"
+                            aria-labelledby="lead-followup-tab">
+                            @includeIf('admin.leads.partials.followup')
                         </div>
                     </div>
                 </div>

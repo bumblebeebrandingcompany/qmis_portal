@@ -733,7 +733,31 @@
         });
     </script>
 
+<script>
+    $(document).ready(function() {
+        // Show the modal when the "Follow Up" button is clicked
+        $('#SiteVisitButton').click(function() {
+            $('#SiteVisitModal').modal('show');
+        });
+    });
+</script>
 
+<script>
+    $(document).ready(function() {
+        // Show the modal when the "Follow Up" button is clicked
+        $('#FollowUpButton').click(function() {
+            $('#FollowUpModal').modal('show');
+        });
+    });
+</script>
+ <script>
+    $(document).ready(function() {
+        // Show the modal when the "Follow Up" button is clicked
+        $('#NotesButton').click(function() {
+            $('#NotesModal').modal('show');
+        });
+    });
+</script>
 
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -10,65 +10,57 @@
         </div>
         <div class="card-body">
             <div class="row">
+            @if(!(auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager))
+                        <div class="col-md-3 campaigns_div">
+                            <label for="campaign_id">
+campaign                            </label>
+                            <select class="search form-control" id="campaign_id">
+                                <option value>{{ trans('global.all') }}</option>
+                                @foreach($campaigns as $key => $item)
+                                    <option value="{{ $item->id }}" @if(isset($filters['campaign_id']) && $filters['campaign_id'] == $item->id) selected @endif>{{ $item->campaign_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="campaign_name">Select Campaign Name</label>
-                        <select id="campaign_name" name="campaign_name" class="form-control">
-                            @foreach ($campaigns as $key => $item)
-                                @if ($item->campaign_name)
-                                    <!-- Check if representative_name is not null or empty -->
-                                    <option value="{{ $item->campaign_name }}">{{ $item->campaign_name }}</option>
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="staffMember">Select Staff Member</label>
-                        <select id="staffMember" name="staffMember" class="form-control">
-                            @foreach ($agencies as $key => $item)
-                                @if ($item->representative_name)
-                                    <!-- Check if representative_name is not null or empty -->
-                                    @if (trim($item->representative_name) !== '')
-                                        <!-- Check if representative_name is not empty after trimming -->
-                                        <option value="{{ $item->representative_name }}">{{ $item->representative_name }}
-                                        </option>
-                                    @endif
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+                        <label for="user_id">Select Staff Member</label>
+                        <select name="user_id" id="user_id" class="form-control{{ $errors->has('user_id') ? ' is-invalid' : '' }}"
+                    rows="3" required>{{ old('user_id') }}
+>
+<option value>{{ trans('global.all') }}</option>
 
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="start_date">{{ trans('cruds.project.fields.start_date') }}</label>
-                        <input class="form-control date {{ $errors->has('start_date') ? 'is-invalid' : '' }}" type="text"
-                            name="start_date" id="start_date" value="{{ old('start_date') }}">
-                        @if ($errors->has('start_date'))
-                            <span class="text-danger">{{ $errors->first('start_date') }}</span>
-                        @endif
-                        <span class="help-block">{{ trans('cruds.project.fields.start_date_helper') }}</span>
+                        <!-- <option value="" selected disabled>Please Select</option> -->
+                        @foreach ($agencies as $id => $agency)
+                            @foreach ($agency->agencyUsers as $user)
+                                <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                    {{ $user->representative_name }}
+                                </option>
+                            @endforeach
+                        @endforeach
+                    </select>
                     </div>
                 </div>
-            </div>
-
-            <table class="table">
+            <div class="col-md-3">
+                            <label for="added_on">{{ trans('messages.added_on') }}</label>
+                            <input class="form-control date_range" type="text" name="date" id="added_on" readonly>
+                        </div>
+            <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-Followup">
                 <thead>
                     <tr>
-                        <th>Reference Number</th>
-                        <th>Campaign Name</th>
-                        <th>Follow-Up Date</th>
-                        <th>Follow-Up Time</th>
-                        <th>Follow-Up By</th>
-                        <th>notes</th>
-                        {{-- <th>Action</th> --}}
+                        <th>{{trans('messages.ref_num')}}</th>
+                        <th>{{trans('messages.campaign')}}</th>
+                        <th>{{trans('messages.follow_up_date')}}</th>
+                        <th>{{trans('messages.follow_up_time')}}</th>
+                        <th>{{trans('messages.follow_up_by')}}</th>
+                        <th>{{trans('messages.notes')}}</th>
+                        <th>{{trans('messages.created_at')}}</th>
 
+                        {{-- <th>{{trans('messages.action')}}</th> --}}
                         <!-- Add more table headers for other lead follow-up properties -->
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="followUpTableBody">
                     @foreach ($followUps as $followUp)
                         <tr>
                             <td>
@@ -99,8 +91,7 @@
                                     @endif
                                 @endforeach
                             </td>
-                            {{-- <td>{{ $followUp->follow_up_date }}</td> --}}
-                            {{-- <td>{{ $followUp->follow_up_time }}</td> --}}
+
                             <td>
                                 {{ $followUp->users->representative_name }}
                             </td>
@@ -108,6 +99,13 @@
                                 @foreach ($lead as $leads)
                                     @if ($leads->id === $followUp->lead_id)
                                         {{ $followUp->notes }}
+                                    @endif
+                                @endforeach
+                            </td>
+                            <td>
+                                @foreach ($lead as $leads)
+                                    @if ($leads->id === $followUp->lead_id)
+                                        {{ $followUp->created_at }}
                                     @endif
                                 @endforeach
                             </td>
@@ -125,10 +123,15 @@
                 </tbody>
             </table>
         @endsection
+
         @section('scripts')
-            <script>
-                function confirmDelete() {
-                    return confirm('{{ trans('global.areYouSure') }}');
-                }
-            </script>
-        @endsection
+        @parent
+
+        <script>
+
+    $(function () {
+       @includeIf('admin.leads.partials.follow_up_js')
+    });
+</script>
+
+@endsection
