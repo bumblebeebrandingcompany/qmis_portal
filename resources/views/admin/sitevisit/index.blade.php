@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-    <h1>Site Visit</h1>
+    <h3>Site Visit And Reschedule</h3>
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Lead Site Visit Table</h3>
@@ -35,10 +35,11 @@
                 <thead>
                     <tr>
                         <th>Reference Number</th>
+                        <th>Parent Name</th>
                         <th>Campaign Name</th>
                         <th>Site Visit Date</th>
                         <th>Site Visit Time</th>
-                        <th>Site Visit By</th>
+                        <th>Supervise By</th>
                         <th>Notes</th>
                         <th>Created At</th>
                         <th>Actions</th>
@@ -51,6 +52,13 @@
                                 @foreach ($lead as $leads)
                                     @if ($leads->id === $sitevisit->lead_id)
                                         {{ $leads->ref_num }}
+                                    @endif
+                                @endforeach
+                            </td>
+                            <td>
+                                @foreach ($lead as $leads)
+                                    @if ($leads->id === $sitevisit->lead_id)
+                                        {{ $leads->name }}
                                     @endif
                                 @endforeach
                             </td>
@@ -156,6 +164,8 @@
                                                                 <span aria-hidden="true">&times;</span>
                                                             </button>
                                                         </div>
+                                                        <input type="hidden" name="parent_stage_id" value="20">
+
                                                         <div class="modal-body">
                                                             Are you sure you want to cancel?
                                                         </div>
@@ -179,6 +189,7 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
+
                                             <div class="modal-body">
                                                 Are you sure you want to mark this visit as conducted?
                                             </div>
@@ -186,6 +197,8 @@
                                                 <form method="POST" action="{{ route('admin.sitevisits.conducted', $sitevisit->id) }}">
                                                     @csrf
                                                     @method('PUT')
+                                                    <input type="hidden" name="parent_stage_id" value="11">
+
                                                     <button type="submit" class="btn btn-primary">Confirm</button>
                                                 </form>
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -203,6 +216,7 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
+
                                             <div class="modal-body">
                                                 Are you sure this site visit is not visited?
                                             </div>
@@ -210,6 +224,8 @@
                                                 <form action="{{ route('admin.sitevisits.notvisited', $sitevisit->id) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
+                                                    <input type="hidden" name="parent_stage_id" value="12">
+
                                                     <button type="submit" class="btn btn-danger">Confirm</button>
                                                 </form>
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -218,36 +234,29 @@
                                     </div>
                                 </div>
                                 <!-- Edit Modal -->
-                                <div class="modal fade" id="editModal{{ $sitevisit->id }}" tabindex="-1" role="dialog"
-                                    aria-labelledby="editModalLabel{{ $sitevisit->id }}" aria-hidden="true">
+<div class="modal fade" id="editModal{{ $sitevisit->id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel{{ $sitevisit->id }}" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="editModalLabel{{ $sitevisit->id }}">Reschedule
-                                                </h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
+                                                <h5 class="modal-title" id="editModalLabel{{ $sitevisit->id }}">Reschedule</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
+
                                             <div class="modal-body">
-                                                <form method="POST"
-                                                    action="{{ route('admin.sitevisits.reschedule', $sitevisit->id) }}"
-                                                    enctype="multipart/form-data">
+                                                <form method="POST" action="{{ route('admin.sitevisits.reschedule', $sitevisit->id) }}" enctype="multipart/form-data">
                                                     @csrf
                                                     @method('PUT')
                                                     <input type="hidden" name="lead_id" value="{{ $sitevisit->lead_id }}">
                                                     <h3 class="card-title">Lead Id : {{ $sitevisit->lead_id }}</h3>
+
                                                     <div class="form-group">
-                                                        <label class="required"
-                                                            for="user_id">{{ trans('cruds.project.fields.client') }}</label>
-                                                        <select
-                                                            class="form-control select2 {{ $errors->has('client') ? 'is-invalid' : '' }}"
-                                                            name="user_id" id="user_id" required>
+                                                        <label class="required" for="user_id">{{ trans('cruds.project.fields.client') }}</label>
+                                                        <select class="form-control select2 {{ $errors->has('client') ? 'is-invalid' : '' }}" name="user_id" id="user_id" required>
                                                             @foreach ($client as $id => $clients)
                                                                 @foreach ($clients->clientUsers as $user)
-                                                                    <option value="{{ $user->id }}"
-                                                                        {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
                                                                         {{ $user->representative_name }}
                                                                     </option>
                                                                 @endforeach
@@ -256,30 +265,26 @@
                                                         @if ($errors->has('client'))
                                                             <span class="text-danger">{{ $errors->first('client') }}</span>
                                                         @endif
-                                                        <span
-                                                            class="help-block">{{ trans('cruds.project.fields.client_helper') }}</span>
+                                                        <span class="help-block">{{ trans('cruds.project.fields.client_helper') }}</span>
                                                     </div>
-                                                    <input type="hidden" name="parent_stage_id" value="19">
-                                                    <!-- New hidden field for sparent_stage_id -->
 
                                                     <label for="Date">Select Date</label>
-                                                    <input type="date" name="follow_up_date"
-                                                        class="form-control datepicker"
-                                                        value="{{ $sitevisit->follow_up_date }}">
+                                                    <input type="date" name="follow_up_date" class="form-control datepicker" value="{{ $sitevisit->follow_up_date }}">
+
                                                     <label for="Time">Select Time</label>
-                                                    <input id="follow_up_time" name="follow_up_time" type="text"
-                                                        class="form-control timepicker"
-                                                        value="{{ $sitevisit->follow_up_time }}">
+                                                    <input id="follow_up_time" name="follow_up_time" type="text" class="form-control timepicker" value="{{ $sitevisit->follow_up_time }}">
+
                                                     <div class="form-group">
                                                         <label for="followUpContent">Notes</label>
                                                         <textarea id="followUpContent" name="notes" class="form-control" rows="5">{{ $sitevisit->notes }}</textarea>
                                                     </div>
-                                                </form>
-                                            </div>
+                                                </div>
+
                                             <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary">Save Changes</button>
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>

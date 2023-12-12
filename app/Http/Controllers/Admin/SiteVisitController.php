@@ -108,11 +108,9 @@ class SiteVisitController extends Controller
 {
     $sitevisit = SiteVisit::findOrFail($sitevisitId);
 
-    if ($sitevisit->lead->parent_stage_id == 10) {
-        $sitevisit->lead->update(['parent_stage_id' => 20]);
-    } elseif ($sitevisit->lead->parent_stage_id == 25) {
-        $sitevisit->lead->update(['parent_stage_id' => 28]);
-    }
+    $parentStageId = $request->input('parent_stage_id');
+        $sitevisit->lead->update(['parent_stage_id' =>  $parentStageId]);
+
 
     // Your additional logic or redirection here if needed
 
@@ -125,13 +123,9 @@ public function conducted(Request $request, $sitevisitId)
     {
         $sitevisit = SiteVisit::findOrFail($sitevisitId);
 
-        if ($sitevisit->lead->parent_stage_id == 10) {
-            $sitevisit->lead->update(['parent_stage_id' => 11]);
-        } elseif ($sitevisit->lead->parent_stage_id == 25) {
-            $sitevisit->lead->update(['parent_stage_id' => 27]);
-        }
+        $parentStageId = $request->input('parent_stage_id');
+            $sitevisit->lead->update(['parent_stage_id' =>  $parentStageId]);
 
-        // Your additional logic or redirection here if needed
 
         return redirect()->back();
     }
@@ -139,12 +133,9 @@ public function conducted(Request $request, $sitevisitId)
 public function notVisited(Request $request, $sitevisitId)
 {
     $sitevisit = SiteVisit::findOrFail($sitevisitId);
+    $parentStageId = $request->input('parent_stage_id');
 
-    if ($sitevisit->lead->parent_stage_id == 10) {
-        $sitevisit->lead->update(['parent_stage_id' => 12]);
-    } elseif ($sitevisit->lead->parent_stage_id == 25) {
-        $sitevisit->lead->update(['parent_stage_id' => 27]);
-    }
+        $sitevisit->lead->update(['parent_stage_id' =>  $parentStageId]);
 
     // Your additional logic or redirection here if needed
 

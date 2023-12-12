@@ -189,7 +189,7 @@
                 </li>
 
                 <li class="list-group-item">
-                    <b>{{ trans('messages.intake_year') }}</b>
+                    <b>Intake Year</b>
                     <a class="float-right">
                         <span class="value-container">
                             <span class="display-value">{{ $lead->intake_year }}</span>
@@ -227,7 +227,7 @@
                     </a>
                 </li>
                 <li class="list-group-item">
-                    <b>{{ trans('messages.grade_enquired') }}</b>
+                    <b>Grade Enquired</b>
                     <a class="float-right">
                         <span class="value-container">
                             <span class="display-value">{{ $lead->grade_enquired }}</span>
@@ -275,7 +275,7 @@
 
 
                 <li class="list-group-item">
-                    <b>{{ trans('messages.current_school') }}</b>
+                    <b>Current School</b>
                     <a class="float-right">
                         <span class="value-container">
                             <span class="display-value"
