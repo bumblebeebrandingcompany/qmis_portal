@@ -298,13 +298,15 @@
                         </span>
                     </a>
                 </li>
-                <li class="list-group-item">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
                     <b>Stage</b>
-                    <a class="float-right">{{ $lead->parentStage->name ?? '' }}</a>
+                    <div class="d-flex align-items-center">
+                        <span style="margin-right: 1cm;">{{ $lead->parentStage->name ?? '' }}</span>
+                        <button type="button" class="btn btn-primary rounded-circle p-2 d-flex align-items-center" data-toggle="modal" data-target="#stageModal" style="width: 30px; height: 30px;">
+                            <i class="fas fa-play fa-sm mx-auto"></i>
+                        </button>
+                    </div>
                 </li>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#stageModal">
-                    View Stages
-                </button>
 
                 <div class="modal fade" id="stageModal" tabindex="-1" role="dialog"
                     aria-labelledby="exampleModalLabel" aria-hidden="true">
