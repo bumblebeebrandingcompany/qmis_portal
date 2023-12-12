@@ -254,7 +254,7 @@
                 </li>
             @endif
                 <li class="nav-item">
-                    <a href="{{ route('admin.leads.index', ['view' => 'list']) }}" id="lead_menu_link" class="nav-link {{ request()->is("admin/leads") || request()->is("admin/leads/*") ? "active" : "" }}">
+                    <a href="{{ route('admin.leads.index', ['view' => 'kanban']) }}" id="lead_menu_link" class="nav-link {{ request()->is("admin/leads") || request()->is("admin/leads/*") ? "active" : "" }}">
                         <i class="fa-fw nav-icon fas fa-handshake">
                         </i>
                         <p>
