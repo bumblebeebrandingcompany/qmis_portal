@@ -1,5 +1,4 @@
 @extends('layouts.admin')
-
 @section('content')
     <h1>Lead Follow Up List</h1>
     <div class="card">
@@ -167,7 +166,6 @@
                         startDate = moment().startOf('day');
                         endDate = moment().add(29, 'days').endOf('day');
                         break;
-
                     case 'this_week':
                         startDate = moment().add(1, 'week').startOf('week');
                         endDate = moment().add(1, 'week').endOf('week');
