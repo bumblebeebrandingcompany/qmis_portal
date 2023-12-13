@@ -34,8 +34,7 @@
                     </div>
                 </div>
             </div>
-
-            <table class="table" id="siteVisitTable">
+            <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-sitevisit" id="siteVisitTable">
                 <thead>
                     <tr>
                         <th>Reference Number</th>

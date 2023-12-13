@@ -35,7 +35,7 @@
                 </div>
             </div>
 
-            <table class="table" id="followUpTable">
+            <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-followup" id="followUpTable">
                 <thead>
                     <tr>
                         <th>Reference Number</th>
