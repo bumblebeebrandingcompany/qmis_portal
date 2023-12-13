@@ -26,6 +26,7 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <th>Ref num</th>
                 <th>Client number</th>
                 <th>Status</th>
                 <th>Call Start Time</th>
@@ -42,12 +43,23 @@
             @foreach ($callRecords as $callRecord)
                 <tr>
                     <td>{{ $counter++ }}</td>
+                    <td> </td>
                     <td>{{ $callRecord->called_by }}</td>
                     <td>{{ $callRecord->called_on }}</td>
                     <td>{{ $callRecord->call_start_time }}</td>
                     <td>{{ $callRecord->call_duration }}</td>
                     <td>{{ $callRecord->called_on }}</td>
+                    @foreach ($lead as $leads)
+                    @if ($leads->id === $callrecords->lead_id)
+                        {{ $callrecords->phone }}
+                    @endif
 
+                    {{-- @foreach ($lead as $leads)
+
+                    @if ($leads->id === $sitevisit->lead_id)
+                        {{ $sitevisit->notes }}
+                    @endif
+                @endforeach --}}
                     {{-- <td>
                         <audio controls>
                             <source src="{{ asset('storage/audio/' . $callRecord->call_recordings) }}" type="audio/mp3">

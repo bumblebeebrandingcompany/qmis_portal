@@ -72,12 +72,12 @@ class CallRecordController extends Controller
         if (isset($callRecords['results']) && is_array($callRecords['results'])) {
             foreach ($callRecords['results'] as $record) {
                 // Check if the necessary keys are present in each record
-                if (isset($record['recording_url'], $record['agent_number'], $record['date'], $record['time'], $record['answered_seconds'], $record['status'])) {
+                if (isset($record['recording_url'], $record['client_number'], $record['date'], $record['time'], $record['answered_seconds'], $record['status'])) {
                     $recordingUrl = $record['recording_url'];
                     $audioData = file_get_contents($recordingUrl);
 
                     // Check if 'called_by' is not null or empty
-                    $calledBy = $record['agent_number'] ?? null;
+                    $calledBy = $record['client_number'] ?? null;
 
                     if ($calledBy !== null) {
                         // Generate a unique file name
