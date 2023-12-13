@@ -25,6 +25,7 @@
     <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-callog">
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Client number</th>
                 <th>Status</th>
                 <th>Call Start Time</th>
@@ -35,8 +36,12 @@
             </tr>
         </thead>
         <tbody>
+            @php
+            $counter = 1;
+        @endphp
             @foreach ($callRecords as $callRecord)
                 <tr>
+                    <td>{{ $counter++ }}</td>
                     <td>{{ $callRecord->called_by }}</td>
                     <td>{{ $callRecord->called_on }}</td>
                     <td>{{ $callRecord->call_start_time }}</td>

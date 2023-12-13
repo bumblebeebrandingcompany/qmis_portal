@@ -38,6 +38,7 @@
             <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-followup" id="followUpTable">
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Reference Number</th>
                         <th>Parent Name</th>
                         <th>Campaign Name</th>
@@ -49,8 +50,13 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                    $counter = 1;
+                @endphp
                     @foreach ($followUps as $followUp)
+
                         <tr data-created-at="{{ $followUp->follow_up_date}}">
+                            <td>{{ $counter++ }}</td>
                             <td>
                                 @foreach ($lead as $leads)
                                     @if ($leads->id === $followUp->lead_id)
