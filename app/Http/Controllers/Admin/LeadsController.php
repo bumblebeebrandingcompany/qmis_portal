@@ -118,9 +118,7 @@ class LeadsController extends Controller
                     $q->whereIn('name', $lead_stage);
                 });
 
-                // Check if the user is super admin
                 if ($user->is_superadmin) {
-                    // If not super admin, include leads with empty parent_stage_id
                     $query->orWhereNull('parent_stage_id');
                 }
             });
