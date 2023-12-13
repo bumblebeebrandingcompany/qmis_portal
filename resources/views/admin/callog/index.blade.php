@@ -42,6 +42,7 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <th>Ref num</th>
                 <th>Client number</th>
                 <th>Status</th>
                 <th>Call Start Time</th>
@@ -58,6 +59,7 @@
             @foreach ($callRecords as $callRecord)
                 <tr>
                     <td>{{ $counter++ }}</td>
+                    <td> </td>
                     <td>{{ $callRecord->called_by }}</td>
                     <td>{{ $callRecord->called_on }}</td>
                     <td>{{ $callRecord->call_start_time }}</td>
@@ -74,6 +76,13 @@
                     </td>
 
                     <td>{{ $callRecord->called_on }}</td>
+
+                    {{-- <td>
+                        <audio controls>
+                            <source src="{{ asset('storage/audio/' . $callRecord->call_recordings) }}" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </td> --}}
                     <td>
                             <audio controls>
                                 <source src="{{ asset($callRecord['call_recordings']) }}" type="audio/mp3">
