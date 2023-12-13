@@ -273,7 +273,30 @@
                 </li>
                 </li>
 
-
+                <li class="list-group-item">
+                    <b>Child Name</b>
+                    <a class="float-right">
+                        <span class="value-container">
+                            <span class="display-value"
+                                style="{{ $errors->has('child_name') ? 'display:none;' : '' }}">
+                                {{ $lead->child_name }}
+                            </span>
+                            <input type="text" name="child_name" class="edit-field"
+                                placeholder="Enter Current School"
+                                style="{{ $errors->has('child_name') ? '' : 'display:none;' }}"
+                                value="{{ old('child_name') }}">
+                            @error('child_name')
+                                <div class="text-danger">{{ $message }}</div>
+                                {{-- Show the save button when there is an error --}}
+                                <script>
+                                    $(document).ready(function() {
+                                        $('.save-button').show();
+                                    });
+                                </script>
+                            @enderror
+                        </span>
+                    </a>
+                </li>
                 <li class="list-group-item">
                     <b>Current School</b>
                     <a class="float-right">

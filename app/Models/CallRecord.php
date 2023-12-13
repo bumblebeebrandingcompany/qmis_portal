@@ -18,7 +18,7 @@ class CallRecord extends Model
     ];
 
 // In your CallRecord model
-protected $fillable = ['called_by', 'called_on', 'call_duration', 'call_start_time', 'status'];
+protected $fillable = ['called_by', 'called_on', 'call_duration', 'call_start_time', 'status','call_recordings'];
 
 }
 

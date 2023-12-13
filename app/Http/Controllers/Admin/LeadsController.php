@@ -12,12 +12,13 @@ use App\Models\SiteVisit;
 use App\Models\Followup;
 use App\Models\CallRecord;
 use App\Models\Project;
-use App\Models\Client;
+use App\Models\Clients;
 use App\Models\Agency;
 use App\Models\Note;
 use App\Models\ParentStage;
 use App\Models\Tag;
 use Gate;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
@@ -411,7 +412,7 @@ class LeadsController extends Controller
         $leads=Lead::all();
         $sitevisits = SiteVisit::all();
 
-          $client=Client::all();
+          $client=Clients::all();
           $lead->load('project', 'campaign', 'source', 'createdBy');
           $agencies= Agency::all();
           $user_id = request()->get('user_id'); // Get the user ID from the request

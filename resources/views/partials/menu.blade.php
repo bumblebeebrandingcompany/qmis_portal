@@ -197,6 +197,18 @@
                     </p>
                 </a>
             </li>
+            @if(!(auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager))
+            <li class="nav-item">
+                <a href="{{ route("admin.callog.index") }}" class="nav-link {{ request()->is("admin/callog") || request()->is("admin/callog/*") ? "active" : "" }}">
+                    <i class="fas fa-fw fa-calendar nav-icon">
+
+                    </i>
+                    <p>
+                        Lead Call log
+                    </p>
+                </a>
+            </li>
+        @endif
                  {{-- @if(!(auth()->user()->is_channel_partner || auth()->user()->is_agency || auth()->user()->is_channel_partner_manager))
                     <li class="nav-item">
                         <a href="{{ route("admin.stages.index") }}" class="nav-link {{ request()->is("admin/stages") || request()->is("admin/stages/*") ? "active" : "" }}">

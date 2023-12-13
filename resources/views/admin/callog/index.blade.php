@@ -3,64 +3,26 @@
     <h1>Call Records</h1>
     <form action="{{ route('admin.callog.store') }}" method="post">
         @csrf
-        <button type="submit">Store Call Records</button>
+        <button class="btn btn-primary" type="submit">
+            Store Call Records</button>
     </form>
     <div class="card">
-        <div class="row">
-            <div class="col-md-3">
+
+            <div class="col-md-4">
                 <div class="form-group">
-                    <label for="campaign_name">Select Campaign Name</label>
-                    <select id="campaign_name" name="campaign_name" class="form-control">
-                        @foreach ($campaigns as $key => $item)
-                            @if ($item->campaign_name)
-                                <!-- Check if representative_name is not null or empty -->
-                                <option value="{{ $item->campaign_name }}">{{ $item->campaign_name }}</option>
-                            @endif
-                        @endforeach
+                    <label for="date_range">Select a date</label>
+                    <select class="form-control" id="date_range">
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="last_week">Last Week</option>
+                        <option value="last_30_days">Last 30 Days</option>
+                        <option value="last_60_days" selected>Last 60 Days</option>
+                        <option value="last_year">Last One Year</option>
+                        <option value="custom">Custom Range</option>
                     </select>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="staffMember">Select Staff Member</label>
-                    <select id="staffMember" name="staffMember" class="form-control">
-                        @foreach ($agencies as $key => $item)
-                            @if ($item->representative_name)
-                                <!-- Check if representative_name is not null or empty -->
-                                @if (trim($item->representative_name) !== '')
-                                    <!-- Check if representative_name is not empty after trimming -->
-                                    <option value="{{ $item->representative_name }}">{{ $item->representative_name }}
-                                    </option>
-                                @endif
-                            @endif
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="start_date">{{ trans('cruds.project.fields.start_date') }}</label>
-                    <input class="form-control date {{ $errors->has('start_date') ? 'is-invalid' : '' }}" type="text"
-                        name="start_date" id="start_date" value="{{ old('start_date') }}">
-                    @if ($errors->has('start_date'))
-                        <span class="text-danger">{{ $errors->first('start_date') }}</span>
-                    @endif
-                    <span class="help-block">{{ trans('cruds.project.fields.start_date_helper') }}</span>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="start_date">{{ trans('cruds.project.fields.end_date') }}</label>
-                    <input class="form-control date {{ $errors->has('end_date') ? 'is-invalid' : '' }}" type="text"
-                        name= "end_date" id="end_date" value="{{ old('end_date') }}">
-                    @if ($errors->has('end_date'))
-                        <span class="text-danger">{{ $errors->first('end_date') }}</span>
-                    @endif
-                    <span class="help-block">{{ trans('cruds.project.fields.end_date_helper') }}</span>
-                </div>
-            </div>
-        </div>
-    <table class="table">
+    <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-callog">
         <thead>
             <tr>
                 <th>Client number</th>
@@ -88,11 +50,18 @@
                         </audio>
                     </td> --}}
                     <td>
-                        <audio controls>
-                            <!-- Assuming the recording URL is already in MP3 format -->
-                            <source src="{{ $callRecord['recording_url'] }}" type="audio/mp3">
-                            Your browser does not support the audio tag.
-                        </audio>
+
+                            <audio controls>
+                                <!-- Use the asset function to generate the correct URL -->
+                                <source src="{{ asset($callRecord['call_recordings']) }}" type="audio/mp3">
+                                Your browser does not support the audio tag.
+                            </audio>
+
+                            {{-- <audio controls>
+                                <!-- Use the asset function to generate the correct URL -->
+                                <source src="{{ asset($callRecord['call_recordings']) }}" type="audio/mp3">
+                                Your browser does not support the audio tag.
+                            </audio>  --}}
                     </td>
                 </tr>
             @endforeach
@@ -105,3 +74,22 @@
     <button type="submit">Store Call Records</button>
 </form> --}}
 @endsection
+<style>
+    /* Customize the audio player controls */
+    audio {
+        /* Set the background color */
+        background-color: #f0f0f0;
+
+        /* Set the color of the volume control slider */
+        --webkit-slider-thumb-color: #3498db;
+        --moz-range-thumb-color: #3498db;
+        --ms-thumb-color: #3498db;
+        --o-range-thumb-color: #3498db;
+        --webkit-slider-runnable-track-color: #bdc3c7;
+        --moz-range-track-color: #bdc3c7;
+        --ms-track-color: #bdc3c7;
+        --o-range-track-color: #bdc3c7;
+    }
+</style>
+
+

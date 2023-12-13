@@ -133,4 +133,8 @@ return [
     'event_type' => 'Event type',
     'log' => 'Log',
     'search' => 'Search',
+    'child_name' => 'Child name',
+    'grade_enquired' => 'Grade enquired',
+    'intake_year' => 'Intake year',
+
 ];

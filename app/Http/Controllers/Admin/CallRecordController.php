@@ -62,50 +62,62 @@ class CallRecordController extends Controller
     {
         $apiKey = config('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2N1c3RvbWVyLnNlcnZldGVsLmluL2FwaS92MS9hdXRoL2xvZ2luIiwiaWF0IjoxNjk4NjY0NTAxLCJleHAiOjE2OTg2NjgxMDEsIm5iZiI6MTY5ODY2NDUwMSwianRpIjoiaFBDRUIwblllUjBjU2N2MCIsInN1YiI6IjE3MDQ0MCJ9.V_qQ_Vtm9d2ojWyqR1ZBfxjQRt2JJnz3YHXgXJ3WIxQ');
         $apiKey = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNzA0NDAiLCJpc3MiOiJodHRwczovL2N1c3RvbWVyLnNlcnZldGVsLmluL3Rva2VuL2dlbmVyYXRlIiwiaWF0IjoxNjk4NjYxMjYwLCJleHAiOjE5OTg2NjEyNjAsIm5iZiI6MTY5ODY2MTI2MCwianRpIjoiTWtYY0h0OXlpNG5Ea2FuaSJ9.L23vhUJ0UIGc3nffLeMK0NMczroLgwwkECFnaCaY-A8';
-
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $apiKey,
         ])->get('https://api.servetel.in/v1/call/records');
+
         $callRecords = $response->json();
-        foreach ($callRecords['results'] as $record) {
 
-            $recordingUrl = $record['recording_url'];
+        // Check if the 'results' key exists
+        if (isset($callRecords['results']) && is_array($callRecords['results'])) {
+            foreach ($callRecords['results'] as $record) {
+                // Check if the necessary keys are present in each record
+                if (isset($record['recording_url'], $record['agent_number'], $record['date'], $record['time'], $record['answered_seconds'], $record['status'])) {
+                    $recordingUrl = $record['recording_url'];
+                    $audioData = file_get_contents($recordingUrl);
 
-            $audioData = file_get_contents($recordingUrl);
+                    // Check if 'called_by' is not null or empty
+                    $calledBy = $record['agent_number'] ?? null;
 
-            // Generate a unique file name
-            $fileName = 'audio_' . time() . '.mp3';
-            $path = 'audio/' . $fileName;
-            $absolutePath = public_path($path);
-                        echo "Path: " . $path;
+                    if ($calledBy !== null) {
+                        // Generate a unique file name
+                        $fileName = 'audio_' . time() . '.mp3';
+                        $path = 'audio/' . $fileName;
+                        $absolutePath = public_path($path);
+
+                        // Ensure the directory exists
                         File::makeDirectory(dirname($absolutePath), 0755, true, true);
+
                         // Save the audio data to the server
-                        file_put_contents($absolutePath, $audioData);
-            // Store the call record in the database
-            CallRecord::create([
-                'called_by' => $record['agent_number'],
-                'called_on' => $record['date'],
-                'call_start_time' => $record['time'],
-                'call_duration' => $record['answered_seconds'],
-                'call_recordings' => $path,
-                'status' => $record['status'], // Ensure this line is present and correct
-            ]);
+                        if (file_put_contents($absolutePath, $audioData) !== false) {
+                            // Store the call record in the database
+                            CallRecord::create([
+                                'called_by' => $calledBy,
+                                'called_on' => $record['date'],
+                                'call_start_time' => $record['time'],
+                                'call_duration' => $record['answered_seconds'],
+                                'call_recordings' => $path,
+                                'status' => $record['status'],
+                            ]);
+                        } else {
+                            // Log or handle the case where file_put_contents fails
+                        }
+                    } else {
+                        // Log or handle the case where 'called_by' is null
+                    }
+                } else {
+                    // Log or handle the case where required keys are missing in the record
+                }
+            }
+        } else {
+            // Log or handle the case where 'results' key is missing in the API response
         }
 
         return redirect()->route('admin.callog.store')->with('success', 'Call records stored successfully.');
     }
 
-    private function validateCallRecord(array $record)
-    {
-        validator($record, [
-            'called_by' => 'required|string',
-            'called_on' => 'required|string',
-            'call_start_time' => 'required|date',
-            'call_duration' => 'required|integer',
-            'call_recordings' => 'required', // Assuming this is correct based on your structure
-            'status' => 'required',
-        ])->validate();
-    }
+
+
 
 
 }

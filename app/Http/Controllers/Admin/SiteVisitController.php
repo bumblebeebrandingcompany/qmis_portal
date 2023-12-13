@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SiteVisitRequest;
 use App\Models\Campaign;
-use App\Models\Client;
+use App\Models\Clients;
 use App\Models\Lead;
 use App\Models\SiteVisit;
 use App\Models\User;
@@ -25,7 +25,7 @@ class SiteVisitController extends Controller
     public function index(Request $request)
     {
         $lead = Lead::all();
-        $client = Client::all();
+        $client = Clients::all();
         $agencies = User::all();
         $campaigns = Campaign::all();
         $sitevisits = SiteVisit::all(); // Fixed variable name to $sitevisits
