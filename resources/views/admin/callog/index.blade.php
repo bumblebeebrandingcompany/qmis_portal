@@ -8,7 +8,7 @@
     </form>
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Lead Site Visit Table</h3>
+            <h3 class="card-title">Call Records Table</h3>
         </div>
         <div class="card-body">
             <div class="row">
@@ -86,10 +86,7 @@
     </table>
     </div>
 </div>
-{{-- <form action="{{ route('admin.callog.store') }}" method="post">
-    @csrf
-    <button type="submit">Store Call Records</button>
-</form> --}}
+
 @endsection
 <style>
     /* Customize the audio player controls */
