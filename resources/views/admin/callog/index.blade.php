@@ -49,7 +49,7 @@
                 <th>Call Duration</th>
                 <th>Called On</th>
                 <th>Call Recording</th>
-                <!-- Add more table headers for other lead follow-up properties -->
+
             </tr>
         </thead>
         <tbody>
@@ -59,8 +59,9 @@
             @foreach ($callRecords as $callRecord)
                 <tr>
                     <td>{{ $counter++ }}</td>
-                    <td> </td>
-                    <td>{{ $callRecord->called_by }}</td>
+                    <td>{{ $callRecord->lead->ref_num }} </td>
+                    <td>{{ $callRecord->client_number }}</td>
+                    <td>{{ $callRecord->status }}</td>
                     <td>{{ $callRecord->called_on }}</td>
                     <td>{{ $callRecord->call_start_time }}</td>
                     <td>
@@ -75,14 +76,6 @@
                         {{ $seconds.'s' }}
                     </td>
 
-                    <td>{{ $callRecord->called_on }}</td>
-
-                    {{-- <td>
-                        <audio controls>
-                            <source src="{{ asset('storage/audio/' . $callRecord->call_recordings) }}" type="audio/mp3">
-                            Your browser does not support the audio element.
-                        </audio>
-                    </td> --}}
                     <td>
                             <audio controls>
                                 <source src="{{ asset($callRecord['call_recordings']) }}" type="audio/mp3">
@@ -97,22 +90,6 @@
 </div>
 
 @endsection
-<style>
-    /* Customize the audio player controls */
-    audio {
-        /* Set the background color */
-        background-color: #f0f0f0;
 
-        /* Set the color of the volume control slider */
-        --webkit-slider-thumb-color: #3498db;
-        --moz-range-thumb-color: #3498db;
-        --ms-thumb-color: #3498db;
-        --o-range-thumb-color: #3498db;
-        --webkit-slider-runnable-track-color: #bdc3c7;
-        --moz-range-track-color: #bdc3c7;
-        --ms-track-color: #bdc3c7;
-        --o-range-track-color: #bdc3c7;
-    }
-</style>
 
 

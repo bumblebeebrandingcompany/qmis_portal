@@ -3,36 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\MassDestroyLeadRequest;
-use App\Http\Requests\StoreFollowupRequest;
-use App\Http\Requests\UpdateLeadRequest;
 use App\Models\Campaign;
-use App\Models\Document;
 use App\Models\Lead;
-use App\Models\LeadEvents;
-use App\Models\Project;
-use App\Models\Source;
 use App\Models\CallRecord;
 use App\Models\User;
-use App\Notifications\LeadDocumentShare;
-use App\Utils\Util;
-use App\Models\Note;
-use Carbon\Carbon;
-use Exception;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\View;
-use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
-use FFMpeg;
-use FFProbe;
 use Illuminate\Support\Facades\File;
-
-use DateTimeInterface;
 
 class CallRecordController extends Controller
 {
@@ -56,8 +33,27 @@ class CallRecordController extends Controller
             $errorResponse = $response->json();
         }
         $data = $response->json();
-        return view('admin.callog.index',compact('agencies','campaigns','lead','callRecords'),['data' => $data]);
+        return view('admin.callog.index', compact('agencies', 'campaigns', 'lead', 'callRecords'), ['data' => $data]);
     }
+
+    public function show($id)
+    {
+        // Retrieve the call record by ID
+        $callRecord = CallRecord::find($id);
+
+        // Check if the call record exists
+        if (!$callRecord) {
+            abort(404, 'Call Record not found');
+        }
+
+        // Decode the JSON string
+        $callFlowJson = $callRecord->call_flow;
+        $callFlow = json_decode($callFlowJson, true);
+
+        // Pass the call flow data to the view
+        return view('admin.callog.show', compact('callFlow', 'callRecord'));
+    }
+
     public function store(Request $request)
     {
         $apiKey = config('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2N1c3RvbWVyLnNlcnZldGVsLmluL2FwaS92MS9hdXRoL2xvZ2luIiwiaWF0IjoxNjk4NjY0NTAxLCJleHAiOjE2OTg2NjgxMDEsIm5iZiI6MTY5ODY2NDUwMSwianRpIjoiaFBDRUIwblllUjBjU2N2MCIsInN1YiI6IjE3MDQ0MCJ9.V_qQ_Vtm9d2ojWyqR1ZBfxjQRt2JJnz3YHXgXJ3WIxQ');
@@ -68,36 +64,36 @@ class CallRecordController extends Controller
 
         $callRecords = $response->json();
 
-        // Check if the 'results' key exists
         if (isset($callRecords['results']) && is_array($callRecords['results'])) {
             foreach ($callRecords['results'] as $record) {
-                // Check if the necessary keys are present in each record
                 if (isset($record['recording_url'], $record['client_number'], $record['date'], $record['time'], $record['answered_seconds'], $record['status'])) {
                     $recordingUrl = $record['recording_url'];
                     $audioData = file_get_contents($recordingUrl);
 
-                    // Check if 'called_by' is not null or empty
                     $calledBy = $record['client_number'] ?? null;
+                    $lead = Lead::where('phone', $calledBy)->first();
 
                     if ($calledBy !== null) {
-                        // Generate a unique file name
                         $fileName = 'audio_' . time() . '.mp3';
                         $path = 'audio/' . $fileName;
                         $absolutePath = public_path($path);
 
-                        // Ensure the directory exists
                         File::makeDirectory(dirname($absolutePath), 0755, true, true);
 
-                        // Save the audio data to the server
                         if (file_put_contents($absolutePath, $audioData) !== false) {
-                            // Store the call record in the database
                             CallRecord::create([
-                                'called_by' => $calledBy,
+                                'lead_id' => $lead->id ?? 21,
+                                'client_number' => $record['client_number'],
                                 'called_on' => $record['date'],
-                                'call_start_time' => $record['time'],
+                                'call_on_time' => $record['time'],
                                 'call_duration' => $record['answered_seconds'],
                                 'call_recordings' => $path,
                                 'status' => $record['status'],
+                                'direction' => $record['direction'],
+                                'description' => $record['description'],
+                                'call_id' => $record['call_id'],
+                                'did number' => $record['did_number'],
+                                'call_flow' => json_encode($record['call_flow']),
                             ]);
                         } else {
                             // Log or handle the case where file_put_contents fails
@@ -115,9 +111,5 @@ class CallRecordController extends Controller
 
         return redirect()->route('admin.callog.store')->with('success', 'Call records stored successfully.');
     }
-
-
-
-
 
 }

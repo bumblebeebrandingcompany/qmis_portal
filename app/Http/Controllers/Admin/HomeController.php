@@ -159,7 +159,7 @@ class HomeController
             'chart_title'           => 'No. of Clients',
             'chart_type'            => 'number_block',
             'report_type'           => 'group_by_date',
-            'model'                 => 'App\Models\Client',
+            'model'                 => 'App\Models\Clients',
             'group_by_field'        => 'created_at',
             'group_by_period'       => 'day',
             'aggregate_function'    => 'count',
