@@ -314,34 +314,59 @@ class LeadsController extends Controller
     }
 
     public function store(StoreLeadRequest $request)
-    {
-        $input = $request->except(['_method', '_token']);
-        $input['lead_details'] = $this->getLeadDetailsKeyValuePair($input['lead_details'] ?? []);
-        $input['created_by'] = auth()->user()->id;
+{
 
-        $input['parent_stage_id'] = $request->input('parent_stage_id'); // Add this line
+    $input = $request->except(['_method', '_token']);
+    $input['lead_details'] = $this->getLeadDetailsKeyValuePair($input['lead_details'] ?? []);
+    $input['created_by'] = auth()->user()->id;
 
+    $input['parent_stage_id'] = $request->input('parent_stage_id'); // Add this line
+
+    $existingLead = Lead::where('phone', $input['phone'])->first();
+
+    if ($existingLead) {
+        // Create a new lead instance
+        $lead = new Lead;
+
+        // Copy the existing lead's attributes to the new instance
+        $lead->fill($existingLead->getAttributes());
+
+        // Update the new lead with the new data
+        $lead->fill($input);
+
+        // Save the new lead
+        $lead->save();
+    } else {
+        // Create a new lead
+        $lead = Lead::create($input);
+        $lead->ref_num = $this->util->generateLeadRefNum($lead);
+        $lead->save();
+
+        // Update source and campaign for the new lead
         $source = Source::where('is_cp_source', 1)
             ->where('project_id', $input['project_id'])
             ->first();
 
         if (auth()->user()->is_channel_partner && !empty($source)) {
-            $input['source_id'] = $source->id;
+            $lead->source_id = $source->id;
+            // You may need to adjust this based on your actual field names
+            $lead->campaign = $source->campaign;
+            $lead->save();
         }
-
-        $lead = Lead::create($input);
-        $lead->ref_num = $this->util->generateLeadRefNum($lead);
-        $lead->save();
-
-        $this->util->storeUniqueWebhookFields($lead);
-        if (!empty($lead->project->outgoing_apis)) {
-            $this->util->sendApiWebhook($lead->id);
-        }
-
-
-
-        return redirect()->route('admin.leads.index');
     }
+
+    $this->util->storeUniqueWebhookFields($lead);
+
+    if (!empty($lead->project->outgoing_apis)) {
+        $this->util->sendApiWebhook($lead->id);
+    }
+
+    return redirect()->route('admin.leads.index');
+}
+
+
+
+
 
     public function edit(Lead $lead)
     {

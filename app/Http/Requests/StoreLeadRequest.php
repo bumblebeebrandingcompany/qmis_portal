@@ -27,12 +27,12 @@ class StoreLeadRequest extends FormRequest
                     return $query->whereNotNull('email')->where('project_id', $project_id);
                 }),
             ],
-            'phone' => [
-                auth()->user()->is_superadmin ? '' : 'required',
-                Rule::unique('leads')->where(function ($query) use ($project_id) {
-                    return $query->whereNotNull('phone')->where('project_id', $project_id);
-                }),
-            ],
+            // 'phone' => [
+            //     auth()->user()->is_superadmin ? '' : 'required',
+            //     Rule::unique('leads')->where(function ($query) use ($project_id) {
+            //         return $query->whereNotNull('phone')->where('project_id', $project_id);
+            //     }),
+            // ],
             'project_id' => 'required|integer',
             'parent_stage_id' => 'nullable|integer', // Add this line for parent_stage_id
         ];
