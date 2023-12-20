@@ -98,4 +98,14 @@ input:checked + .slider:before {
 .spacer {
     height: 10px; /* Adjust the height to add more or less space */
 }
+
+    .saved-note {
+        background-color: #f2f2f2;
+        /* Gray background color */
+        padding: 10px;
+        /* Add some padding to make it visually appealing */
+        margin-bottom: 10px;
+        /* Add some space between containers */
+    }
+
 </style>
