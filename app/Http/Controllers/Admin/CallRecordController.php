@@ -32,10 +32,11 @@ class CallRecordController extends Controller
         } else {
             $errorResponse = $response->json();
         }
-        $data = $response->json();
-        return view('admin.callog.index', compact('agencies', 'campaigns', 'lead', 'callRecords'), ['data' => $data]);
-    }
 
+        $callRecords = CallRecord::paginate(10); // Adjust the number per page as needed
+        $data = $response->json();
+        return view('admin.callog.index', compact('agencies', 'campaigns', 'lead', 'callRecords', 'data'));
+    }
     public function show($id)
     {
         // Retrieve the call record by ID

@@ -43,6 +43,7 @@
                 @yield('content')
             </section>
         </div>
+
         <footer class="main-footer">
             <div class="float-right d-none d-sm-block">
                 {{config('app.name', 'Laravel')}} | Copyright <strong> &copy;</strong> {{Date('Y')}} {{ trans('global.allRightsReserved') }}
