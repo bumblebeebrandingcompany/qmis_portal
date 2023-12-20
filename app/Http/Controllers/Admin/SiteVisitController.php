@@ -43,14 +43,16 @@ class SiteVisitController extends Controller
         $input = $request->validated(); // Use the validated input from the request
         // Find the lead and user based on their IDs
         $lead = Lead::findOrFail($input['lead_id']);
-        // $user = User::findOrFail($input['user_id']);
-        $sitevisit = new SiteVisit();
+        $parentStageId = $request->input('parent_stage_id');        $sitevisit = new SiteVisit();
         $sitevisit->lead_id = $lead->id;
         $sitevisit->user_id = $input['user_id'];
         $sitevisit->follow_up_date = $input['follow_up_date']; // Assign the date
         $sitevisit->follow_up_time = $input['follow_up_time']; // Assign the time
         $sitevisit->notes = $input['notes'];
+        $sitevisit->parent_stage_id = $parentStageId; // Set parent_stage_id directly
         $sitevisit->save();
+
+        $sitevisit->lead->update(['parent_stage_id'=>$sitevisit->parent_stage_id]);
         return redirect()->back()->with('success', 'Form submitted successfully!');
 
     }
