@@ -325,7 +325,8 @@
                     <b>Stage</b>
                     <div class="d-flex align-items-center">
                         <span style="margin-right: 1cm;">{{ $lead->parentStage->name ?? '' }}</span>
-                        <button type="button" class="btn btn-primary rounded-circle p-2 d-flex align-items-center" data-toggle="modal" data-target="#stageModal" style="width: 30px; height: 30px;">
+                        <button type="button" class="btn btn-primary rounded-circle p-2 d-flex align-items-center"
+                            data-toggle="modal" data-target="#stageModal" style="width: 30px; height: 30px;">
                             <i class="fas fa-play fa-sm mx-auto"></i>
                         </button>
                     </div>
@@ -362,7 +363,8 @@
 
                                         <div class="form-group">
                                             <label for="child_stage_id">Select Child Stage:</label>
-                                            <select name="parent_stage_id" id="child_stage_id" class="form-control" onchange="checkParentStageId(this)">
+                                            <select name="parent_stage_id" id="child_stage_id" class="form-control"
+                                                onchange="checkParentStageId(this)">
                                                 <option value="" selected disabled>Please Select</option>
                                                 {{-- Options will be dynamically populated based on the selected tag and lead's stage --}}
                                             </select>
@@ -563,39 +565,250 @@
                                 </div>
                             </div>
                         </form>
+                        <form id="NotvisitedFormId" method="POST" action="{{ route('admin.notes.store') }}"
+                            enctype="multipart/form-data">
+                            @csrf
+                            <div id="notvisitedContent" style="display: none;">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="followUpModalLabel">Site Not Visited</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="lead_id" value="{{ $lead->id }}">
+                                        <input type="hidden" name="parent_stage_id" value="12">
+
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <label for="noteContent">Note Content</label>
+                                                <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
+                                                    rows="4" required>{{ old('note_text') }}</textarea>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" onclick="togglePopup()">Close</button>
+                                                <button class="btn btn-danger" type="submit">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <form id="SpamFormId" method="POST" action="{{ route('admin.notes.store') }}"
+                            enctype="multipart/form-data">
+                            @csrf
+                            <div id="spamContent" style="display: none;">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="followUpModalLabel">Spam</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="lead_id" value="{{ $lead->id }}">
+                                        <input type="hidden" name="parent_stage_id" value="15">
+
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <label for="noteContent">Note Content</label>
+                                                <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
+                                                    rows="4" required>{{ old('note_text') }}</textarea>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" onclick="togglePopup()">Close</button>
+                                                <button class="btn btn-danger" type="submit">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <form id="NotqualifiedFormId" method="POST" action="{{ route('admin.notes.store') }}"
+                            enctype="multipart/form-data">
+                            @csrf
+                            <div id="notqualifiedContent" style="display: none;">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="followUpModalLabel">Not Qualified</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="lead_id" value="{{ $lead->id }}">
+                                        <input type="hidden" name="parent_stage_id" value="16">
+
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <label for="noteContent">Note Content</label>
+                                                <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
+                                                    rows="4" required>{{ old('note_text') }}</textarea>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" onclick="togglePopup()">Close</button>
+                                                <button class="btn btn-danger" type="submit">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <form id="LostFormId" method="POST" action="{{ route('admin.notes.store') }}"
+                            enctype="multipart/form-data">
+                            @csrf
+                            <div id="lostContent" style="display: none;">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="followUpModalLabel">Lost</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="lead_id" value="{{ $lead->id }}">
+                                        <input type="hidden" name="parent_stage_id" value="17">
+
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <label for="noteContent">Note Content</label>
+                                                <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
+                                                    rows="4" required>{{ old('note_text') }}</textarea>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" onclick="togglePopup()">Close</button>
+                                                <button class="btn btn-danger" type="submit">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <form id="FututeprospectFormId" method="POST" action="{{ route('admin.notes.store') }}"
+                            enctype="multipart/form-data">
+                            @csrf
+                            <div id="futureprospectContent" style="display: none;">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="followUpModalLabel">Future Prospect</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="lead_id" value="{{ $lead->id }}">
+                                        <input type="hidden" name="parent_stage_id" value="18">
+
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <label for="noteContent">Note Content</label>
+                                                <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
+                                                    rows="4" required>{{ old('note_text') }}</textarea>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" onclick="togglePopup()">Close</button>
+                                                <button class="btn btn-danger" type="submit">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <form id="CancelledFormId" method="POST" action="{{ route('admin.notes.store') }}"
+                            enctype="multipart/form-data">
+                            @csrf
+                            <div id="cancelledContent" style="display: none;">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="followUpModalLabel">Cancelled</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="lead_id" value="{{ $lead->id }}">
+                                        <input type="hidden" name="parent_stage_id" value="20">
+
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <label for="noteContent">Note Content</label>
+                                                <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
+                                                    rows="4" required>{{ old('note_text') }}</textarea>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" onclick="togglePopup()">Close</button>
+                                                <button class="btn btn-danger" type="submit">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <form id="rnrFormId" method="POST" action="{{ route('admin.notes.store') }}"
+                            enctype="multipart/form-data">
+                            @csrf
+                            <div id="rnrContent" style="display: none;">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="followUpModalLabel">21</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="lead_id" value="{{ $lead->id }}">
+                                        <input type="hidden" name="parent_stage_id" value="18">
+
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <label for="noteContent">Note Content</label>
+                                                <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
+                                                    rows="4" required>{{ old('note_text') }}</textarea>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" onclick="togglePopup()">Close</button>
+                                                <button class="btn btn-danger" type="submit">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                    @php
-                        $lead_info = $lead->lead_info;
-                        if (!empty($lead->source) && !empty($lead->source->name_key) && isset($lead_info[$lead->source->name_key]) && !empty($lead_info[$lead->source->name_key])) {
-                            unset($lead_info[$lead->source->name_key]);
-                        }
+                @php
+                    $lead_info = $lead->lead_info;
+                    if (!empty($lead->source) && !empty($lead->source->name_key) && isset($lead_info[$lead->source->name_key]) && !empty($lead_info[$lead->source->name_key])) {
+                        unset($lead_info[$lead->source->name_key]);
+                    }
 
-                        if (!empty($lead->source) && !empty($lead->source->email_key) && isset($lead_info[$lead->source->email_key]) && !empty($lead_info[$lead->source->email_key])) {
-                            unset($lead_info[$lead->source->email_key]);
-                        }
+                    if (!empty($lead->source) && !empty($lead->source->email_key) && isset($lead_info[$lead->source->email_key]) && !empty($lead_info[$lead->source->email_key])) {
+                        unset($lead_info[$lead->source->email_key]);
+                    }
 
-                        if (!empty($lead->source) && !empty($lead->source->phone_key) && isset($lead_info[$lead->source->phone_key]) && !empty($lead_info[$lead->source->phone_key])) {
-                            unset($lead_info[$lead->source->phone_key]);
-                        }
+                    if (!empty($lead->source) && !empty($lead->source->phone_key) && isset($lead_info[$lead->source->phone_key]) && !empty($lead_info[$lead->source->phone_key])) {
+                        unset($lead_info[$lead->source->phone_key]);
+                    }
 
-                        if (!empty($lead->source) && !empty($lead->source->additional_email_key) && isset($lead_info[$lead->source->additional_email_key]) && !empty($lead_info[$lead->source->additional_email_key])) {
-                            unset($lead_info[$lead->source->additional_email_key]);
-                        }
+                    if (!empty($lead->source) && !empty($lead->source->additional_email_key) && isset($lead_info[$lead->source->additional_email_key]) && !empty($lead_info[$lead->source->additional_email_key])) {
+                        unset($lead_info[$lead->source->additional_email_key]);
+                    }
 
-                        if (!empty($lead->source) && !empty($lead->source->secondary_phone_key) && isset($lead_info[$lead->source->secondary_phone_key]) && !empty($lead_info[$lead->source->secondary_phone_key])) {
-                            unset($lead_info[$lead->source->secondary_phone_key]);
-                        }
-                    @endphp
-                    @foreach ($lead_info as $key => $value)
-                        <li class="list-group-item">
-                            <b>{!! $key !!}</b>
-                            <a class="float-right">
-                                {!! $value !!}
-                            </a>
-                        </li>
-                    @endforeach
-                    <!-- <li class="list-group-item">
+                    if (!empty($lead->source) && !empty($lead->source->secondary_phone_key) && isset($lead_info[$lead->source->secondary_phone_key]) && !empty($lead_info[$lead->source->secondary_phone_key])) {
+                        unset($lead_info[$lead->source->secondary_phone_key]);
+                    }
+                @endphp
+                @foreach ($lead_info as $key => $value)
+                    <li class="list-group-item">
+                        <b>{!! $key !!}</b>
+                        <a class="float-right">
+                            {!! $value !!}
+                        </a>
+                    </li>
+                @endforeach
+                <!-- <li class="list-group-item">
                 <b>@lang('messages.sell_do_created_date')</b>
                 <a class="float-right">
                     @if (!empty($lead->sell_do_lead_created_at))
@@ -603,36 +816,36 @@
 @endif
                 </a>
             </li> -->
-                    <!-- <li class="list-group-item">
+                <!-- <li class="list-group-item">
                 <b>@lang('messages.sell_do_status')</b>
                 <a class="float-right">
                     {!! $lead->sell_do_status ?? '' !!}
                 </a>
             </li> -->
-                    <!-- <li class="list-group-item">
+                <!-- <li class="list-group-item">
                 <b>@lang('messages.sell_do_stage')</b>
                 <a class="float-right">
                     {!! $lead->sell_do_stage ?? '' !!}
                 </a>
             </li> -->
-                    <li class="list-group-item">
-                        <b>@lang('messages.customer_comments')</b>
-                        <a class="float-right">
-                            {!! $lead->comments ?? '' !!}
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <b>@lang('messages.cp_comments')</b>
-                        <a class="float-right">
-                            {!! $lead->cp_comments ?? '' !!}
-                        </a>
-                    </li>
-                    <li class="list-group-item">
-                        <b>@lang('messages.added_by')</b>
-                        <a class="float-right">
-                            {{ $lead->createdBy ? $lead->createdBy->name : '' }}
-                        </a>
-                    </li>
+                <li class="list-group-item">
+                    <b>@lang('messages.customer_comments')</b>
+                    <a class="float-right">
+                        {!! $lead->comments ?? '' !!}
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <b>@lang('messages.cp_comments')</b>
+                    <a class="float-right">
+                        {!! $lead->cp_comments ?? '' !!}
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <b>@lang('messages.added_by')</b>
+                    <a class="float-right">
+                        {{ $lead->createdBy ? $lead->createdBy->name : '' }}
+                    </a>
+                </li>
         </form>
         </ul>
     </div>
@@ -742,32 +955,31 @@
         });
     </script>
 
-<script>
-    $(document).ready(function() {
-        // Show the modal when the "Follow Up" button is clicked
-        $('#SiteVisitButton').click(function() {
-            $('#SiteVisitModal').modal('show');
+    <script>
+        $(document).ready(function() {
+            // Show the modal when the "Follow Up" button is clicked
+            $('#SiteVisitButton').click(function() {
+                $('#SiteVisitModal').modal('show');
+            });
         });
-    });
-</script>
+    </script>
 
-<script>
-    $(document).ready(function() {
-        // Show the modal when the "Follow Up" button is clicked
-        $('#FollowUpButton').click(function() {
-            $('#FollowUpModal').modal('show');
+    <script>
+        $(document).ready(function() {
+            // Show the modal when the "Follow Up" button is clicked
+            $('#FollowUpButton').click(function() {
+                $('#FollowUpModal').modal('show');
+            });
         });
-    });
-</script>
- <script>
-    $(document).ready(function() {
-        // Show the modal when the "Follow Up" button is clicked
-        $('#NotesButton').click(function() {
-            $('#NotesModal').modal('show');
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Show the modal when the "Follow Up" button is clicked
+            $('#NotesButton').click(function() {
+                $('#NotesModal').modal('show');
+            });
         });
-    });
-</script>
-
+    </script>
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -782,6 +994,14 @@
         document.getElementById('rescheduleContent').style.display = 'none';
         document.getElementById('followUpContent').style.display = 'none';
         document.getElementById('siteVisitContent').style.display = 'none';
+        document.getElementById('notvisitedContent').style.display = 'none';
+        document.getElementById('spamContent').style.display = 'none';
+        document.getElementById('notqualifiedContent').style.display = 'none';
+        document.getElementById('lostContent').style.display = 'none';
+        document.getElementById('futureprospectContent').style.display = 'none';
+        document.getElementById('cancelledContent').style.display = 'none';
+        document.getElementById('rnrContent').style.display = 'none';
+
 
         // Check the selected option and display the corresponding modal
         if (selectedName === 'followup') {
@@ -790,6 +1010,20 @@
             document.getElementById('siteVisitContent').style.display = 'block';
         } else if (selectedName === 'rescheduled') {
             document.getElementById('rescheduleContent').style.display = 'block';
+        } else if (selectedName === 'site not visited') {
+            document.getElementById('notvisitedContent').style.display = 'block';
+        } else if (selectedName === 'spam') {
+            document.getElementById('spamContent').style.display = 'block';
+        } else if (selectedName === 'not qualified') {
+            document.getElementById('notqualifiedContent').style.display = 'block';
+        } else if (selectedName === 'lost') {
+            document.getElementById('lostContent').style.display = 'block';
+        } else if (selectedName === 'future prospect') {
+            document.getElementById('futureprospectContent').style.display = 'block';
+        } else if (selectedName === 'cancelled') {
+            document.getElementById('cancelledContent').style.display = 'block';
+        } else if (selectedName === 'rnr') {
+            document.getElementById('rnrContent').style.display = 'block';
         }
     }
 
@@ -798,17 +1032,18 @@
         var contentId = formId + 'Content';
         document.getElementById(contentId).style.display = 'none';
     }
+
     function hideStageModal() {
-    // Hide the stagemodel
-    document.getElementById('stageModal').style.display = 'none';
-}
+        // Hide the stagemodel
+        document.getElementById('stageModal').style.display = 'none';
+    }
     // Initially check the value on page load
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         checkParentStageId(document.getElementById('parent_stage_id'));
     });
 
-    $(document).ready(function () {
-        $('#tag_id').change(function () {
+    $(document).ready(function() {
+        $('#tag_id').change(function() {
             var selectedTagId = $('#tag_id option:selected').val();
 
             // Check if childStages is not null
@@ -840,4 +1075,4 @@
             }
         });
     });
-    </script>
+</script>
