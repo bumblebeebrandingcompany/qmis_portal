@@ -365,9 +365,6 @@ class LeadsController extends Controller
 }
 
 
-
-
-
     public function edit(Lead $lead)
     {
         if (!auth()->user()->is_superadmin) {
