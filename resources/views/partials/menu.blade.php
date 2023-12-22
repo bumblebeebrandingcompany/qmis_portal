@@ -196,10 +196,10 @@
                     </p>
                 </a>
             </li>
-            @if(!(auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager))
+            @if(auth()->user()->is_superadmin)
             <li class="nav-item">
                 <a href="{{ route("admin.callog.index") }}" class="nav-link {{ request()->is("admin/callog") || request()->is("admin/callog/*") ? "active" : "" }}">
-                    <i class="fas fa-phone fa-flip-horizontal"></i>
+                    <i class="fas fa-phone fa-flip-horizontal nav-icon"></i>
 
                     </i>
                     <p>

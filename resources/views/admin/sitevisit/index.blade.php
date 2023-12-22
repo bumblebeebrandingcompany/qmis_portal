@@ -1,13 +1,13 @@
 @extends('layouts.admin')
 @section('content')
-<div class="row">
+    <div class="row">
 
-    <div class="col-md-9 float-right">
-    <h3>Site Visit And Reschedule</h3>
+        <div class="col-md-9 float-right">
+            <h3>Site Visit And Reschedule</h3>
+        </div>
+        <div class="col-md-2 float-right" id="countdown">Respond Within: <span id="timer"></span></div>
+        <div class="col-md-1"></div>
     </div>
-    <div class="col-md-2 float-right" id="countdown">Respond Within: <span id="timer"></span></div>
-    <div class="col-md-1"></div>
-</div>
 
     <ul class="nav nav-tabs" id="myTabs">
         <li class="nav-item">
@@ -50,15 +50,15 @@
                                     $tomorrowData = [];
                                 @endphp
 
-                            @foreach ($sitevisits as $sitevisit)
-                                @php
-                                    $visitDate = \Carbon\Carbon::parse($sitevisit->follow_up_date);
-                                    $today = \Carbon\Carbon::today();
-                                    $tomorrow = \Carbon\Carbon::tomorrow();
-                                    $followUpTime = \Carbon\Carbon::parse($sitevisit->follow_up_time);
-        $currentTime = \Carbon\Carbon::now();
-        $timeRemaining = $followUpTime->diffInMinutes($currentTime);
-                                @endphp
+                                @foreach ($sitevisits as $sitevisit)
+                                    @php
+                                        $visitDate = \Carbon\Carbon::parse($sitevisit->follow_up_date);
+                                        $today = \Carbon\Carbon::today();
+                                        $tomorrow = \Carbon\Carbon::tomorrow();
+                                        $followUpTime = \Carbon\Carbon::parse($sitevisit->follow_up_time);
+                                        $currentTime = \Carbon\Carbon::now();
+                                        $timeRemaining = $followUpTime->diffInMinutes($currentTime);
+                                    @endphp
 
                                     @if ($visitDate->eq($today))
                                         @php
@@ -302,6 +302,3 @@
     }
 </style>
 <!-- resources/views/countdown/index.blade.php -->
-
-
-
