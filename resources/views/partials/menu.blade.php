@@ -1,4 +1,4 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4" style="min-height: 917px; overflow-y: auto;">
+<aside class="main-sidebar sidebar-dark-primary " style="min-height: 917px; overflow-y: auto;">
     <!-- Brand Logo -->
     <a href="#" class="brand-link">
         <span class="brand-text font-weight-light">

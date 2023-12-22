@@ -752,11 +752,11 @@
                             <div id="rnrContent" style="display: none;">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="followUpModalLabel">21</h5>
+                                        <h5 class="modal-title" id="followUpModalLabel">RNR</h5>
                                     </div>
                                     <div class="modal-body">
                                         <input type="hidden" name="lead_id" value="{{ $lead->id }}">
-                                        <input type="hidden" name="parent_stage_id" value="18">
+                                        <input type="hidden" name="parent_stage_id" value="21">
 
                                         <div class="form-group">
                                             <div class="form-group">

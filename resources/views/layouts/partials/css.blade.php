@@ -107,5 +107,30 @@ input:checked + .slider:before {
         margin-bottom: 10px;
         /* Add some space between containers */
     }
+    h4 {
+        font-size: 14px; /* Adjust the font size as needed */
+        font-weight: bold; /* Make the text bold */
+        background-color: #f4f4f4; /* Light gray background */
+        padding: 5px; /* Padding for spacing */
+        border-radius: 3px; /* Rounded corners */
+        display: inline-block; /* Make it inline-block to allow text to wrap */
+        margin-bottom: 5px; /* Add some bottom margin for spacing */
+    }
+    .custom-tomorrow-heading {
+        font-size: 14px;
+        font-weight: bold;
+        background-color: #f4f4f4;
+        padding: 5px;
+        border-radius: 3px;
+        display: inline-block;
+        margin-bottom: 0; /* Adjusted to reduce bottom margin */
+        margin-top: 0; /* Adjusted to reduce top margin */
+    }
+
+
 
 </style>
+
+
+
+

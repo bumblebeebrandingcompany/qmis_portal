@@ -39,7 +39,7 @@
             @yield('content_header')
         </div>
         <div class="content-wrapper kanban">
-            <section class="content pb-3">
+          <section class="content pb-3">
                 @yield('content')
             </section>
         </div>
@@ -56,5 +56,4 @@
     @includeIf('layouts.partials.javascript')
     @yield('scripts')
 </body>
-
 </html>
