@@ -455,6 +455,8 @@ class LeadsController extends Controller
               $note = Note::where('lead_id',$lead->id)->when($user_id,function ($query) use ($user_id){
                 return $query->where('user_id',$user_id);
               })->get();
+              $callRecords = CallRecord::paginate(10); // Adjust the number per page as needed
+
         //   $note = Note::where('lead_id', $lead->id)
         //       ->when($user_id, function ($query) use ($user_id) {
         //           return $query->where('user_id', $user_id);
