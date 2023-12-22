@@ -38,13 +38,12 @@
                         {{ $sitevisit->notes }}
                     <td>
                         @if ($sitevisit->parent_stage_id == 10)
-                        @if (!auth()->user()->is_client)
-                        <span class="badge badge-info">Scheduled</span>
-                        @endif
+                            @if (!auth()->user()->is_client)
+                                <span class="badge badge-info">Scheduled</span>
+                            @endif
                         @endif
                         <div class="btn-group" role="group" aria-label="Site Visit Actions">
-                            <form action="{{ route('admin.sitevisits.reschedule', $sitevisit->id) }}"
-                                method="POST">
+                            <form action="{{ route('admin.sitevisits.reschedule', $sitevisit->id) }}" method="POST">
                                 @csrf
 
                                 @method('PUT')
@@ -62,9 +61,8 @@
                                         Reschedule
                                     </button>
                                 @endif
-                                <div class="modal fade" id="editModal{{ $sitevisit->id }}" tabindex="-1"
-                                    role="dialog" aria-labelledby="editModalLabel{{ $sitevisit->id }}"
-                                    aria-hidden="true">
+                                <div class="modal fade" id="editModal{{ $sitevisit->id }}" tabindex="-1" role="dialog"
+                                    aria-labelledby="editModalLabel{{ $sitevisit->id }}" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -78,8 +76,7 @@
 
                                             <div class="modal-body">
 
-                                                <input type="hidden" name="lead_id"
-                                                    value="{{ $sitevisit->lead_id }}">
+                                                <input type="hidden" name="lead_id" value="{{ $sitevisit->lead_id }}">
                                                 <h3 class="card-title">Lead Id : {{ $sitevisit->lead_id }}</h3>
 
                                                 <div class="form-group">
@@ -99,8 +96,7 @@
                                                     </select>
                                                     <input type="hidden" name="parent_stage_id" value="10">
                                                     @if ($errors->has('client'))
-                                                        <span
-                                                            class="text-danger">{{ $errors->first('client') }}</span>
+                                                        <span class="text-danger">{{ $errors->first('client') }}</span>
                                                     @endif
                                                     <span
                                                         class="help-block">{{ trans('cruds.project.fields.client_helper') }}</span>
@@ -127,166 +123,180 @@
                                                 <button type="button" class="btn btn-secondary"
                                                     data-dismiss="modal">Cancel</button>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </form>
                         </div>
-</div>
-</div>
-
-<div class="mr-2"></div>
-<form action="{{ route('admin.sitevisits.conducted', $sitevisit->id) }}" method="POST">
-@csrf
-@method('PUT')
-
-@if ($sitevisit->parent_stage_id == 11)
-    @if (!auth()->user()->is_superadmin)
-        <span class="badge badge-success">Conducted</span>
-    @else
-        <span class="badge badge-success">Conducted</span>
-    @endif
-@elseif (!auth()->user()->is_superadmin && $sitevisit->lead && in_array($sitevisit->parent_stage_id, [26, 27, 20, 19]))
-
-@elseif (!auth()->user()->is_superadmin && $sitevisit->lead && $sitevisit->parent_stage_id != 11)
-    @if ($sitevisit->parent_stage_id != 12)
-        <!-- Add this condition to exclude Not Visited -->
-        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal"
-            data-target="#conductedModel{{ $sitevisit->id }}">
-            Conducted
-        </button>
-    @endif
-@endif
-
-<!-- Modal for Conducted -->
-<div class="modal fade" id="conductedModel{{ $sitevisit->id }}" tabindex="-1" role="dialog"
-    aria-labelledby="conductedModelLabel{{ $sitevisit->id }}" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="conductedModelLabel{{ $sitevisit->id }}">Confirmation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                Are you sure this site visit is Conducted?
-            </div>
-            <div class="modal-footer">
-                <input type="hidden" name="parent_stage_id" value="11">
-                <button type="submit" class="btn btn-danger">Confirm</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-</form>
 
 
+                        <div class="mr-2"></div>
+                        <form action="{{ route('admin.sitevisits.conducted', $sitevisit->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
 
-<div class="mr-2"></div>
+                            @if ($sitevisit->parent_stage_id == 11)
+                                @if (!auth()->user()->is_superadmin)
+                                    <span class="badge badge-success">Conducted</span>
+                                @else
+                                    <span class="badge badge-success">Conducted</span>
+                                @endif
+                            @elseif (!auth()->user()->is_superadmin && $sitevisit->lead && in_array($sitevisit->parent_stage_id, [26, 27, 20, 19]))
 
+                            @elseif (!auth()->user()->is_superadmin && $sitevisit->lead && $sitevisit->parent_stage_id != 11)
+                                @if ($sitevisit->parent_stage_id != 12)
+                                    <!-- Add this condition to exclude Not Visited -->
+                                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal"
+                                        data-target="#conductedModel{{ $sitevisit->id }}">
+                                        Conducted
+                                    </button>
+                                @endif
+                            @endif
+
+                            <!-- Modal for Conducted -->
+                            <div class="modal fade" id="conductedModel{{ $sitevisit->id }}" tabindex="-1"
+                                role="dialog" aria-labelledby="conductedModelLabel{{ $sitevisit->id }}"
+                                aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="conductedModelLabel{{ $sitevisit->id }}">
+                                                Confirmation</h5>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            Are you sure this site visit is Conducted?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="hidden" name="parent_stage_id" value="11">
+                                            <button type="submit" class="btn btn-danger">Confirm</button>
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
 
 
 
-
-<!-- Add margin to create space -->
-<div class="mr-2"></div>
-<div class="btn-group" role="group" aria-label="Site Visit Actions">
-<form method="POST" action="{{ route('admin.sitevisits.cancel', $sitevisit->id) }}"
-    enctype="multipart/form-data">
-    @csrf
-    @method('PUT')
-
-    @if ($sitevisit->parent_stage_id == 20)
-        <span class="badge badge-danger">Cancelled</span>
-    @elseif ($sitevisit->parent_stage_id != 11 && $sitevisit->parent_stage_id != 10 && $sitevisit->parent_stage_id != 19)
-        <!-- Add this condition to hide "Cancel" button if the stage is conducted or 10 -->
-        @php
-            $canCancel = !auth()->user()->is_client && $sitevisit->lead && $sitevisit->parent_stage_id != 20;
-        @endphp
-
-        @if ($canCancel)
-            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                data-target="#cancelModal{{ $sitevisit->id }}">
-                Cancel
-            </button>
-        @endif
-
-        <!-- Modal -->
-        <div class="modal fade" id="cancelModal{{ $sitevisit->id }}" tabindex="-1" role="dialog"
-            aria-labelledby="cancelModalLabel{{ $sitevisit->id }}" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="cancelModalLabel{{ $sitevisit->id }}">Confirmation</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <input type="hidden" name="parent_stage_id" value="20">
-
-                    <div class="modal-body">
-                        Are you sure you want to cancel?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-danger">Confirm</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
-</form>
-</div>
-
-<div class="mr-2"></div>
-
-<form action="{{ route('admin.sitevisits.notvisited', $sitevisit->id) }}" method="POST">
-@csrf
-@method('PUT')
-
-@if ($sitevisit->parent_stage_id == 12)
-    @if (!auth()->user()->is_superadmin)
-        <span class="badge badge-warning">Not Visited</span>
-    @else
-        <span class="badge badge-warning">Not Visited</span>
-    @endif
-@elseif (!auth()->user()->is_superadmin && $sitevisit->lead && in_array($sitevisit->parent_stage_id, [11, 26, 27, 20, 19]))
-
-@elseif (!auth()->user()->is_superadmin && $sitevisit->lead && $sitevisit->parent_stage_id != 12)
-    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-        data-target="#notVisitedModel{{ $sitevisit->id }}">
-        Not Visited
-    </button>
-@endif
+                        <div class="mr-2"></div>
 
 
-<!-- Modal -->
-<div class="modal fade" id="notVisitedModel{{ $sitevisit->id }}" tabindex="-1" role="dialog"
-    aria-labelledby="notVisitedModelLabel{{ $sitevisit->id }}" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="notVisitedModelLabel{{ $sitevisit->id }}">Confirmation
-                </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
 
-            <div class="modal-body">
-                Are you sure this site visit is not visited?
-            </div>
-            <div class="modal-footer">
-                <input type="hidden" name="parent_stage_id" value="12">
-                <button type="submit" class="btn btn-danger">Confirm</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-</form>
 
-                        </td>
+
+                        <!-- Add margin to create space -->
+                        <div class="mr-2"></div>
+                        <div class="btn-group" role="group" aria-label="Site Visit Actions">
+                            <form method="POST" action="{{ route('admin.sitevisits.cancel', $sitevisit->id) }}"
+                                enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
+
+                                @if ($sitevisit->parent_stage_id == 20)
+                                    <span class="badge badge-danger">Cancelled</span>
+                                @elseif ($sitevisit->parent_stage_id != 11 && $sitevisit->parent_stage_id != 10 && $sitevisit->parent_stage_id != 19)
+                                    <!-- Add this condition to hide "Cancel" button if the stage is conducted or 10 -->
+                                    @php
+                                        $canCancel = !auth()->user()->is_client && $sitevisit->lead && $sitevisit->parent_stage_id != 20;
+                                    @endphp
+
+                                    @if ($canCancel)
+                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                            data-target="#cancelModal{{ $sitevisit->id }}">
+                                            Cancel
+                                        </button>
+                                    @endif
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="cancelModal{{ $sitevisit->id }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="cancelModalLabel{{ $sitevisit->id }}"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title"
+                                                        id="cancelModalLabel{{ $sitevisit->id }}">Confirmation</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <input type="hidden" name="parent_stage_id" value="20">
+
+                                                <div class="modal-body">
+                                                    Are you sure you want to cancel?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-danger">Confirm</button>
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </form>
+                        </div>
+
+                        <div class="mr-2"></div>
+
+                        <form action="{{ route('admin.sitevisits.notvisited', $sitevisit->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+
+                            @if ($sitevisit->parent_stage_id == 12)
+                                @if (!auth()->user()->is_superadmin)
+                                    <span class="badge badge-warning">Not Visited</span>
+                                @else
+                                    <span class="badge badge-warning">Not Visited</span>
+                                @endif
+                            @elseif (!auth()->user()->is_superadmin && $sitevisit->lead && in_array($sitevisit->parent_stage_id, [11, 26, 27, 20, 19]))
+
+                            @elseif (!auth()->user()->is_superadmin && $sitevisit->lead && $sitevisit->parent_stage_id != 12)
+                                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                    data-target="#notVisitedModel{{ $sitevisit->id }}">
+                                    Not Visited
+                                </button>
+                            @endif
+
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="notVisitedModel{{ $sitevisit->id }}" tabindex="-1"
+                                role="dialog" aria-labelledby="notVisitedModelLabel{{ $sitevisit->id }}"
+                                aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="notVisitedModelLabel{{ $sitevisit->id }}">
+                                                Confirmation
+                                            </h5>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            Are you sure this site visit is not visited?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="hidden" name="parent_stage_id" value="12">
+                                            <button type="submit" class="btn btn-danger">Confirm</button>
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </td>
                 </tr>
             @endforeach
         </tbody>

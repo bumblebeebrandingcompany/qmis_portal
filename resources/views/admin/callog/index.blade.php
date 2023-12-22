@@ -62,7 +62,6 @@
                     <td>{{ $callRecord->lead->ref_num }} </td>
                     <td>{{ $callRecord->client_number }}</td>
                     <td>{{ $callRecord->status }}</td>
-                    <td>{{ $callRecord->called_on }}</td>
                     <td>{{ $callRecord->call_start_time }}</td>
                     <td>
                         <?php
@@ -75,6 +74,9 @@
                         {{ $minutes ? $minutes.'m ' : '' }}
                         {{ $seconds.'s' }}
                     </td>
+                    <td>{{ $callRecord->called_on }}</td>
+
+
 
                     <td>
                             <audio controls>

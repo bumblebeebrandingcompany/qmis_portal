@@ -17,90 +17,88 @@
         <div class="tab-pane fade show active" id="siteVisit">
             <div class="card">
                 <div class="card-header">
-
+                    <h3 class="card-title">Upcoming Sitevisits</h3>
                 </div>
-                <div class="col-md-4">
-
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-reschedule"
-                        id="rescheduleTable">
-                        <thead>
-                            <tr>
-                                <th>Reference Number</th>
-                                <th>Parent Name</th>
-                                <th>Campaign Name</th>
-                                <th>Site Visit Date</th>
-                                <th>Site Visit Time</th>
-                                <th>Supervise By</th>
-                                <th>Notes</th>
-                                <th>Created At</th>
-                                <th>Actions</th>
-                                <th>Timer</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php
-                                $todayData = [];
-                                $tomorrowData = [];
-                            @endphp
-
-                            @foreach ($sitevisits as $sitevisit)
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table
+                            class="table table-bordered table-striped table-hover ajaxTable datatable datatable-reschedule"
+                            id="rescheduleTable">
+                            <thead>
+                                <tr>
+                                    <th>R.No</th>
+                                    <th>Parent Name</th>
+                                    <th>Campaign Name</th>
+                                    <th>Site Visit Date</th>
+                                    <th>Site Visit Time</th>
+                                    <th>Supervise By</th>
+                                    <th>Notes</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
+                                    <th>Timer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 @php
-                                    $visitDate = \Carbon\Carbon::parse($sitevisit->follow_up_date);
-                                    $today = \Carbon\Carbon::today();
-                                    $tomorrow = \Carbon\Carbon::tomorrow();
-                                    $followUpTime = \Carbon\Carbon::parse($sitevisit->follow_up_time);
-        $currentTime = \Carbon\Carbon::now();
-        $timeRemaining = $followUpTime->diffInMinutes($currentTime);
+                                    $todayData = [];
+                                    $tomorrowData = [];
                                 @endphp
 
-                                @if ($visitDate->eq($today))
+                                @foreach ($sitevisits as $sitevisit)
                                     @php
-                                        $todayData[] = $sitevisit;
+                                        $visitDate = \Carbon\Carbon::parse($sitevisit->follow_up_date);
+                                        $today = \Carbon\Carbon::today();
+                                        $tomorrow = \Carbon\Carbon::tomorrow();
+                                        $followUpTime = \Carbon\Carbon::parse($sitevisit->follow_up_time);
+                                        $currentTime = \Carbon\Carbon::now();
+                                        $timeRemaining = $followUpTime->diffInMinutes($currentTime);
                                     @endphp
-                                @elseif ($visitDate->eq($tomorrow))
-                                    @php
-                                        $tomorrowData[] = $sitevisit;
-                                    @endphp
+
+                                    @if ($visitDate->eq($today))
+                                        @php
+                                            $todayData[] = $sitevisit;
+                                        @endphp
+                                    @elseif ($visitDate->eq($tomorrow))
+                                        @php
+                                            $tomorrowData[] = $sitevisit;
+                                        @endphp
+                                    @endif
+                                @endforeach
+
+                                {{-- Display today's data --}}
+                                @if (!empty($todayData))
+                                    <tr>
+                                        <td>
+                                            <h4 class="custom-today-heading">Today</h4>
+                                        </td>
+                                    </tr>
+
+                                    @foreach ($todayData as $sitevisit)
+                                        @include('admin.sitevisit.partials.table_body')
+                                    @endforeach
                                 @endif
-                            @endforeach
 
-                            {{-- Display today's data --}}
-                            @if (!empty($todayData))
-                                <tr>
-                                    <td>
-                                        <h4 class="custom-today-heading">Today</h4>
-                                    </td>
-                                </tr>
+                                {{-- Display tomorrow's data --}}
+                                @if (!empty($tomorrowData))
+                                    <tr>
+                                        <td>
+                                            <h4 class="custom-tomorrow-heading">Tomorrow</h4>
+                                        </td>
+                                    </tr>
 
-                                @foreach ($todayData as $sitevisit)
-                                    @include('admin.sitevisit.partials.table_body')
-                                @endforeach
-                            @endif
-
-                            {{-- Display tomorrow's data --}}
-                            @if (!empty($tomorrowData))
-                                <tr>
-                                    <td>
-                                        <h4 class="custom-tomorrow-heading">Tomorrow</h4>
-                                    </td>
-                                </tr>
-
-                                @foreach ($tomorrowData as $sitevisit)
-                                    @include('admin.sitevisit.partials.table_body')
-                                @endforeach
-                            @endif
+                                    @foreach ($tomorrowData as $sitevisit)
+                                        @include('admin.sitevisit.partials.table_body')
+                                    @endforeach
+                                @endif
 
 
-                        </tbody>
+                            </tbody>
 
-                    </table>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-
         <!-- Reschedule Tab -->
         <div class="tab-pane fade" id="reschedule">
             <div class="card">
@@ -141,7 +139,7 @@
                                 id="siteVisitTable">
                                 <thead>
                                     <tr>
-                                        <th>Reference Number</th>
+                                        <th>R.No</th>
                                         <th>Parent Name</th>
                                         <th>Campaign Name</th>
                                         <th>Site Visit Date</th>
