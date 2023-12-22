@@ -199,7 +199,7 @@
             @if(!(auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager))
             <li class="nav-item">
                 <a href="{{ route("admin.callog.index") }}" class="nav-link {{ request()->is("admin/callog") || request()->is("admin/callog/*") ? "active" : "" }}">
-                    <i class="fas fa-fw fa-calendar nav-icon">
+                    <i class="fas fa-phone fa-flip-horizontal"></i>
 
                     </i>
                     <p>

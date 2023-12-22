@@ -1,7 +1,13 @@
 @extends('layouts.admin')
-
 @section('content')
+<div class="row">
+
+    <div class="col-md-9 float-right">
     <h3>Site Visit And Reschedule</h3>
+    </div>
+    <div class="col-md-2 float-right" id="countdown">Respond Within: <span id="timer"></span></div>
+    <div class="col-md-1"></div>
+</div>
 
     <ul class="nav nav-tabs" id="myTabs">
         <li class="nav-item">
@@ -52,8 +58,8 @@
                                     $today = \Carbon\Carbon::today();
                                     $tomorrow = \Carbon\Carbon::tomorrow();
                                     $followUpTime = \Carbon\Carbon::parse($sitevisit->follow_up_time);
-        $currentTime = \Carbon\Carbon::now();
-        $timeRemaining = $followUpTime->diffInMinutes($currentTime);
+                                    $currentTime = \Carbon\Carbon::now();
+                                    $timeRemaining = $followUpTime->diffInMinutes($currentTime);
                                 @endphp
 
                                 @if ($visitDate->eq($today))
@@ -245,3 +251,59 @@
         });
     </script>
 @endsection
+
+
+<!-- resources/views/countdown/index.blade.php -->
+
+<style>
+    #countdown {
+        font-size: 24px;
+    }
+</style>
+
+
+<script>
+    const targetTime = new Date();
+    targetTime.setHours(19, 0, 0); // 7:00 PM
+
+    function updateTimer() {
+        const currentTime = new Date();
+        const timeDifference = targetTime - currentTime;
+
+        if (timeDifference > 0) {
+            const hours = Math.floor(timeDifference / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+            document.getElementById('timer').innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+        } else {
+            document.getElementById('timer').innerHTML = 'Countdown expired';
+        }
+    }
+
+    // Update the timer every second
+    setInterval(updateTimer, 1000);
+
+    // Initial update
+    updateTimer();
+</script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: right;
+        margin: 10px;
+    }
+
+    #countdown {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    #timer {
+        font-weight: bold;
+    }
+</style>
+<!-- resources/views/countdown/index.blade.php -->
+
+
+

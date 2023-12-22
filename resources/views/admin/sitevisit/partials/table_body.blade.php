@@ -251,8 +251,6 @@
                     Not Visited
                 </button>
             @endif
-
-
             <!-- Modal -->
             <div class="modal fade" id="notVisitedModel{{ $sitevisit->id }}" tabindex="-1" role="dialog"
                 aria-labelledby="notVisitedModelLabel{{ $sitevisit->id }}" aria-hidden="true">
@@ -283,15 +281,35 @@
         <?php
         $followUpDateTime = strtotime($sitevisit->follow_up_date . ' ' . $sitevisit->follow_up_time);
         $currentTime = time();
-        $timeRemaining = floor(($followUpDateTime - $currentTime) / 60); // in minutes
+        $timeRemaining = max(0, $followUpDateTime - $currentTime); // in seconds
         ?>
 
-        @if ($timeRemaining > 0 && $timeRemaining <= 30)
-            <span class="text-danger">{{ $timeRemaining }} mins</span>
+        @if ($timeRemaining > 0 && $timeRemaining <= 1800) <!-- 30 minutes in seconds -->
+            <span class="text-danger" id="countdown">
+                {{ gmdate('i:s', $timeRemaining) }}
+            </span>
+            <script>
+                // Countdown script
+                var countdownElement = document.getElementById('countdown');
+                var countdownInterval = setInterval(function () {
+                    var timeRemaining = parseInt(countdownElement.innerHTML.split(':')[0]) * 60 + parseInt(countdownElement.innerHTML.split(':')[1]) - 1;
+                    if (timeRemaining >= 0) {
+                        var minutes = Math.floor(timeRemaining / 60);
+                        var seconds = timeRemaining % 60;
+                        countdownElement.innerHTML = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+                    } else {
+                        clearInterval(countdownInterval);
+                        countdownElement.innerHTML = 'Ended';
+                    }
+                }, 1000); // Update every second
+            </script>
         @elseif ($timeRemaining <= 0)
             <span class="text-danger">Ended</span>
         @else
             Upcoming
         @endif
     </td>
+
 </tr>
+
+

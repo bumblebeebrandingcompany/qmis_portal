@@ -139,5 +139,5 @@ return [
     'child_name' => 'Child name',
     'grade_enquired' => 'Grade enquired',
     'intake_year' => 'Intake year',
-
+'call_logs'=>'Call Logs'
 ];

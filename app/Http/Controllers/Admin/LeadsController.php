@@ -442,11 +442,11 @@ class LeadsController extends Controller
                   return $query->where('user_id', $user_id);
               })
               ->get();
-              // $callRecords = CallRecord::where('lead_id', $lead->id)
-              // ->when($user_id, function ($query) use ($user_id) {
-              //     return $query->where('user_id', $user_id);
-              // })
-              // ->get();
+              $callRecords = CallRecord::where('lead_id', $lead->id)
+              ->when($user_id, function ($query) use ($user_id) {
+                  return $query->where('user_id', $user_id);
+              })
+              ->get();
               $sitevisit = SiteVisit::where('lead_id', $lead->id)
               ->when($user_id, function ($query) use ($user_id) {
                   return $query->where('user_id', $user_id);
@@ -462,7 +462,7 @@ class LeadsController extends Controller
         //       ->get();
         $sitevisits = SiteVisit::all();
           $campaigns = Campaign::all();
-        return view('admin.leads.show', compact('lead', 'lead_events', 'projects_list', 'parentStages', 'stages', 'tags','agencies', 'user_id', 'followUps', 'campaigns','sitevisit','client','leads','note','sitevisits'));
+        return view('admin.leads.show', compact('lead', 'lead_events', 'projects_list', 'parentStages', 'stages', 'tags','agencies', 'user_id', 'followUps', 'campaigns','sitevisit','client','leads','note','sitevisits','callRecords'));
     }
 
     public function destroy(Lead $lead)
