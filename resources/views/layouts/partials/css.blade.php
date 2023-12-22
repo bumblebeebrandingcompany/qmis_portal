@@ -132,10 +132,6 @@
         margin-bottom: 0; /* Adjusted to reduce bottom margin */
         margin-top: 0; /* Adjusted to reduce top margin */
     }
-
-
-
-
     .content {
         width: 100%;
         /* Adjust the width based on your content */
@@ -145,6 +141,14 @@
         overflow-y: hidden;
         /* or overflow-y: scroll; */
     }
+    #countdown {
+            text-align: center;
+            font-size: 1rem;
+            padding: 6px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
 </style>
 
 
