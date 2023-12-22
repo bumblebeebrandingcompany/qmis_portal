@@ -149,6 +149,32 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
+        .custom-audio-player {
+        width: 200px;
+        margin: 10px;
+        background-color: ; /* Set the background color to black */
+        color: black; /* Set the text color to white */
+        border-radius: 5px; /* Optional: Add border radius for rounded corners */
+    }
+
+    /* Customize the audio player controls */
+    .custom-audio-player audio {
+        width: 100%;
+    }
+
+    /* Customize the play button color */
+    .custom-audio-player audio::-webkit-media-controls-play-button {
+        color: white;
+    }
+
+    .custom-audio-player audio::-webkit-media-controls-start-playback-button {
+        color: white;
+    }
+
+    .custom-audio-player audio::-webkit-media-controls-pause-button {
+        color: white;
+    }
+
 </style>
 
 
