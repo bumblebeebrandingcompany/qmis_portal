@@ -5,7 +5,7 @@
         <div class="col-md-9 float-right">
             <h3>Site Visit And Reschedule</h3>
         </div>
-        <div class="col-md-2 float-right" id="countdown">Respond Within: <span id="timer"></span></div>
+        <div class="col-md-2 float-right" id="countdown1">Respond Within: <span id="timer"></span></div>
         <div class="col-md-1"></div>
     </div>
 
@@ -262,7 +262,7 @@
 
 <script>
     const targetTime = new Date();
-    targetTime.setHours(19, 0, 0); // 7:00 PM
+    targetTime.setHours(20, 0, 0); // 7:00 PM
 
     function updateTimer() {
         const currentTime = new Date();

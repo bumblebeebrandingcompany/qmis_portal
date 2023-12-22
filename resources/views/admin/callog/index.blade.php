@@ -80,11 +80,11 @@
                             <td>{{ $callRecord->called_on }}</td>
 
                             @php
-                            $callOnTime = $callRecord->call_on_time; // Replace this with your actual time
-                            $formattedTime = \Carbon\Carbon::createFromFormat('H:i:s', $callOnTime)->format('h:i A');
-                        @endphp
+                                $callOnTime = $callRecord->call_on_time; // Replace this with your actual time
+                                $formattedTime = \Carbon\Carbon::createFromFormat('H:i:s', $callOnTime)->format('h:i A');
+                            @endphp
 
-                        <td>{{ $formattedTime }}</td>
+                            <td>{{ $formattedTime }}</td>
 
                             <td>
                                 <audio controls>
@@ -96,38 +96,24 @@
                     @endforeach
                 </tbody>
             </table>
-
-        </div>
-    </div>
+            <form method="get" action="{{ url()->current() }}">
+                <label for="recordsPerPage">Records Per Page:</label>
+                <select class="form-control ml-2" id="recordsPerPage" name="perPage" onchange="this.form.submit()">
+                    <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
+                    <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </form>
     <!-- Pagination Links -->
     <div class="d-flex justify-content-end">
         {{ $callRecords->links('pagination::bootstrap-4') }}
     </div>
 
     <!-- Records Per Page Dropdown -->
-    <div class="d-flex justify-content-end mt-2">
-        <label for="recordsPerPage">Records Per Page:</label>
-        <select class="form-control ml-2" id="recordsPerPage" onchange="changeRecordsPerPage()">
-            <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
-            <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
-            <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>
-            <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
-        </select>
-    </div>
-    </div>
-    </div>
+
 @endsection
 
 
 
 
-@push('scripts')
-    <script>
-        function changeRecordsPerPage() {
-            console.log("Function called"); // Check if this log statement appears in the console
-            var selectedValue = document.getElementById("recordsPerPage").value;
-            console.log("Selected Value: " + selectedValue); // Check the selected value
-            window.location.href = "{{ url()->current() }}?perPage=" + selectedValue;
-        }
-    </script>
-@endpush
