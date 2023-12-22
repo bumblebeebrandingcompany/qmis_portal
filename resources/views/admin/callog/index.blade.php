@@ -3,12 +3,13 @@
     <h1>Call Records</h1>
     <form action="{{ route('admin.callog.store') }}" method="post">
         @csrf
-        <button class="btn btn-primary" type="submit">
-            Store Call Records</button>
+
     </form>
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Call Records Table</h3>
+            <button class="btn btn-primary float-right" type="submit">
+                Store Call Records</button>
         </div>
         <div class="card-body">
             <div class="row">
@@ -45,6 +46,7 @@
                         <th>Ref num</th>
                         <th>Client number</th>
                         <th>Status</th>
+
                         <th>Call Duration</th>
                         <th>Called On</th>
                         <th>Call Start Time</th>
@@ -62,6 +64,7 @@
                             <td>{{ $callRecord->lead->ref_num }} </td>
                             <td>{{ $callRecord->client_number }}</td>
                             <td>{{ $callRecord->status }}</td>
+
 
                             <td>
                                 <?php
