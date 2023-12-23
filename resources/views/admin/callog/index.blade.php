@@ -4,7 +4,7 @@
     <form action="{{ route('admin.callog.store') }}" method="post">
         @csrf
 
-    </form>
+
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Call Records Table</h3>
@@ -115,7 +115,7 @@
     </div>
 
     <!-- Records Per Page Dropdown -->
-
+</form>
 @endsection
 
 
