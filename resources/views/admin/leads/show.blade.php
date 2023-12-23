@@ -61,14 +61,14 @@
                         <li class="nav-item">
                             <a class="nav-link" id="lead-followup-tab" data-toggle="tab" href="#lead-followup"
                                 role="tab" aria-controls="lead-leadfollowup" aria-selected="false">
-                                <i class="fas fa-sticky-calender"></i>
+                                <i class="far fa-newspaper"></i>
                                 Followup
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="lead-sitevisit-tab" data-toggle="tab" href="#lead-sitevisit"
                                 role="tab" aria-controls="lead-sitevisit" aria-selected="false">
-                                <i class="fas fa-sticky-note"></i>
+                                <i class="fas fa-map-marker"></i>
                                Site Visit
                             </a>
                         </li>

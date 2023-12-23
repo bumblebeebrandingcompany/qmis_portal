@@ -177,7 +177,7 @@
                 @if(auth()->user()->is_superadmin)
                                 <li class="nav-item">
                     <a href="{{ route("admin.followups.index") }}" class="nav-link {{ request()->is("admin/followups") || request()->is("admin/followups/*") ? "active" : "" }}">
-                        <i class="fas fa-fw fa-calendar nav-icon">
+                        <i class="far fa-newspaper nav-icon">
 
                         </i>
                         <p>
@@ -188,7 +188,7 @@
             @endif
             <li class="nav-item">
                 <a href="{{ route("admin.sitevisit.index") }}" class="nav-link {{ request()->is("admin/sitevisit") || request()->is("admin/sitevisit/*") ? "active" : "" }}">
-                    <i class="fas fa-fw fa-calendar nav-icon">
+                    <i class="fas fa-map-marker-alt nav-icon">
 
                     </i>
                     <p>
@@ -257,7 +257,7 @@
                 @if(auth()->user()->is_superadmin)
                 <li class="nav-item">
                     <a href="{{ route("admin.parent-stages.index") }}" class="nav-link {{ request()->is("admin/parent-stages") || request()->is("admin/parent-stages/*") ? "active" : "" }}">
-                        <i class="fa-fw nav-icon fas fa-external-link-alt"></i>
+                        <i class="far fa-dot-circle nav-icon "></i>
                         <p>
                             {{ trans('cruds.stages.title') }}
                         </p>
