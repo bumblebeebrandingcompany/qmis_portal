@@ -33,14 +33,16 @@
                     </div>
                 </div>
                 <div class="col-md-1">
-            <label for="recordpage">Record per page</label>
-            <select class="form-control ml-2 select2" id="recordsPerPage" name="perPage"
-            onchange="this.form.submit()">
-            <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
-            <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
-            <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>
-            <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
-        </select>
+            <form method="get" action="{{ url()->current() }}">
+                <label for="recordsPerPage">Records Per Page:</label>
+                <select class="form-control ml-2 select2" id="recordsPerPage" name="perPage"
+                    onchange="this.form.submit()">
+                    <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
+                    <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>
+                    <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
+                </select>
+            </form>
                 </div>
             <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-followup" id="followUpTable">
                 <thead>
