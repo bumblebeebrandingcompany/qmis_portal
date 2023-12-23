@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('lead_follow_ups', function (Blueprint $table) {
-            $table->text('notes');         });
+        Schema::table('follow_ups', function (Blueprint $table) {
+            $table->text('notes');
+            $table->unsignedBigInteger('parent_stage_id')->nullable();
+            $table->foreign('parent_stage_id', 'stage_fk_8745955')->references('id')->on('parent_stages');
+        });
     }
 
     /**
@@ -20,7 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('followups', function (Blueprint $table) {
+        Schema::table('follow_ups', function (Blueprint $table) {
             //
         });
     }

@@ -41,5 +41,24 @@ class SiteVisit extends Model
 {
     return $this->belongsTo(Lead::class);
 }
+public function logTimeline($lead,$description, $activityType = null)
+{
+    $data = [
+        'lead_id' =>$lead,
+        'description' => $description,
+    ];
 
+    if ($activityType !== null) {
+        $data['activity_type'] = $activityType;
+    }
+
+
+
+    $this->timeline()->create($data);
+}
+
+public function timeline()
+{
+    return $this->hasMany(LeadTimeline::class);
+}
 }

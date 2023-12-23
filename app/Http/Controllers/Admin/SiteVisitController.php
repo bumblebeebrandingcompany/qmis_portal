@@ -45,16 +45,17 @@ class SiteVisitController extends Controller
         $input = $request->validated(); // Use the validated input from the request
         // Find the lead and user based on their IDs
         $lead = Lead::findOrFail($input['lead_id']);
-        $parentStageId = $request->input('parent_stage_id');        $sitevisit = new SiteVisit();
+        $parentStageId = $request->input('parent_stage_id');
+        $sitevisit = new SiteVisit();
         $sitevisit->lead_id = $lead->id;
         $sitevisit->user_id = $input['user_id'];
         $sitevisit->follow_up_date = $input['follow_up_date']; // Assign the date
         $sitevisit->follow_up_time = $input['follow_up_time']; // Assign the time
         $sitevisit->notes = $input['notes'];
-        $sitevisit->parent_stage_id = $parentStageId; // Set parent_stage_id directly
+        $sitevisit->parent_stage_id = $parentStageId;
         $sitevisit->save();
-
-        $sitevisit->lead->update(['parent_stage_id'=>$sitevisit->parent_stage_id]);
+        $sitevisit->lead->update(['parent_stage_id' => $sitevisit->parent_stage_id]);
+        // $sitevisit->logTimeline($lead->id, 'Site Visit  created', 'sitevisit_created');
         return redirect()->back()->with('success', 'Form submitted successfully!');
 
     }
@@ -95,12 +96,13 @@ class SiteVisitController extends Controller
         $newSiteVisit->user_id = $request->user_id;
         $newSiteVisit->notes = $request->notes;
         $newSiteVisit->parent_stage_id = $parentStageId; // Set parent_stage_id directly
+        // $newSiteVisit->logTimeline('rescheduled', 'rescheduled');
         $newSiteVisit->save();
 
         // Update the lead status to "rescheduled"
         $lead = Lead::find($request->lead_id);
         if ($lead) {
-            $lead->update(['parent_stage_id' =>  19]);
+            $lead->update(['parent_stage_id' => 19]);
         }
 
 
@@ -111,41 +113,44 @@ class SiteVisitController extends Controller
 
 
     public function cancelSiteVisit(Request $request, $sitevisitId)
-{
-    $sitevisit = SiteVisit::findOrFail($sitevisitId);
-
-    $parentStageId = $request->input('parent_stage_id');
-        $sitevisit->update(['parent_stage_id' =>  $parentStageId]);
-        $sitevisit->lead->update(['parent_stage_id'=>$sitevisit->parent_stage_id]);
-
-    // Your additional logic or redirection here if needed
-
-    return redirect()->back();
-
-}
-
-public function conducted(Request $request, $sitevisitId)
     {
         $sitevisit = SiteVisit::findOrFail($sitevisitId);
+        $lead = Lead::find($request->lead_id);
 
         $parentStageId = $request->input('parent_stage_id');
-            $sitevisit->update(['parent_stage_id' =>  $parentStageId]);
-            $sitevisit->lead->update(['parent_stage_id'=>$sitevisit->parent_stage_id]);
+        $sitevisit->update(['parent_stage_id' => $parentStageId]);
+        // $sitevisit->logTimeline($lead->id, 'sitevisit cancelled', 'site_visit_cancelled', $sitevisit->id);
+        $sitevisit->lead->update(['parent_stage_id' => $sitevisit->parent_stage_id]);
 
+
+        return redirect()->back();
+
+    }
+
+    public function conducted(Request $request, $sitevisitId)
+    {
+        $sitevisit = SiteVisit::findOrFail($sitevisitId);
+        $lead = new Lead;
+
+        $parentStageId = $request->input('parent_stage_id');
+        $sitevisit->update(['parent_stage_id' => $parentStageId]);
+        $sitevisit->lead->update(['parent_stage_id' => $sitevisit->parent_stage_id]);
+        // $sitevisit->logTimeline($lead->id, 'Site visit was conducted', 'site_visit_conducted');
 
         return redirect()->back();
     }
 
-public function notVisited(Request $request, $sitevisitId)
-{
-    $sitevisit = SiteVisit::findOrFail($sitevisitId);
-    $parentStageId = $request->input('parent_stage_id');
+    public function notVisited(Request $request, $sitevisitId)
+    {
+        $sitevisit = SiteVisit::findOrFail($sitevisitId);
+        $parentStageId = $request->input('parent_stage_id');
+        $lead = Lead::find($request->lead_id);
 
-        $sitevisit->update(['parent_stage_id' =>  $parentStageId]);
-        $sitevisit->lead->update(['parent_stage_id'=>$sitevisit->parent_stage_id]);
+        $sitevisit->update(['parent_stage_id' => $parentStageId]);
+        $sitevisit->lead->update(['parent_stage_id' => $sitevisit->parent_stage_id]);
+        // $sitevisit->logTimeline($lead->id, 'Site not visited', 'site_not_visited', $sitevisit->id);
 
-    // Your additional logic or redirection here if needed
 
-    return redirect()->back();
-}
+        return redirect()->back();
+    }
 }

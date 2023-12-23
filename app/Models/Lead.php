@@ -7,9 +7,10 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class Lead extends Model
 {
-    use Auditable, HasFactory;
+    use Auditable, HasFactory ;
 
     public $table = 'leads';
 
@@ -162,5 +163,31 @@ class Lead extends Model
         }
         return $lead_stages;
     }
+
+    public function logTimeline($description, $activityType = null, $activityId = null)
+{
+    $data = [
+        'description' => $description,
+    ];
+
+    if ($activityType !== null) {
+        $data['activity_type'] = $activityType;
+    }
+
+    if ($activityId !== null) {
+        $data['activity_id'] = $activityId;
+    }
+
+    $this->timeline()->create($data);
+}
+
+
+    public function timeline()
+    {
+        return $this->hasMany(LeadTimeline::class);
+    }
+
+
+
 }
 

@@ -12,7 +12,7 @@ class Followup extends Model
 
     protected $appends = ['is_superadmin', 'is_client', 'is_agency', 'is_channel_partner', 'is_channel_partner_manager',];
 
-    public $table = 'lead_follow_ups';
+    public $table = 'follow_ups';
 
     protected $dates = [
         'created_at',
@@ -27,5 +27,32 @@ class Followup extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    protected $fillable = [
+        'parent_stage_id'
+    ];
+    public function logTimeline($lead,$description, $activityType = null,$followup)
+    {
 
+
+        $data = [
+            'lead_id'=> $lead,
+            'description' => $description,
+            'follow_up_id'=>$followup,
+        ];
+
+        if ($activityType !== null) {
+            $data['activity_type'] = $activityType;
+        }
+
+        $this->timeline()->create($data);
+    }
+    public function timeline()
+    {
+        return $this->hasMany(LeadTimeline::class);
+    }
+
+    public function lead()
+    {
+        return $this->belongsTo(Lead::class);
+    }
 }

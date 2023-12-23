@@ -52,20 +52,37 @@ class FollowUpController extends Controller
 
     public function store(StoreFollowupRequest $request)
     {
+        $input = $request->validated();
 
-        $input = $request->validated(); // Use the validated input from the request
-        // Find the lead and user based on their IDs
+        // Find the lead based on its ID
         $lead = Lead::findOrFail($input['lead_id']);
-        // $user = User::findOrFail($input['user_id']);
-        $followup = new Followup();
-        $followup->lead_id = $lead->id;
-        $followup->user_id = $input['user_id'];
-        $followup->follow_up_date = $input['follow_up_date']; // Assign the date
-        $followup->follow_up_time = $input['follow_up_time']; // Assign the time
-        $followup->notes=$input['notes'];
-        $followup->save();
-        return redirect()->back()->with('success', 'Form submitted successfully!');
+
+        // Check if the lead is not null before proceeding
+        if ($lead) {
+            $parentStageId = $request->input('parent_stage_id');
+
+            $followup = new Followup();
+            $followup->lead_id = $lead->id;
+            $followup->user_id = $input['user_id'];
+            $followup->follow_up_date = $input['follow_up_date'];
+            $followup->follow_up_time = $input['follow_up_time'];
+            $followup->notes = $input['notes'];
+            $followup->parent_stage_id = $parentStageId;
+
+            $followup->save();
+
+            // Check if $followup->lead is not null before updating
+            if ($followup->lead) {
+                $followup->lead->update(['parent_stage_id' => $followup->parent_stage_id]);
+            }
+
+            return redirect()->back()->with('success', 'Form submitted successfully!');
+        } else {
+            // Handle the case where the lead is not found
+            return redirect()->back()->with('error', 'Lead not found!');
+        }
     }
+
     public function destroy(Followup $followup)
     {
         abort_if(!auth()->user()->is_superadmin, Response::HTTP_FORBIDDEN, '403 Forbidden');

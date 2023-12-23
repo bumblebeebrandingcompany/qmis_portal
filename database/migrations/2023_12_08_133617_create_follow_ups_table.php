@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lead_follow_ups', function (Blueprint $table) {
+        Schema::create('follow_ups', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('lead_id');
             $table->bigInteger('user_id');
@@ -25,6 +25,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('lead_follow_ups');
+        Schema::dropIfExists('follow_ups');
     }
 };

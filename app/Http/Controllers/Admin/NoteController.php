@@ -51,6 +51,7 @@ class NoteController extends Controller
         $note->note_text = $request->note_text;
         $note->lead_id = $lead->id;
         $note->save();
+        $note->logTimeline($lead->id,'Note added','note_added');
 
         return redirect()->back()->with('success', 'Form submitted successfully!');
     }
