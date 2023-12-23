@@ -31,8 +31,9 @@ class NoteController extends Controller
         $lead = Lead::all();
         $notes = Note::all();
         $campaigns = Campaign::all();
-
-        return view('admin.leads.partials.notes', compact('note_text','lead','note','campaigns'));
+        $itemsPerPage = request('perPage', 10);
+        $notes = Note::paginate($itemsPerPage);
+        return view('admin.leads.partials.notes', compact('note_text','lead','note','campaigns',));
     }
     public function store(Request $request)
     {

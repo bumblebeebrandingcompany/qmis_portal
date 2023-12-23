@@ -52,4 +52,7 @@
     </div>
 
     </form>
+    <div class="d-flex justify-content-end">
+        {{ $notes->links('pagination::bootstrap-4') }}
+    </div>
 </div>

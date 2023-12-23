@@ -5,6 +5,7 @@
         <div class="col-md-9 float-right">
             <h3>Site Visit And Reschedule</h3>
         </div>
+
         <div class="col-md-2 float-right" id="countdown1">Respond Within: <span id="timer"></span></div>
         <div class="col-md-1"></div>
     </div>
@@ -22,8 +23,17 @@
         <!-- Site Visit Tab -->
         <div class="tab-pane fade show active" id="siteVisit">
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Upcoming Sitevisits</h3>
+                <div class="col-md-1 ">
+                    <form method="get" action="{{ url()->current() }}">
+                        <label for="recordsPerPage">Records Per Page:</label>
+                        <select class="form-control ml-2 select2" id="recordsPerPage" name="perPage"
+                            onchange="this.form.submit()">
+                            <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
+                            <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>
+                            <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
+                        </select>
+                    </form>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -99,7 +109,9 @@
 
 
                             </tbody>
-
+                            <div class="d-flex justify-content-end">
+                                {{ $sitevisits->links('pagination::bootstrap-4') }}
+                            </div>
                         </table>
                     </div>
                 </div>
@@ -139,6 +151,18 @@
                                     value="{{ old('custom_range') }}">
                             </div>
                         </div>
+                        <div class="col-md-1">
+                            <form method="get" action="{{ url()->current() }}">
+                                <label for="recordsPerPage">Records Per Page:</label>
+                                <select class="form-control ml-2 select2" id="recordsPerPage" name="perPage"
+                                    onchange="this.form.submit()">
+                                    <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
+                                    <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>
+                                    <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
+                                </select>
+                            </form>
+                        </div>
                         <div class="table-responsive">
                             <table
                                 class="table table-bordered table-striped table-hover ajaxTable datatable datatable-sitevisit"
@@ -162,6 +186,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
+
                         </div>
                     </div>
 

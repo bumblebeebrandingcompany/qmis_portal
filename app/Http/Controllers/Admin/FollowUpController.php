@@ -45,7 +45,8 @@ class FollowUpController extends Controller
         $agencies = User::all();
         $campaigns = Campaign::all();
         $followUps = Followup::all();
-
+        $itemsPerPage = request('perPage', 10);
+        $followUps = Followup::paginate($itemsPerPage);
         return view('admin.leads.followup.index', compact('campaigns', 'agencies', 'lead', 'followUps'));
     }
 

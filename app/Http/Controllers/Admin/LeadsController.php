@@ -456,6 +456,9 @@ class LeadsController extends Controller
                 return $query->where('user_id',$user_id);
               })->get();
               $callRecords = CallRecord::paginate(10); // Adjust the number per page as needed
+              $itemsPerPage = request('perPage', 10);
+              $followUps = Followup::paginate($itemsPerPage);
+              $notes = Note::paginate($itemsPerPage);
 
         //   $note = Note::where('lead_id', $lead->id)
         //       ->when($user_id, function ($query) use ($user_id) {
@@ -464,7 +467,7 @@ class LeadsController extends Controller
         //       ->get();
         $sitevisits = SiteVisit::all();
           $campaigns = Campaign::all();
-        return view('admin.leads.show', compact('lead', 'lead_events', 'projects_list', 'parentStages', 'stages', 'tags','agencies', 'user_id', 'followUps', 'campaigns','sitevisit','client','leads','note','sitevisits','callRecords'));
+        return view('admin.leads.show', compact('lead', 'lead_events', 'projects_list', 'parentStages', 'stages', 'tags','agencies', 'user_id', 'followUps', 'campaigns','sitevisit','client','leads','note','sitevisits','callRecords','notes'));
     }
 
     public function destroy(Lead $lead)
