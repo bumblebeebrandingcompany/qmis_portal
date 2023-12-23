@@ -21,13 +21,14 @@
 
     <div class="tab-content">
         <!-- Site Visit Tab -->
+
         <div class="tab-pane fade show active" id="siteVisit">
             <div class="card">
-                <div class="col-md-1 ">
+
+                <div class="col-md-1 offset-md-10">
                     <form method="get" action="{{ url()->current() }}">
                         <label for="recordsPerPage">Records Per Page:</label>
-                        <select class="form-control ml-2 select2" id="recordsPerPage" name="perPage"
-                            onchange="this.form.submit()">
+                        <select class="form-control ml-2 select2" id="recordsPerPage" name="perPage" onchange="this.form.submit()">
                             <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
                             <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
                             <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>

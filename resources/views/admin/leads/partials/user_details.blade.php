@@ -227,6 +227,55 @@
                     </a>
                 </li>
                 <li class="list-group-item">
+                    <b>Grade enquired</b>
+                    <a class="float-right">
+                        <span class="value-container">
+                            <span class="display-value">{{ $lead->grade_enquired }}</span>
+
+                            <select name="grade_enquired" class="edit-field"
+                            style="{{ $errors->has('grade_enquired') ? '' : 'display:none;' }} ">
+
+                            @if ($lead->grade_enquired)
+                                <option value="{{ $lead->grade_enquired }}" selected>{{ $lead->grade_enquired }}
+                                </option>
+                            @else
+                                <option value="" selected> Select Grade</option>
+                            @endif
+
+                            @for ($i = -2; $i <= 12; $i++)
+                                @php
+                                    if ($i == -2) {
+                                        $grade = 'Pre-KG';
+                                    } elseif ($i == -1) {
+                                        $grade = 'LKG';
+                                    } elseif ($i == 0) {
+                                        $grade = 'UKG';
+                                    } else {
+                                        $grade = $i;
+                                    }
+                                @endphp
+                                <option value="{{ $grade }}"
+                                    @if (old('grade_enquired', $lead->grade_enquired) == $grade) selected @endif>
+                                    {{ $grade }}
+                                </option>
+                            @endfor
+                        </select>
+
+                            @error('grade_enquired')
+                                <div class="text-danger">{{ $message }}</div>
+                                {{-- Show the save button when there is an error --}}
+                                <script>
+                                    $(document).ready(function() {
+                                        $('.save-button').show();
+                                    });
+                                </script>
+                            @enderror
+
+                            {{-- Check if there are no errors related to 'intake_year' --}}
+                        </span>
+                    </a>
+                </li>
+                {{-- <li class="list-group-item">
                     <b>Grade Enquired</b>
                     <a class="float-right">
                         <span class="value-container">
@@ -270,8 +319,7 @@
                             @enderror
                         </span>
                     </a>
-                </li>
-                </li>
+                </li> --}}
 
                 <li class="list-group-item">
                     <b>Child Name</b>
