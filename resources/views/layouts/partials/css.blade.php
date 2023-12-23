@@ -141,7 +141,7 @@
         overflow-y: hidden;
         /* or overflow-y: scroll; */
     }
-    #countdown {
+    .countdown {
             text-align: center;
             font-size: 1rem;
             padding: 6px;
@@ -149,6 +149,8 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
+
+
         .custom-audio-player {
         width: 200px;
         margin: 10px;

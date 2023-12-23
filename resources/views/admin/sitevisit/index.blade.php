@@ -278,7 +278,6 @@
             document.getElementById('timer').innerHTML = 'Countdown expired';
         }
     }
-
     // Update the timer every second
     setInterval(updateTimer, 1000);
 
