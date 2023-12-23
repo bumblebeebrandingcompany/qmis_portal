@@ -39,15 +39,16 @@
                     </div>
                 </div>
                 <div class="col-md-1">
-                <form method="get" action="{{ url()->current() }}">
-                    <label for="recordsPerPage">Records Per Page:</label>
-                    <select class="form-control ml-2 select2" id="recordsPerPage" name="perPage" onchange="this.form.submit()">
-                        <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
-                        <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
-                        <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>
-                        <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
-                    </select>
-                </form>
+                    <form method="get" action="{{ url()->current() }}">
+                        <label for="recordsPerPage">Records Per Page:</label>
+                        <select class="form-control ml-2 select2" id="recordsPerPage" name="perPage"
+                            onchange="this.form.submit()">
+                            <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
+                            <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>
+                            <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
+                        </select>
+                    </form>
                 </div>
             </div>
 
@@ -109,92 +110,90 @@
                 </tbody>
             </table>
 
-    <!-- Pagination Links -->
-    <div class="d-flex justify-content-end">
-        {{ $callRecords->links('pagination::bootstrap-4') }}
-    </div>
+            <!-- Pagination Links -->
+            <div class="d-flex justify-content-end">
+                {{ $callRecords->links('pagination::bootstrap-4') }}
+            </div>
 
-    <!-- Records Per Page Dropdown -->
-
-@endsection
-
-
-@section('scripts')
-    @parent
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-
-    <script>
-        $(document).ready(function() {
-            // Initialize the date range picker for Site Visit
-            $('#custom_range').daterangepicker();
-
-            // Show/hide the custom range container based on the selected option for Site Visit
-            $('#date_range').change(function() {
-                var selectedOption = $(this).val();
-                if (selectedOption === 'custom') {
-                    $('#custom_range_container').show();
-                } else {
-                    $('#custom_range_container').hide();
-                    filterTable(selectedOption, 'siteVisit');
-                }
-            });
-
-            // Handle filtering when the custom range is selected for Site Visit
-            $('#custom_range').change(function() {
-                var customRange = $(this).val();
-                filterTable('custom', 'siteVisit', customRange);
-            });
-
-            // Initialize the date range picker for Reschedule
-            $('#custom_range_reschedule').daterangepicker();
-
-            // Show/hide the custom range container based on the selected option for Reschedule
-            $('#date_range_reschedule').change(function() {
-                var selectedOption = $(this).val();
-                if (selectedOption === 'custom') {
-                    $('#custom_range_container_reschedule').show();
-                } else {
-                    $('#custom_range_container_reschedule').hide();
-                    filterTable(selectedOption, 'reschedule');
-                }
-            });
-
-            // Handle filtering when the custom range is selected for Reschedule
-            $('#custom_range_reschedule').change(function() {
-                var customRange = $(this).val();
-                filterTable('custom', 'reschedule', customRange);
-            });
-
-            function filterTable(selectedOption, tableType, customRange = null) {
-                var startDate, endDate;
-                var tableId;
-
-                if (tableType === 'siteVisit') {
-                    startDate = moment().startOf('day');
-                    endDate = moment().endOf('day');
-                    tableId = '#siteVisitTable';
-                } else if (tableType === 'reschedule') {
-                    // Adjust the logic for reschedule table if needed
-                    startDate = moment().startOf('day');
-                    endDate = moment().endOf('day');
-                    tableId = '#rescheduleTable';
-                }
-
-                switch (selectedOption) {
-                    // ... (Your existing switch cases for date range options) ...
-                }
-
-                // Filter the table rows based on the calculated start and end dates
-                $(tableId + ' tbody tr').hide().filter(function() {
-                    var createdDate = $(this).data('created-at');
-                    return moment(createdDate, 'YYYY-MM-DD').isBetween(startDate, endDate, null, '[]');
-                }).show();
-            }
-        });
-    </script>
-@endsection
+            <!-- Records Per Page Dropdown -->
+        @endsection
 
 
+        @section('scripts')
+            @parent
+            <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+            <link rel="stylesheet" type="text/css"
+                href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+            <script>
+                $(document).ready(function() {
+                    // Initialize the date range picker for Site Visit
+                    $('#custom_range').daterangepicker();
+
+                    // Show/hide the custom range container based on the selected option for Site Visit
+                    $('#date_range').change(function() {
+                        var selectedOption = $(this).val();
+                        if (selectedOption === 'custom') {
+                            $('#custom_range_container').show();
+                        } else {
+                            $('#custom_range_container').hide();
+                            filterTable(selectedOption, 'siteVisit');
+                        }
+                    });
+
+                    // Handle filtering when the custom range is selected for Site Visit
+                    $('#custom_range').change(function() {
+                        var customRange = $(this).val();
+                        filterTable('custom', 'siteVisit', customRange);
+                    });
+
+                    // Initialize the date range picker for Reschedule
+                    $('#custom_range_reschedule').daterangepicker();
+
+                    // Show/hide the custom range container based on the selected option for Reschedule
+                    $('#date_range_reschedule').change(function() {
+                        var selectedOption = $(this).val();
+                        if (selectedOption === 'custom') {
+                            $('#custom_range_container_reschedule').show();
+                        } else {
+                            $('#custom_range_container_reschedule').hide();
+                            filterTable(selectedOption, 'reschedule');
+                        }
+                    });
+
+                    // Handle filtering when the custom range is selected for Reschedule
+                    $('#custom_range_reschedule').change(function() {
+                        var customRange = $(this).val();
+                        filterTable('custom', 'reschedule', customRange);
+                    });
+
+                    function filterTable(selectedOption, tableType, customRange = null) {
+                        var startDate, endDate;
+                        var tableId;
+
+                        if (tableType === 'siteVisit') {
+                            startDate = moment().startOf('day');
+                            endDate = moment().endOf('day');
+                            tableId = '#siteVisitTable';
+                        } else if (tableType === 'reschedule') {
+                            // Adjust the logic for reschedule table if needed
+                            startDate = moment().startOf('day');
+                            endDate = moment().endOf('day');
+                            tableId = '#rescheduleTable';
+                        }
+
+                        switch (selectedOption) {
+                            // ... (Your existing switch cases for date range options) ...
+                        }
+
+                        // Filter the table rows based on the calculated start and end dates
+                        $(tableId + ' tbody tr').hide().filter(function() {
+                            var createdDate = $(this).data('created-at');
+                            return moment(createdDate, 'YYYY-MM-DD').isBetween(startDate, endDate, null, '[]');
+                        }).show();
+                    }
+                });
+            </script>
+        @endsection
