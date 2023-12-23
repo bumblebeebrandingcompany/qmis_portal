@@ -54,7 +54,7 @@
             </div>
         </div>
         <br>
-        <button type="button" class="float-right edit-button">Edit</button>
+        <button type="submit" class="float-right edit-button btn-primary">Edit</button>
 
         <div class="text-center">
             @php
@@ -65,7 +65,7 @@
         <form method="POST" action="{{ route('admin.leads.update', [$lead->id]) }}" enctype="multipart/form-data">
             @method('PUT')
             @csrf
-            <button type="submit" class="float-right save-button" style="display:none;">Save</button>
+            <button type="submit" class="float-right save-button btn-success" style="display:none;">Save</button>
             <h3 class="profile-username text-center">
                 {{ $lead->name ?? '' }}
             </h3>

@@ -11,6 +11,7 @@
             <button class="btn btn-primary float-right" type="submit">
                 Store Call Records</button>
         </div>
+    </form>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-4">
