@@ -12,17 +12,19 @@
 
     <ul class="nav nav-tabs" id="myTabs">
         <li class="nav-item">
-            <a class="nav-link active" id="siteVisitTab" data-toggle="tab" href="#siteVisit">Upcoming Schedule</a>
+            <a class="nav-link active" id="rescheduleTab" data-toggle="tab" href="#reschedule">Upcoming Schedule</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="rescheduleTab" data-toggle="tab" href="#reschedule">Site Visit</a>
+            <a class="nav-link" id="siteVisitTab" data-toggle="tab" href="#sitevisit">Site Visit</a>
         </li>
+
+
     </ul>
 
     <div class="tab-content">
         <!-- Site Visit Tab -->
 
-        <div class="tab-pane fade show active" id="siteVisit">
+        <div class="tab-pane fade show active" id="reschedule">
             <div class="card">
 
                 <div class="col-md-1 offset-md-10">
@@ -119,7 +121,7 @@
             </div>
         </div>
         <!-- Reschedule Tab -->
-        <div class="tab-pane fade" id="reschedule">
+        <div class="tab-pane fade" id="sitevisit">
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Lead Site Visit Table</h3>
@@ -139,7 +141,7 @@
                                     <option value="next_30_days">Next 30 Days</option>
                                     <option value="last_week">Last Week</option>
                                     <option value="last_30_days">Last 30 Days</option>
-                                    <option value="last_60_days">Last 60 Days</option>
+                                    <option value="last_60_days" selected>Last 60 Days</option>
                                     <option value="last_year">Last One Year</option>
                                     <option value="custom">Custom Range</option>
                                 </select>
@@ -179,6 +181,7 @@
                                         <th>Notes</th>
                                         <th>Created At</th>
                                         <th>Actions</th>
+                                        <th>Timer</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -222,30 +225,30 @@
             });
 
             // Handle filtering when the custom range is selected for Site Visit
-            $('#custom_range').change(function() {
-                var customRange = $(this).val();
-                filterTable('custom', 'siteVisit', customRange);
-            });
+            // $('#custom_range').change(function() {
+            //     var customRange = $(this).val();
+            //     filterTable('custom', 'siteVisit', customRange);
+            // });
 
-            // Initialize the date range picker for Reschedule
-            $('#custom_range_reschedule').daterangepicker();
+            // // Initialize the date range picker for Reschedule
+            // $('#custom_range_reschedule').daterangepicker();
 
-            // Show/hide the custom range container based on the selected option for Reschedule
-            $('#date_range_reschedule').change(function() {
-                var selectedOption = $(this).val();
-                if (selectedOption === 'custom') {
-                    $('#custom_range_container_reschedule').show();
-                } else {
-                    $('#custom_range_container_reschedule').hide();
-                    filterTable(selectedOption, 'reschedule');
-                }
-            });
+            // // Show/hide the custom range container based on the selected option for Reschedule
+            // $('#date_range_reschedule').change(function() {
+            //     var selectedOption = $(this).val();
+            //     if (selectedOption === 'custom') {
+            //         $('#custom_range_container_reschedule').show();
+            //     } else {
+            //         $('#custom_range_container_reschedule').hide();
+            //         filterTable(selectedOption, 'reschedule');
+            //     }
+            // });
 
-            // Handle filtering when the custom range is selected for Reschedule
-            $('#custom_range_reschedule').change(function() {
-                var customRange = $(this).val();
-                filterTable('custom', 'reschedule', customRange);
-            });
+            // // Handle filtering when the custom range is selected for Reschedule
+            // $('#custom_range_reschedule').change(function() {
+            //     var customRange = $(this).val();
+            //     filterTable('custom', 'reschedule', customRange);
+            // });
 
             function filterTable(selectedOption, tableType, customRange = null) {
                 var startDate, endDate;
@@ -263,7 +266,54 @@
                 }
 
                 switch (selectedOption) {
-                    // ... (Your existing switch cases for date range options) ...
+                    case 'today':
+                        startDate = moment().startOf('day');
+                        endDate = moment().endOf('day');
+                        break;
+                    case 'yesterday':
+                        startDate = moment().subtract(1, 'days').startOf('day');
+                        endDate = moment().subtract(1, 'days').endOf('day');
+                        break;
+                    case 'last_30_days':
+                        startDate = moment().subtract(29, 'days').startOf('day');
+                        endDate = moment().endOf('day');
+                        break;
+                    case 'last_60_days':
+                        startDate = moment().subtract(59, 'days').startOf('day');
+                        endDate = moment().endOf('day');
+                        break;
+                    case 'next_60_days':
+                        startDate = moment().startOf('day');
+                        endDate = moment().add(59, 'days').startOf('day');
+
+                        break;
+                    case 'last_year':
+                        startDate = moment().subtract(1, 'year').startOf('day');
+                        endDate = moment().endOf('day');
+                        break;
+                    case 'last_week':
+                        startDate = moment().subtract(1, 'week').startOf('week');
+                        endDate = moment().subtract(1, 'week').endOf('week');
+                        break;
+                    case 'next_30_days':
+                        startDate = moment().startOf('day');
+                        endDate = moment().add(29, 'days').endOf('day');
+                        break;
+                    case 'this_week':
+                        startDate = moment().add(1, 'week').startOf('week');
+                        endDate = moment().add(1, 'week').endOf('week');
+                        break;
+                    case 'tomorrow':
+                        startDate = moment().add(1, 'day').startOf('day');
+                        endDate = moment().add(1, 'day').endOf('day');
+                        break;
+                    case 'custom':
+                        if (customRange) {
+                            var dates = customRange.split(' - ');
+                            startDate = moment(dates[0], 'YYYY-MM-DD').startOf('day');
+                            endDate = moment(dates[1], 'YYYY-MM-DD').endOf('day');
+                        }
+                        break;
                 }
 
                 // Filter the table rows based on the calculated start and end dates
