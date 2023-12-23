@@ -285,32 +285,34 @@
         $currentTime = time();
         $timeRemaining = max(0, $followUpDateTime - $currentTime); // in seconds
         ?>
-
         @if ($timeRemaining > 0 && $timeRemaining <= 1800) <!-- 30 minutes in seconds -->
-            <span class="text-danger" id="countdown">
+            <span class="text-danger countdown" data-time="{{ $timeRemaining }}">
                 {{ gmdate('i:s', $timeRemaining) }}
             </span>
-            <script>
-                // Countdown script
-                var countdownElement = document.getElementById('countdown');
-                var countdownInterval = setInterval(function () {
-                    var timeRemaining = parseInt(countdownElement.innerHTML.split(':')[0]) * 60 + parseInt(countdownElement.innerHTML.split(':')[1]) - 1;
-                    if (timeRemaining >= 0) {
-                        var minutes = Math.floor(timeRemaining / 60);
-                        var seconds = timeRemaining % 60;
-                        countdownElement.innerHTML = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-                    } else {
-                        clearInterval(countdownInterval);
-                        countdownElement.innerHTML = 'Ended';
-                    }
-                }, 1000); // Update every second
-            </script>
         @elseif ($timeRemaining <= 0)
             <span class="text-danger">Ended</span>
         @else
             Upcoming
         @endif
     </td>
+    <script>
+        var countdownElements = document.getElementsByClassName('countdown');
+
+        Array.from(countdownElements).forEach(function (countdownElement) {
+            var timeRemaining = parseInt(countdownElement.getAttribute('data-time'));
+            var countdownInterval = setInterval(function () {
+                if (timeRemaining > 0) {
+                    var minutes = Math.floor(timeRemaining / 60);
+                    var seconds = timeRemaining % 60;
+                    countdownElement.innerHTML = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+                    timeRemaining--;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownElement.innerHTML = 'Ended';
+                }
+            }, 1000); // Update every second
+        });
+    </script>
 
 </tr>
 
