@@ -26,4 +26,6 @@
         @endforeach
     </tbody>
 </table>
-
+<div class="d-flex justify-content-end">
+    {{ $followUps->links('pagination::bootstrap-4') }}
+</div>

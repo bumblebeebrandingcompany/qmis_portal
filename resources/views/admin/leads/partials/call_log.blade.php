@@ -3,19 +3,7 @@
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Lead ID: {{ $lead->id }}</h3>
-        <div class="col-md-1">
-            <form method="get" action="{{ url()->current() }}">
-                <label for="recordsPerPage">Records Per Page:</label>
-                <select class="form-control ml-2 select2" id="recordsPerPage" name="perPage"
-                    onchange="this.form.submit()">
-                    <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
-                    <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
-                    <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>
-                    <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
-                </select>
-            </form>
-        </div>
-      </div>
+         </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">
@@ -88,6 +76,9 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="d-flex justify-content-end">
+                {{ $callRecords->links('pagination::bootstrap-4') }}
+            </div>
 </div>
 </div>
 

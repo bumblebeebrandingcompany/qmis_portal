@@ -60,7 +60,6 @@
                         <th>Ref num</th>
                         <th>Client number</th>
                         <th>Status</th>
-
                         <th>Call Duration</th>
                         <th>Called On</th>
                         <th>Call Start Time</th>
