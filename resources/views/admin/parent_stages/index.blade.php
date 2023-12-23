@@ -24,7 +24,8 @@
                         <div class="col-md-5">
                             <div class="form-group">
                                 <label for="name">Select a Tag</label>
-                                <select name="tag_id" id="tag_id" class="form-control select2" required data-minimum-results-for-search="Infinity">
+
+                                <select name="tag_id" id="tag_id" class="form-control select" required data-minimum-results-for-search="Infinity">
                                     @foreach ($tags as $childStage)
                                         <option value="{{ $childStage->id }}">{{ $childStage->name }}</option>
                                     @endforeach

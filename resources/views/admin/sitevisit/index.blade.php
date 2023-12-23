@@ -262,7 +262,7 @@
 
 <script>
     const targetTime = new Date();
-    targetTime.setHours(20, 0, 0); // 7:00 PM
+    targetTime.setHours(19, 0, 0); // 7:00 PM
 
     function updateTimer() {
         const currentTime = new Date();
