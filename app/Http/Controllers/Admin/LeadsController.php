@@ -332,14 +332,12 @@ class LeadsController extends Controller
 
             // Update the new lead with the new data
             $lead->fill($input);
-            $lead->logTimeline('Lead was created','lead_created',$lead->id);
             // Save the new lead
             $lead->save();
         } else {
             // Create a new lead
             $lead = Lead::create($input);
             $lead->ref_num = $this->util->generateLeadRefNum($lead);
-            $lead->logTimeline('Lead was created','lead_created',$lead->id);
             $lead->save();
 
             // Update source and campaign for the new lead
@@ -461,7 +459,6 @@ class LeadsController extends Controller
         $note = Note::where('lead_id', $lead->id)->when($user_id, function ($query) use ($user_id) {
             return $query->where('user_id', $user_id);
         })->get();
-        $callRecords = CallRecord::paginate(10); // Adjust the number per page as needed
         $itemsPerPage = request('perPage', 10);
         $followUps = Followup::paginate($itemsPerPage);
         $notes = Note::paginate($itemsPerPage);
