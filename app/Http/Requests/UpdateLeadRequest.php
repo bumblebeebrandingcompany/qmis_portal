@@ -12,8 +12,6 @@ class UpdateLeadRequest extends FormRequest
     public function authorize()
 {
     $user = auth()->user();
-
-
     return $user->is_superadmin || $user->is_client || $user->is_agency;
 }
 

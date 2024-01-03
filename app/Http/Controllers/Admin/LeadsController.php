@@ -123,7 +123,6 @@ class LeadsController extends Controller
                 }
             });
             $table = Datatables::of($query);
-
             $table->addColumn('placeholder', '&nbsp;');
             $table->addColumn('actions', '&nbsp;');
 
@@ -407,7 +406,7 @@ class LeadsController extends Controller
         // Assuming you have a method like storeUniqueWebhookFields
         $this->util->storeUniqueWebhookFields($lead);
 
-        return redirect()->route('admin.leads.index');
+        return redirect()->back()->with('success', 'Form submitted successfully!');
     }
 
     public function show(Lead $lead, Request $request)

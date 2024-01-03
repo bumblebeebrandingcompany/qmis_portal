@@ -3,6 +3,7 @@
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addNoteModal">
         Add Note
     </button>
+
     <br>
     <br>
     <div class="modal fade" id="addNoteModal" tabindex="-1" role="dialog" aria-labelledby="addNoteModalLabel"
