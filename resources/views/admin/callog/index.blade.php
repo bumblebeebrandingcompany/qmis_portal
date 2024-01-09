@@ -50,7 +50,7 @@
                         </form>
                     </div>
                 </div>
-
+                <div class="col-md-12">
                 <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-callog">
                     <thead>
                         <tr>
@@ -107,7 +107,7 @@
                         @endforeach
                     </tbody>
                 </table>
-
+                </div>
                 <!-- Pagination Links -->
                 <div class="d-flex justify-content-end">
                     {{ $callRecords->links('pagination::bootstrap-4') }}
