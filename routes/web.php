@@ -18,7 +18,8 @@ Route::any('webhook/new-lead', 'Admin\WebhookReceiverController@storeNewLead')
 Route::any('webhook/lead-activity', 'Admin\WebhookReceiverController@storeLeadActivity')
     ->name('webhook.store.lead.activity');
 Route::any('webhook/{secret}', 'Admin\WebhookReceiverController@processor')->name('webhook.processor');
-
+Route::any('webhook/call-record', 'Admin\CallRecordController@storeNewRecord')
+->name('webhook.store.new.record');
 Route::get('document/{id}/view', 'Admin\DocumentController@guestView')->name('document.guest.view');
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth']], function () {
@@ -37,8 +38,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Roles
     Route::delete('roles/destroy', 'RolesController@massDestroy')->name('roles.massDestroy');
     Route::resource('roles', 'RolesController');
-    Route::any('webhook/call-record', 'Admin\CallRecordController@storeNewRecord')
-    ->name('webhook.store.new.record');
+
 //sitevist
 Route::resource('/sitevisit', 'SiteVisitController');
 Route::resource('/notes', 'NoteController');
