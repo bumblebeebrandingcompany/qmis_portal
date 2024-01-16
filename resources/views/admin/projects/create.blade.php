@@ -41,6 +41,7 @@
                 </div>
                 <div class="form-group">
                     <label class="required" for="client_id">{{ trans('cruds.project.fields.client') }}</label>
+                    <br>
                     <select class="form-control select2 {{ $errors->has('client') ? 'is-invalid' : '' }}" name="client_id"
                         id="client_id" required>
                         @foreach ($clients as $id => $entry)
@@ -48,6 +49,7 @@
                                 {{ $entry }}</option>
                         @endforeach
                     </select>
+                    <br>
                     @if ($errors->has('client'))
                         <span class="text-danger">{{ $errors->first('client') }}</span>
                     @endif

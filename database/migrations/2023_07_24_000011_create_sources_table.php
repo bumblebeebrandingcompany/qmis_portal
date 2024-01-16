@@ -19,7 +19,7 @@ class CreateSourcesTable extends Migration
             $table->longText('outgoing_webhook')
                 ->comment('outgoing webhook details')
                 ->nullable();
-            
+
             $table->longText('outgoing_apis')
                 ->comment('outgoing api details')
                 ->nullable();

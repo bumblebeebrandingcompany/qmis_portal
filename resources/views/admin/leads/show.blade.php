@@ -123,8 +123,6 @@
 @endsection
 @section('scripts')
 @parent
-
-
 <script>
     $(function () {
         $(document).on('click', '.send_doc_to_lead', function() {

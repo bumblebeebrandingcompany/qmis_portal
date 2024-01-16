@@ -61,4 +61,15 @@ public function timeline()
 {
     return $this->hasMany(LeadTimeline::class);
 }
+public function campaign()
+{
+    return $this->belongsTo(Campaign::class, 'campaign_id');
+}
+public function source()
+{
+    return $this->belongsTo(Source::class, 'source_id');
+}    public function project()
+{
+    return $this->belongsTo(Project::class, 'project_id');
+}
 }

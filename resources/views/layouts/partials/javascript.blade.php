@@ -270,7 +270,28 @@ $(document).on('input', 'input.input_number', function(event) {
     }
 })
 });
+const targetTime = new Date();
+    targetTime.setHours(19, 0, 0); // 7:00 PM
 
+    function updateTimer() {
+        const currentTime = new Date();
+        const timeDifference = targetTime - currentTime;
+
+        if (timeDifference > 0) {
+            const hours = Math.floor(timeDifference / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+            document.getElementById('timer').innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+        } else {
+            document.getElementById('timer').innerHTML = 'Countdown expired';
+        }
+    }
+    // Update the timer every second
+    setInterval(updateTimer, 1000);
+
+    // Initial update
+    updateTimer();
 </script>
 <script>
     /*!

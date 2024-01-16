@@ -44,6 +44,8 @@
                 </select>
             </form>
                 </div>
+                <div class="table-responsive">
+
             <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-followup" id="followUpTable">
                 <thead>
                     <tr>
@@ -110,6 +112,7 @@
                     @endforeach
                 </tbody>
             </table>
+                </div>
             <div class="d-flex justify-content-end">
                 {{ $followUps->links('pagination::bootstrap-4') }}
             </div>

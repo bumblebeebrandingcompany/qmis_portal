@@ -1,3 +1,5 @@
+<div class="table-responsive">
+
 <table class="table">
     <thead>
         <tr>
@@ -26,6 +28,7 @@
         @endforeach
     </tbody>
 </table>
+</div>
 <div class="d-flex justify-content-end">
     {{ $followUps->links('pagination::bootstrap-4') }}
 </div>

@@ -3,7 +3,7 @@
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Lead ID: {{ $lead->id }}</h3>
-         </div>
+    </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">
@@ -17,7 +17,8 @@
                 </div>
             </div>
         </div>
-        <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-callog">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-callog">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -66,19 +67,16 @@
 
                             <td>
                                 <div class="custom-audio-player">
-                                <audio controls>
-                                    <source src="{{ asset($callRecord['call_recordings']) }}" type="audio/mp3">
-                                    Your browser does not support the audio tag.
-                                </audio>
+                                    <audio controls>
+                                        <source src="{{ asset($callRecord['call_recordings']) }}" type="audio/mp3">
+                                        Your browser does not support the audio tag.
+                                    </audio>
                                 </div>
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-
-</div>
-</div>
-
-
-
+        </div>
+        </div>
+    </div>

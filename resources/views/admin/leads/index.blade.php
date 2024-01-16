@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section('content')
-    @includeIf('admin.leads.partials.header')
 
+    @includeIf('admin.leads.partials.header')
     @if($lead_view == 'list')
         <div class="row">
             <div class="col-md-12">

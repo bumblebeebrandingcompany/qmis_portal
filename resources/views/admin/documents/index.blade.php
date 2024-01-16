@@ -29,7 +29,7 @@
                                 @foreach($projects as $id => $title)
                                     <option value="{{ $id }}">{{ $title }}</option>
                                 @endforeach
-                            </select>
+                            </
                         </div>
                     </div>
                     <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-documents">
@@ -125,7 +125,7 @@
             $($.fn.dataTable.tables(true)).DataTable()
             .columns.adjust();
         });
-  
+
         let visibleColumnsIndexes = null;
 
         $(document).on('change', '#project_id', function () {

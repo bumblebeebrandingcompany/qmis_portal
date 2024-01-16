@@ -34,6 +34,7 @@ class FollowUpController extends Controller
      * All Utils instance.
      *
      */
+    protected $util;
     public function __construct(Util $util)
     {
         $this->util = $util;
@@ -41,13 +42,30 @@ class FollowUpController extends Controller
 
     public function index(Request $request)
     {
+        $__global_clients_filter = $this->util->getGlobalClientsFilter();
+        if (!empty($__global_clients_filter)) {
+            $project_ids = $this->util->getClientsProjects($__global_clients_filter);
+            $campaign_ids = $this->util->getClientsCampaigns($__global_clients_filter);
+        } else {
+            $project_ids = $this->util->getUserProjects(auth()->user());
+            $campaign_ids = $this->util->getCampaigns(auth()->user(), $project_ids);
+        }
+
         $lead = Lead::all();
         $agencies = User::all();
         $campaigns = Campaign::all();
         $followUps = Followup::all();
         $itemsPerPage = request('perPage', 10);
         $followUps = Followup::paginate($itemsPerPage);
-        return view('admin.leads.followup.index', compact('campaigns', 'agencies', 'lead', 'followUps'));
+        $projects = Project::whereIn('id', $project_ids)
+        ->get();
+    $campaigns = Campaign::whereIn('id', $campaign_ids)
+        ->get();
+
+    $sources = Source::whereIn('project_id', $project_ids)
+        ->whereIn('campaign_id', $campaign_ids)
+        ->get();
+        return view('admin.leads.followup.index', compact('campaigns', 'agencies', 'lead', 'followUps','projects','sources'));
     }
 
     public function store(StoreFollowupRequest $request)

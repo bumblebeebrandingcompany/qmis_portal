@@ -37,10 +37,13 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Roles
     Route::delete('roles/destroy', 'RolesController@massDestroy')->name('roles.massDestroy');
     Route::resource('roles', 'RolesController');
-
+    Route::any('webhook/call-record', 'Admin\CallRecordController@storeNewRecord')
+    ->name('webhook.store.new.record');
 //sitevist
 Route::resource('/sitevisit', 'SiteVisitController');
 Route::resource('/notes', 'NoteController');
+Route::resource('/notenotinterested', 'NoteNotInterestedController');
+
 Route::resource('/followups', 'FollowUpController');
 
 Route::get('leads/{lead}/initiate-call', 'LeadsController@initiateCall')

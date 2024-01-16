@@ -17,6 +17,8 @@ use App\Models\Agency;
 use App\Models\Note;
 use App\Models\ParentStage;
 use App\Models\Tag;
+use App\Models\NoteNotInterested;
+
 use Gate;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
@@ -435,7 +437,7 @@ class LeadsController extends Controller
         $leads = Lead::all();
         $sitevisits = SiteVisit::all();
         $allActivities = $this->getLeadActivities($lead);
-
+        $noteNotInterested=NoteNotInterested::all();
         $client = Clients::all();
         $lead->load('project', 'campaign', 'source', 'createdBy');
         $agencies = Agency::all();
@@ -471,7 +473,7 @@ class LeadsController extends Controller
 
         $sitevisits = SiteVisit::all();
         $campaigns = Campaign::all();
-        return view('admin.leads.show', compact('lead', 'lead_events', 'projects_list', 'parentStages', 'stages', 'tags', 'agencies', 'user_id', 'followUps', 'campaigns', 'sitevisit', 'client', 'leads', 'note', 'sitevisits', 'callRecords', 'notes', 'allActivities'));
+        return view('admin.leads.show', compact('lead', 'lead_events', 'projects_list', 'parentStages', 'stages', 'tags', 'agencies', 'user_id', 'followUps', 'campaigns', 'sitevisit', 'client', 'leads', 'note', 'sitevisits', 'callRecords', 'notes', 'allActivities','noteNotInterested'));
     }
 
     public function destroy(Lead $lead)

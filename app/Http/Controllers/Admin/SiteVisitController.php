@@ -35,8 +35,8 @@ class SiteVisitController extends Controller
         foreach ($sitevisits as $sitevisit) {
             $ids[] = $sitevisit->id;
         }
-        $itemsPerPage = request('perPage', 10);
-        $sitevisits = SiteVisit::paginate($itemsPerPage);
+        // $itemsPerPage = request('perPage', 10);
+        // $sitevisits = SiteVisit::paginate($itemsPerPage);
         return view('admin.sitevisit.index', compact('campaigns', 'agencies', 'lead', 'sitevisits', 'ids', 'client'));
     }
 
