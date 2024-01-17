@@ -489,21 +489,21 @@
                                         <input type="hidden" name="lead_id" value="{{ $lead->id }}">
                                         <input type="hidden" name="parent_stage_id" value="15">
                                         <div class="form-group">
-                                            <select id="myselection">
+                                            <select id="myselection" name="note_text">
                                                 <option>Select Option</option>
                                                 @foreach ($noteNotInterested as $id => $notes)
-                                                    <option value="{{ $notes->id }}"
+                                                    <option value="{{ $notes->notes }}"
                                                         {{ old('notes_id') == $notes->id ? 'selected' : '' }}>
                                                         {{ $notes->notes }}
                                                     </option>
                                                 @endforeach
-                                                <option value="Others">Others</option>
+                                                {{-- <option value="Others">Others</option> --}}
                                             </select>
-                                            <div id="showOthers" class="myDiv">
+                                            {{-- <div id="showOthers" class="myDiv">
                                                 <label for="OthersNoteContent">Note Content</label>
                                                 <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
                                                     rows="4" required>{{ old('note_text') }}</textarea>
-                                            </div>
+                                            </div> --}}
                                         </div>
 
                                         <div class="modal-footer">
@@ -518,28 +518,26 @@
                                 @csrf
                                 <div id="notvisitedContent" style="display: none;">
                                     <div>
-
                                         <div class="modal-body">
                                             <input type="hidden" name="lead_id" value="{{ $lead->id }}">
                                             <input type="hidden" name="parent_stage_id" value="12">
                                             <div class="form-group">
-                                                <select id="myselection">
+                                                <select id="myselection" name="note_text">
                                                     <option>Select Option</option>
                                                     @foreach ($noteNotInterested as $id => $notes)
-                                                        <option value="{{ $notes->id }}"
-                                                            {{ old('notes_id') == $notes->id ? 'selected' : '' }}>
+                                                        <option value="{{ $notes->notes }}"
+                                                            {{ old('note_text') == $notes->id ? 'selected' : '' }}>
                                                             {{ $notes->notes }}
                                                         </option>
                                                     @endforeach
-                                                    <option value="Others">Others</option>
+                                                    {{-- <option value="Others">Others</option> --}}
                                                 </select>
-                                                <div id="showOthers" class="myDiv">
+                                                {{-- <div id="showOthers" class="myDiv">
                                                     <label for="otherNoteContent">Note Content</label>
                                                     <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
                                                         rows="4" required>{{ old('note_text') }}</textarea>
-                                                </div>
+                                                </div> --}}
                                             </div>
-
                                             <div class="modal-footer">
                                                 <button class="btn btn-danger" type="submit">Save</button>
                                             </div>
@@ -550,7 +548,7 @@
                             <form id="ResheduleFormId" method="POST" action="{{ route('admin.sitevisit.store') }}"
                                 class="" enctype="multipart/form-data">
                                 @csrf
-                                <div id="showreschedule" style="display: none;">
+                                <div id="showrescheduled" style="display: none;">
                                     <!-- Your follow-up content goes here -->
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -647,18 +645,18 @@
                                                 <select id="myselection">
                                                     <option>Select Option</option>
                                                     @foreach ($noteNotInterested as $id => $notes)
-                                                        <option value="{{ $notes->id }}"
+                                                        <option value="{{ $notes->notes }}"
                                                             {{ old('notes_id') == $notes->id ? 'selected' : '' }}>
                                                             {{ $notes->notes }}
                                                         </option>
                                                     @endforeach
-                                                    <option value="Others">Others</option>
+                                                    {{-- <option value="Others">Others</option> --}}
                                                 </select>
-                                                <div id="showOthers" class="myDiv">
+                                                {{-- <div id="showOthers" class="myDiv">
                                                     <label for="otherNoteContent">Note Content</label>
                                                     <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
                                                         rows="4" required>{{ old('note_text') }}</textarea>
-                                                </div>
+                                                </div> --}}
                                             </div>
 
                                             <div class="modal-footer">
@@ -680,21 +678,21 @@
                                             <input type="hidden" name="lead_id" value="{{ $lead->id }}">
                                             <input type="hidden" name="parent_stage_id" value="17">
                                             <div class="form-group">
-                                                <select id="myselection">
+                                                <select id="myselection" name="note_text">
                                                     <option>Select Option</option>
                                                     @foreach ($noteNotInterested as $id => $notes)
-                                                        <option value="{{ $notes->id }}"
+                                                        <option value="{{ $notes->notes }}"
                                                             {{ old('notes_id') == $notes->id ? 'selected' : '' }}>
                                                             {{ $notes->notes }}
                                                         </option>
                                                     @endforeach
-                                                    <option value="Others">Others</option>
+                                                    {{-- <option value="Others">Others</option> --}}
                                                 </select>
-                                                <div id="showOthers" class="myDiv">
+                                                {{-- <div id="showOthers" class="myDiv">
                                                     <label for="otherNoteContent">Note Content</label>
                                                     <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
                                                         rows="4" required>{{ old('note_text') }}</textarea>
-                                                </div>
+                                                </div> --}}
                                             </div>
 
                                             <div class="modal-footer">
@@ -742,21 +740,21 @@
                                             <input type="hidden" name="lead_id" value="{{ $lead->id }}">
                                             <input type="hidden" name="parent_stage_id" value="18">
                                             <div class="form-group">
-                                                <select id="myselection">
+                                                <select id="myselection" name="note_text">
                                                     <option>Select Option</option>
                                                     @foreach ($noteNotInterested as $id => $notes)
-                                                        <option value="{{ $notes->id }}"
-                                                            {{ old('notes_id') == $notes->id ? 'selected' : '' }}>
+                                                        <option value="{{ $notes->notes }}"
+                                                            {{ old('notes_id') == $notes->notes ? 'selected' : '' }}>
                                                             {{ $notes->notes }}
                                                         </option>
                                                     @endforeach
-                                                    <option value="Others">Others</option>
+                                                    {{-- <option value="Others">Others</option> --}}
                                                 </select>
-                                                <div id="showOthers" class="myDiv">
+                                                {{-- <div id="showOthers" class="myDiv">
                                                     <label for="otherNoteContent">Note Content</label>
                                                     <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
                                                         rows="4" required>{{ old('note_text') }}</textarea>
-                                                </div>
+                                                </div> --}}
                                             </div>
 
                                             <div class="modal-footer">
@@ -866,21 +864,21 @@
                                         <input type="hidden" name="lead_id" value="{{ $lead->id }}">
                                         <input type="hidden" name="parent_stage_id" value="1">
                                         <div class="form-group">
-                                            <select id="myselection">
+                                            <select id="myselection" name="note_text">
                                                 <option>Select Option</option>
                                                 @foreach ($noteNotInterested as $id => $notes)
-                                                    <option value="{{ $notes->id }}"
+                                                    <option value="{{ $notes->notes }}"
                                                         {{ old('notes_id') == $notes->id ? 'selected' : '' }}>
                                                         {{ $notes->notes }}
                                                     </option>
                                                 @endforeach
-                                                <option value="Others">Others</option>
+                                                {{-- <option value="Others">Others</option> --}}
                                             </select>
-                                            <div id="showOthers" class="myDiv">
+                                            {{-- <div id="showOthers" class="myDiv">
                                                 <label for="otherNoteContent">Note Content</label>
                                                 <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
                                                     rows="4" required>{{ old('note_text') }}</textarea>
-                                            </div>
+                                            </div> --}}
                                         </div>
 
                                         <div class="modal-footer">

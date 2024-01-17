@@ -38,9 +38,10 @@ class NoteController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'id',
-            'note_text' => 'required',
+
+            'note_text' => 'nullable',
             'lead_id' => 'required',
+            // 'note_content'=>'nullable'
         ]);
 
         $lead = Lead::find($request->lead_id);
@@ -50,6 +51,7 @@ class NoteController extends Controller
         $note->id = $request->id;
         $note->note_text = $request->note_text;
         $note->lead_id = $lead->id;
+        // $note->note_content=$request->note_content;
         $note->save();
         $note->logTimeline($lead->id,'Note added','note_added');
 

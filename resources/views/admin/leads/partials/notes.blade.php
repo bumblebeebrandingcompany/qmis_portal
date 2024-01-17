@@ -44,7 +44,8 @@
                 <div class="saved-note">
                     <label for="note_text" class="saved-note-label">Note:</label>
                     <div class="saved-note-text">{{ $note->note_text }}</div>
-
+                    <label for="note_content" class="saved-note-label"></label>
+                    <div class="saved-note-content">{{ $note->note_content }}</div>
                     <label for="created at" class="saved-note-label">Date:</label>
                     <div class="saved-created_at">{{ $note->created_at }}</div>
                 </div>
