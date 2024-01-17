@@ -57,7 +57,7 @@ class CallRecordController extends Controller
         return view('admin.callog.show', compact('callFlow', 'callRecord'));
     }
 
-    public function storeNewRecord(Request $request)
+    public function store(Request $request)
     {
         $apiKey = config('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2N1c3RvbWVyLnNlcnZldGVsLmluL2FwaS92MS9hdXRoL2xvZ2luIiwiaWF0IjoxNjk4NjY0NTAxLCJleHAiOjE2OTg2NjgxMDEsIm5iZiI6MTY5ODY2NDUwMSwianRpIjoiaFBDRUIwblllUjBjU2N2MCIsInN1YiI6IjE3MDQ0MCJ9.V_qQ_Vtm9d2ojWyqR1ZBfxjQRt2JJnz3YHXgXJ3WIxQ');
         $apiKey = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNzA0NDAiLCJpc3MiOiJodHRwczovL2N1c3RvbWVyLnNlcnZldGVsLmluL3Rva2VuL2dlbmVyYXRlIiwiaWF0IjoxNjk4NjYxMjYwLCJleHAiOjE5OTg2NjEyNjAsIm5iZiI6MTY5ODY2MTI2MCwianRpIjoiTWtYY0h0OXlpNG5Ea2FuaSJ9.L23vhUJ0UIGc3nffLeMK0NMczroLgwwkECFnaCaY-A8';
@@ -96,7 +96,9 @@ class CallRecordController extends Controller
                                 'description' => $record['description'],
                                 'call_id' => $record['call_id'],
                                 'did number' => $record['did_number'],
-                                'call_flow' => json_encode($record['call_flow']),
+                                'call_flow' => json_encode($record['call_flow'],
+
+                            ),
                             ]);
                         } else {
                             // Log or handle the case where file_put_contents fails

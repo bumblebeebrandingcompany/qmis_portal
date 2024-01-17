@@ -15,7 +15,6 @@ class CallRecord extends Model
     protected $dates = [
         'created_at',
         'updated_at',
-
     ];
 
 protected $fillable = ['called_by', 'called_on', 'call_duration', 'call_on_time', 'status','call_recordings','call_id','direction','dscription','did number','lead_id','client_number','call_flow'];

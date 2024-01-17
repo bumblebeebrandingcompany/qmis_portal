@@ -73,6 +73,7 @@
                         </div>
                     @endif
                 @elseif (!auth()->user()->is_client && $sitevisit->lead && in_array($sitevisit->parent_stage_id, [11, 20, 27, 10]))
+
                 @elseif (!auth()->user()->is_client && $sitevisit->lead && $sitevisit->parent_stage_id != 20)
                     <button type="button" class="btn btn-sm btn-warning" data-toggle="modal"
                         data-target="#editModal{{ $sitevisit->id }}">
@@ -153,12 +154,13 @@
             @method('PUT')
             @if ($sitevisit->parent_stage_id == 11)
                 @if (!auth()->user()->is_superadmin)
-                    <div style="background-color: green; padding: 5px; display: inline-block; border-radius: 5px;" title="Conducted">
+                    <div style="background-color: green; padding: 5px; display: inline-block; border-radius: 5px;"
+                        title="Conducted">
                         <i class="far fa fa-check nav-icon"></i>
                     </div>
-
                 @else
-                    <div style="background-color: green; padding: 5px; display: inline-block; border-radius: 5px;"title="Conducted">
+                    <div
+                        style="background-color: green; padding: 5px; display: inline-block; border-radius: 5px;"title="Conducted">
                         <i class="far fa fa-check nav-icon"></i>
                     </div>
                 @endif
@@ -221,12 +223,11 @@
         @endphp
 
         @if ($canCancel)
-        <br>
+            <br>
             <button type="button" class="btn btn-sm btn-danger" style="width:90px" data-toggle="modal"
                 data-target="#cancelModal{{ $sitevisit->id }}">
                 Cancel
             </button>
-
         @endif
 
         <!-- Modal -->
@@ -266,12 +267,12 @@
             @if ($sitevisit->parent_stage_id == 12)
                 @if (!auth()->user()->is_superadmin)
                     <div class=float-center>
-                        <div
-                            style="background-color: rgb(119, 84, 214); padding: 5px; display: inline-block; border-radius: 5px;" title="Not Visited">
+                        <div style="background-color: rgb(119, 84, 214); padding: 5px; display: inline-block; border-radius: 5px;"
+                            title="Not Visited">
                             <i class="fa fa-eye-slash" style="font-size:18px"></i>
                         </div>
                     @else
-                    <br>
+                        <br>
                         <div
                             style="background-color: rgb(119, 84, 214); padding: 5px; display: inline-block; border-radius: 5px;"title="Not Visited">
                             <i class="fa fa-eye-slash" style="font-size:18px"></i>
@@ -279,6 +280,7 @@
                 @endif
                 </div>
             @elseif (!auth()->user()->is_superadmin && $sitevisit->lead && in_array($sitevisit->parent_stage_id, [11, 26, 27, 20, 19]))
+
             @elseif (!auth()->user()->is_superadmin && $sitevisit->lead && $sitevisit->parent_stage_id != 12)
                 <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                     data-target="#notVisitedModel{{ $sitevisit->id }}">

@@ -20,7 +20,7 @@ class SitevisitRequest extends FormRequest
 
         return [
             'follow_up_date' => 'required|date',
-            'follow_up_time' => 'required|date_format:H:i:s',
+            'follow_up_time' => 'required|date_format:H:i',
             'deleted_at' => 'date',
             'lead_id' => [
                 'required',

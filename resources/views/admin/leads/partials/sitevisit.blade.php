@@ -1,3 +1,5 @@
+<h2 class="card-title"> Lead ID: {{ $lead->id }}</h2>
+<br>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <h1>
     Site Visit</h1>

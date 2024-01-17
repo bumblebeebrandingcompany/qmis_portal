@@ -15,15 +15,12 @@ use App\Models\Project;
 use App\Models\Source;
 use App\Models\User;
 use App\Models\Followup;
-use App\Notifications\LeadDocumentShare;
 use App\Utils\Util;
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\View;
-use Maatwebsite\Excel\Facades\Excel;
+
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 use DateTimeInterface;
