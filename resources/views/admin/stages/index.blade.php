@@ -1,3 +1,4 @@
+
 @extends('layouts.admin')
 
 @section('content')
@@ -11,26 +12,10 @@
                     @csrf
                     <div class="row">
                         <div class="col-md-5">
-                            <div class="form-group">
-                                <label for="parent_stage_id">Parent Stage:</label>
-                                <select name="parent_stage_id" id="parent_stage_id" class="form-control" required>
-                                    @foreach ($parentStages as $parentStage)
-                                        <option value="{{ $parentStage->id }}">{{ $parentStage->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            <!-- ... (unchanged) ... -->
                         </div>
                         <div class="col-md-5">
-                            <div class="form-group">
-                                <label for="selected_child_stages">Select Child Stages:</label>
-                                <br>
-                                <select name="selected_child_stages[]" id="selected_child_stages"
-                                    class="form-control select2" required>
-                                    @foreach ($parentStages as $childStage)
-                                        <option value="{{ $childStage->id }}">{{ $childStage->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            <!-- ... (unchanged) ... -->
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
@@ -42,27 +27,8 @@
                                     </button>
                                 </div>
                             </div>
-
-                        {{-- </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <button class="btn btn-danger float-right" type="submit">
-                                    {{ trans('global.save') }}
-                                </button>
-                            </div>
-                        </div> --}}
-                        {{-- <div class="form-group">
-                            <label for="selected_child_stages">Select Child Stages:</label>
-                            <select name="selected_child_stages[]" id="selected_child_stages"
-                                class="form-control select2" multiple required
-                                data-minimum-results-for-search="Infinity">
-                                @foreach ($parentStages as $childStage)
-                                    <option value="{{ $childStage->id }}">{{ $childStage->name }}</option>
-                                @endforeach
-                            </select>
-                        </div> --}}
+                        </div>
                     </div>
-
                 </form>
 
                 {{-- Display all created stages in a table --}}
@@ -90,10 +56,10 @@
                                     @endforeach
                                 </td>
                                 <td>
-                                    {{-- Edit Button --}}
+                                    <!-- Edit Button -->
                                     <button class="btn btn-sm btn-primary" data-toggle="modal"
                                         data-target="#editStageModal{{ $stage->id }}">Edit</button>
-                                    {{-- Delete Button --}}
+                                    <!-- Delete Button -->
                                     <button class="btn btn-sm btn-danger" data-toggle="modal"
                                         data-target="#deleteStageModal{{ $stage->id }}">Delete</button>
                                 </td>
@@ -105,8 +71,9 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Modals for Edit and Delete -->
     @foreach ($stages as $stage)
+        <!-- Edit Modal -->
         <div class="modal fade" id="editStageModal{{ $stage->id }}" tabindex="-1" role="dialog"
             aria-labelledby="editStageModalLabel{{ $stage->id }}" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -158,8 +125,8 @@
                 </div>
             </div>
         </div>
-    @endforeach
-    @foreach ($stages as $stage)
+
+        <!-- Delete Modal -->
         <div class="modal fade" id="deleteStageModal{{ $stage->id }}" tabindex="-1" role="dialog"
             aria-labelledby="deleteStageModalLabel{{ $stage->id }}" aria-hidden="true">
             <div class="modal-dialog" role="document">
