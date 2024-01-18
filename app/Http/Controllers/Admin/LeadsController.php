@@ -116,16 +116,19 @@ class LeadsController extends Controller
             $query = $this->util->getFIlteredLeads($request);
 
             $query->where(function ($query) use ($lead_stage, $user) {
+                // Debugging statement to check the value of $lead_stage
+                dd($lead_stage);
+
                 $query->whereHas('parentStage', function ($q) use ($lead_stage) {
                     $q->whereIn('name', $lead_stage);
                 });
 
+
+
                 if ($user->is_superadmin) {
                     $query->orWhereNull('parent_stage_id');
                 }
-                if ($user->is_client) {
-                    $query->orWhereNull('parent_stage_id');
-                }
+
             });
             $table = Datatables::of($query);
             $table->addColumn('placeholder', '&nbsp;');
