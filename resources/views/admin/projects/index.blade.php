@@ -24,7 +24,6 @@
             <thead>
                 <tr>
                     <th width="10">
-
                     </th>
                     <th>
                         {{ trans('cruds.project.fields.name') }}
@@ -156,7 +155,7 @@
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
   });
-  
+
 let visibleColumnsIndexes = null;
 $('.datatable thead').on('input', '.search', function () {
       let strict = $(this).attr('strict') || false

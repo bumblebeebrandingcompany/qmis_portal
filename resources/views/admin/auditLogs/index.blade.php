@@ -50,7 +50,7 @@
 <script>
     $(function () {
   let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-  
+
   let dtOverrideGlobals = {
     buttons: dtButtons,
     processing: true,
@@ -77,7 +77,7 @@
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
   });
-  
+
 });
 
 </script>

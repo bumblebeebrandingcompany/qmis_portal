@@ -96,7 +96,9 @@ class CallRecordController extends Controller
                                 'description' => $record['description'],
                                 'call_id' => $record['call_id'],
                                 'did number' => $record['did_number'],
-                                'call_flow' => json_encode($record['call_flow']),
+                                'call_flow' => json_encode($record['call_flow'],
+
+                            ),
                             ]);
                         } else {
                             // Log or handle the case where file_put_contents fails

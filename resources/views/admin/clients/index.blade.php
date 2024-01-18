@@ -43,8 +43,6 @@
     </div>
 </div>
 
-
-
 @endsection
 @section('scripts')
 @parent
@@ -105,7 +103,7 @@
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
   });
-  
+
 });
 
 </script>

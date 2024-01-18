@@ -18,7 +18,6 @@
             <thead>
                 <tr>
                     <th width="10">
-
                     </th>
                     <th>
                         {{ trans('cruds.source.fields.project') }}

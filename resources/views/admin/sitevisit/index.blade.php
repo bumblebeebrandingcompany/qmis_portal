@@ -15,10 +15,8 @@
             <a class="nav-link active" id="rescheduleTab" data-toggle="tab" href="#reschedule">Upcoming SiteVisits</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="siteVisitTab" data-toggle="tab" href="#sitevisit">All SiteVisits</a>
+            <a class="nav-link" id="siteVisitTab" data-toggle="tab" href="#sitevisit">Site Visit</a>
         </li>
-
-
     </ul>
 
     <div class="tab-content">
@@ -28,21 +26,12 @@
             <div class="card">
 
                 <div class="col-md-1 offset-md-10">
-                    <form method="get" action="{{ url()->current() }}">
-                        <label for="recordsPerPage">Records Per Page:</label>
-                        <select class="form-control ml-2 select2" id="recordsPerPage" name="perPage" onchange="this.form.submit()">
-                            <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
-                            <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
-                            <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>
-                            <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
-                        </select>
-                    </form>
+
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table
-                            class="table table-bordered table-striped table-hover ajaxTable datatable datatable-reschedule"
-                            id="rescheduleTable">
+
+                        <table class="table table-bordered table-striped" id="rescheduleTable">
                             <thead>
                                 <tr>
                                     <th>R.No</th>
@@ -62,7 +51,6 @@
                                     $todayData = [];
                                     $tomorrowData = [];
                                 @endphp
-
                                 @foreach ($sitevisits as $sitevisit)
                                     @php
                                         $visitDate = \Carbon\Carbon::parse($sitevisit->follow_up_date);
@@ -109,12 +97,8 @@
                                         @include('admin.sitevisit.partials.table_body')
                                     @endforeach
                                 @endif
-
-
                             </tbody>
-                            <div class="d-flex justify-content-end">
-                                {{ $sitevisits->links('pagination::bootstrap-4') }}
-                            </div>
+
                         </table>
                     </div>
                 </div>
@@ -128,8 +112,15 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
 
+                            {{-- <div style="padding-bottom: 4px">
+                                <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
+                                <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
+                                <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+
+                            </div> --}}
+                            @includeIf('layouts.partials.javascript')
                             <div class="form-group">
                                 <label for="date_range">Select a date</label>
                                 <select class="form-control" id="date_range">
@@ -147,28 +138,75 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4" id="custom_range_container" style="display:none;">
+                        <div class="col-md-3" id="custom_range_container" style="display:none;">
                             <div class="form-group">
                                 <label for="custom_range">Custom Range</label>
                                 <input class="form-control" type="text" name="custom_range" id="custom_range"
                                     value="{{ old('custom_range') }}">
                             </div>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-2">
                             <form method="get" action="{{ url()->current() }}">
                                 <label for="recordsPerPage">Records Per Page:</label>
+                                <br>
                                 <select class="form-control ml-2 select2" id="recordsPerPage" name="perPage"
                                     onchange="this.form.submit()">
                                     <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
                                     <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
-                                    <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>
-                                    <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
+                                    <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100
+                                    </option>
+                                    <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200
+                                    </option>
                                 </select>
                             </form>
                         </div>
+                        <div class="col-md-1">
+
+                            <table class="table table-bordered table-striped" id="siteVisiticon">
+
+                                <tr>
+                                    <td>Conducted
+
+                                        <div class="float-right"
+                                            style="background-color: green; padding: 2px; display: inline-block; border-radius: 5px;"title="Conducted">
+                                            <i class="far fa fa-check nav-icon"></i>
+                                        </div>
+                                    </td>
+
+                                    <td>NotVisited
+
+                                        <div class="float-right"
+                                            style="background-color: rgb(119, 84, 214); padding: 2px; display: inline-block; border-radius: 5px;"title="NotVisited">
+                                            <i class="fa fa-eye-slash" style="font-size:16px"></i>
+                                        </div>
+                                    </td>
+
+                                    <td>Rescheduled
+                                        <div class="float-right"
+                                            style="background-color: rgb(236, 47, 220); padding: 2px; display: inline-block; border-radius: 5px;"title="Rescheduled">
+                                            <i class="fas fa-check-double" style="font-size:18px"></i>
+                                        </div>
+                                    </td>
+
+                                    <td>Cancelled
+                                        <div class="float-right"
+                                            style="background-color: rgb(240, 18, 18); padding: 2px; display: inline-block; border-radius: 5px;"title="Cancelled">
+                                            <i class="fa fa-close" style="font-size:20px"></i>
+                                        </div>
+                                    </td>
+
+                                    <td>Scheduled
+                                        <div class="float-right"
+                                            style="background-color: rgb(47, 230, 236); padding: 2px; display: inline-block; border-radius: 5px;"title="Scheduled">
+                                            <i class="fas fa-calendar-check nav-icon"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                         <div class="table-responsive">
-                            <table
-                                class="table table-bordered table-striped table-hover ajaxTable datatable datatable-sitevisit"
+
+                            <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-lead"
                                 id="siteVisitTable">
                                 <thead>
                                     <tr>
@@ -197,7 +235,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 @endsection
 
@@ -224,31 +261,7 @@
                 }
             });
 
-            // Handle filtering when the custom range is selected for Site Visit
-            // $('#custom_range').change(function() {
-            //     var customRange = $(this).val();
-            //     filterTable('custom', 'siteVisit', customRange);
-            // });
 
-            // // Initialize the date range picker for Reschedule
-            // $('#custom_range_reschedule').daterangepicker();
-
-            // // Show/hide the custom range container based on the selected option for Reschedule
-            // $('#date_range_reschedule').change(function() {
-            //     var selectedOption = $(this).val();
-            //     if (selectedOption === 'custom') {
-            //         $('#custom_range_container_reschedule').show();
-            //     } else {
-            //         $('#custom_range_container_reschedule').hide();
-            //         filterTable(selectedOption, 'reschedule');
-            //     }
-            // });
-
-            // // Handle filtering when the custom range is selected for Reschedule
-            // $('#custom_range_reschedule').change(function() {
-            //     var customRange = $(this).val();
-            //     filterTable('custom', 'reschedule', customRange);
-            // });
 
             function filterTable(selectedOption, tableType, customRange = null) {
                 var startDate, endDate;
@@ -327,16 +340,14 @@
 @endsection
 
 
-<!-- resources/views/countdown/index.blade.php -->
-
-<style>
+{{-- <style>
     #countdown {
         font-size: 24px;
     }
-</style>
+</style> --}}
 
 
-<script>
+{{-- <script>
     const targetTime = new Date();
     targetTime.setHours(19, 0, 0); // 7:00 PM
 
@@ -359,8 +370,8 @@
 
     // Initial update
     updateTimer();
-</script>
-<style>
+</script> --}}
+{{-- <style>
     body {
         font-family: Arial, sans-serif;
         text-align: right;
@@ -375,5 +386,5 @@
     #timer {
         font-weight: bold;
     }
-</style>
+</style> --}}
 <!-- resources/views/countdown/index.blade.php -->

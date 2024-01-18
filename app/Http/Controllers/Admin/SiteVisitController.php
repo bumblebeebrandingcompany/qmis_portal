@@ -35,8 +35,8 @@ class SiteVisitController extends Controller
         foreach ($sitevisits as $sitevisit) {
             $ids[] = $sitevisit->id;
         }
-        $itemsPerPage = request('perPage', 10);
-        $sitevisits = SiteVisit::paginate($itemsPerPage);
+        // $itemsPerPage = request('perPage', 10);
+        // $sitevisits = SiteVisit::paginate($itemsPerPage);
         return view('admin.sitevisit.index', compact('campaigns', 'agencies', 'lead', 'sitevisits', 'ids', 'client'));
     }
 
@@ -65,7 +65,7 @@ class SiteVisitController extends Controller
     {
         $request->validate([
             'follow_up_date' => 'date',
-            'follow_up_time' => 'date_format:H:i:s',
+            'follow_up_time' => 'date_format:H:i',
             'deleted_at' => 'date',
             'lead_id' => [
                 'required',

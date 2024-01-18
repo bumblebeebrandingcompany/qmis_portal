@@ -718,7 +718,7 @@ class Util
     {
         $prefixes = [
             'Superadmin' => 'SU',
-            'Client' => 'CL',
+            'Clients' => 'CL',
             'Agency' => 'AG',
             // 'ChannelPartner' => 'CP',
             // 'ChannelPartnerManager' => 'CPM',

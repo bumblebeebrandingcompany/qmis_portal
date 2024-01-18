@@ -47,11 +47,13 @@
 
             <div class="form-group">
                 <label class="required" for="project_id">{{ trans('cruds.lead.fields.project') }}</label>
+                <br>
                 <select class="form-control select2 {{ $errors->has('project') ? 'is-invalid' : '' }}" name="project_id" id="project_id" required>
                     @foreach($projects as $id => $entry)
                         <option value="{{ $id }}" {{ (old('project_id') == $id) || ($project_id == $id) ? 'selected' : '' }}>{{ $entry }}</option>
                     @endforeach
                 </select>
+                <br>
                 @if($errors->has('project'))
                     <span class="text-danger">{{ $errors->first('project') }}</span>
                 @endif
@@ -60,11 +62,13 @@
             @if(!auth()->user()->is_channel_partner)
                 <div class="form-group">
                     <label for="campaign_id">{{ trans('cruds.lead.fields.campaign') }}</label>
+                    <br>
                     <select class="form-control select2 {{ $errors->has('campaign') ? 'is-invalid' : '' }}" name="campaign_id" id="campaign_id">
                         @foreach($campaigns as $id => $entry)
                             <option value="{{ $id }}" {{ old('campaign_id') == $id ? 'selected' : '' }}>{{ $entry }}</option>
                         @endforeach
                     </select>
+                    <br>
                     @if($errors->has('campaign'))
                         <span class="text-danger">{{ $errors->first('campaign') }}</span>
                     @endif
@@ -72,9 +76,11 @@
                 </div>
                 <div class="form-group">
                     <label class="required" for="source_id">{{ trans('messages.source') }}</label>
+                    <br>
                     <select class="form-control select2 {{ $errors->has('source_id') ? 'is-invalid' : '' }}" name="source_id" id="source_id" required>
 
                     </select>
+                    <br>
                     @if($errors->has('source_id'))
                         <span class="text-danger">{{ $errors->first('source_id') }}</span>
                     @endif
