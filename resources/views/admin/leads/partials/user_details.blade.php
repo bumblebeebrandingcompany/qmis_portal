@@ -463,7 +463,7 @@
                                                     required>{{ old('follow_up_date') }}
                                             </div>
                                             <label for="Time">Select Time</label>
-                                            <input id="follow_up_time" name="follow_up_time" type="text"
+                                            <input id="follow_up_time" name="follow_up_time" type="time"
                                                 class="form-control timepicker" value="{{ old('follow_up_time') }}">
                                             <div class="form-group">
                                                 <label for="noteContent">Note Content</label>
