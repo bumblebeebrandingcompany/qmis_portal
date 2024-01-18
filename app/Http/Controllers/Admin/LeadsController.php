@@ -110,7 +110,7 @@ class LeadsController extends Controller
             if ($user->is_agency || $user->is_superadmin) {
                 $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted', 'enquiry', 'application purchased', 'lost', 'followup', 'rescheduled', 'Site Not Visited', 'Admitted', 'Spam', 'Not Qualified', 'Future Prospect', 'Cancelled', 'RNR', 'virtual call scheduled', 'Virtual Call Conducted', 'virtual call cancelled'];
             } elseif ($user->is_client) {
-                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted'];
+                $lead_stage = ['enquiry'];
             }
 
             $query = $this->util->getFIlteredLeads($request);
