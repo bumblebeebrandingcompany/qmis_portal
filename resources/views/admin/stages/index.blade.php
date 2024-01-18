@@ -11,12 +11,30 @@
                     class="my-custom-form">
                     @csrf
                     <div class="row">
-                        <div class="col-md-5">
-                            <!-- ... (unchanged) ... -->
-                        </div>
-                        <div class="col-md-5">
-                            <!-- ... (unchanged) ... -->
-                        </div>
+
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="parent_stage_id">Parent Stage:</label>
+                                    <select name="parent_stage_id" id="parent_stage_id" class="form-control" required>
+                                        @foreach ($parentStages as $parentStage)
+                                            <option value="{{ $parentStage->id }}">{{ $parentStage->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="selected_child_stages">Select Child Stages:</label>
+                                    <br>
+                                    <select name="selected_child_stages[]" id="selected_child_stages"
+                                        class="form-control select2" required>
+                                        @foreach ($parentStages as $childStage)
+                                            <option value="{{ $childStage->id }}">{{ $childStage->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="selected_child_stages"></label>
