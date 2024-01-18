@@ -12,7 +12,7 @@
             <label class="required">
                 @lang('messages.value')
             </label>
-            <select class="form-control select select-tags input" name="api[{{$webhook_key}}][request_body][{{$rb_key}}][value][]" required multiple>
+            <select class="form-control select2 select-tags input" name="api[{{$webhook_key}}][request_body][{{$rb_key}}][value][]" required multiple>
                 @foreach($tags as $tag)
                     <option value="{{ $tag }}"
                         @if(!empty($rb['value']) && is_array($rb['value']) && in_array($tag, $rb['value']))
