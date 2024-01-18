@@ -8,7 +8,7 @@ $(function() {
             $("#agency_id, #client_id, #projects, #assign_client").val('').change();
         }
 
-        if(userType == 'Client') {
+        if(userType == 'Clients') {
             $("#client_id").parent('div').show();
             $("#client_id").prop('required', true);
         } else if(userType == 'Agency') {

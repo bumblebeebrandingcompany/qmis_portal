@@ -158,7 +158,7 @@ class User extends Authenticatable
      */
     public function getIsClientAttribute()
     {
-        return $this->user_type == 'Client';
+        return $this->user_type == 'Clients';
     }
 
     /**

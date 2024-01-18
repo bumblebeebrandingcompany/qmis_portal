@@ -12,10 +12,9 @@
 
     <ul class="nav nav-tabs" id="myTabs">
         <li class="nav-item">
-            <a class="nav-link active" id="rescheduleTab" data-toggle="tab" href="#reschedule">Upcoming Schedule</a>
+            <a class="nav-link active" id="rescheduleTab" data-toggle="tab" href="#reschedule">Upcoming SiteVisits</a>
         </li>
         <li class="nav-item">
-
             <a class="nav-link" id="siteVisitTab" data-toggle="tab" href="#sitevisit">Site Visit</a>
         </li>
     </ul>

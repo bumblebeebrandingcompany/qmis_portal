@@ -86,8 +86,8 @@ class LeadsController extends Controller
             $errorResponse = json_decode($response->getBody()->getContents(), true);
         }
 
-        return $responseBody;
-    }
+        return back();
+     }
 
     public function index(Request $request)
     {

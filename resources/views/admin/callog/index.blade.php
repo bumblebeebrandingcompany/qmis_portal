@@ -50,7 +50,6 @@
                         </form>
                     </div>
                 </div>
-                <div class="table-responsive">
 
                 <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-callog">
                     <thead>

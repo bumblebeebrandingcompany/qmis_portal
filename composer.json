@@ -19,6 +19,7 @@
         "spatie/laravel-activitylog": "^4.7",
         "spatie/laravel-medialibrary": "^10.7",
         "spatie/laravel-webhook-server": "^3.4",
+        "twilio/sdk": "^7.13",
         "yajra/laravel-datatables-oracle": "^10.3"
     },
     "require-dev": {
