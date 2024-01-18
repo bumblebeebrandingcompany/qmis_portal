@@ -74,7 +74,7 @@
                     @endif
                 @elseif (!auth()->user()->is_client && $sitevisit->lead && in_array($sitevisit->parent_stage_id, [11, 20, 27, 10]))
 
-                @elseif (!auth()->user()->is_client && $sitevisit->lead && $sitevisit->parent_stage_id != 20)
+                @elseif (!auth()->user()->is_superadmin && $sitevisit->lead && $sitevisit->parent_stage_id != 20)
                     <button type="button" class="btn btn-sm btn-warning" data-toggle="modal"
                         data-target="#editModal{{ $sitevisit->id }}">
                         Reschedule
