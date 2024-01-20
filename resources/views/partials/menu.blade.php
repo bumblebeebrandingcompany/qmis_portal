@@ -291,6 +291,7 @@
                         </a>
                     </li>
                 @endif
+
                 <li class="nav-item">
                     <a href="{{ route('admin.leads.index', ['view' => 'kanban']) }}" id="lead_menu_link"
                         class="nav-link {{ request()->is('admin/leads') || request()->is('admin/leads/*') ? 'active' : '' }}">

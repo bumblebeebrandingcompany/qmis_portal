@@ -24,6 +24,7 @@
             <thead>
                 <tr>
                     <th width="10">
+
                     </th>
                     <th>
                         {{ trans('cruds.project.fields.name') }}

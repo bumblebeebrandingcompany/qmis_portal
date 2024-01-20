@@ -78,8 +78,6 @@
                                     </div>
                                     <div id="additional-details-{{ $lead->id }}"
                                         class="additional-details-container">
-
-
                                         <!-- <div class="col-md-12">
                                         <strong>@lang('messages.status')</strong>:
                                         {{ $lead->sell_do_status }}

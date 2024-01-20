@@ -13,6 +13,7 @@
             @csrf
             <div class="form-group">
                 <label class="required" for="project_id">{{ trans('cruds.source.fields.project') }}</label>
+                <br>
                 <select class="form-control select2 {{ $errors->has('project') ? 'is-invalid' : '' }}" name="project_id" id="project_id" required>
                     @foreach($projects as $id => $entry)
                         <option value="{{ $id }}" {{ old('project_id') == $id ? 'selected' : '' }}>{{ $entry }}</option>
@@ -25,6 +26,7 @@
             </div>
             <div class="form-group">
                 <label class="required" for="campaign_id">{{ trans('cruds.source.fields.campaign') }}</label>
+                <br>
                 <select class="form-control select2 {{ $errors->has('campaign') ? 'is-invalid' : '' }}" name="campaign_id" id="campaign_id" required>
                     @foreach($campaigns as $id => $entry)
                         <option value="{{ $id }}" {{ old('campaign_id') == $id ? 'selected' : '' }}>{{ $entry }}</option>

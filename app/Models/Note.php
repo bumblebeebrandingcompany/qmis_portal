@@ -12,20 +12,24 @@ class Note extends Model
         'created_at',
     ];
 
-    protected $fillable = ['note_text','lead_id',]; // Specify the fillable attributes
+    protected $fillable = ['note_text','lead_id','note_content']; // Specify the fillable attributes
 
 
-    // public function rules()
-    // {
-    //     return [
-    //         'note_content' => [
-    //             'string',
-    //             'nullable'
+    public function rules()
+    {
+        return [
+            'note_content' => [
+                'string',
+                'nullable'
 
-    //         ],
+            ],
+            'note_text' => [
+                'string',
+                'nullable'
 
-    //     ];
-    // }
+            ],
+        ];
+    }
     public function logTimeline($lead,$description, $activityType = null)
     {
         $data = [

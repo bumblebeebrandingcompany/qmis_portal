@@ -22,7 +22,7 @@ class Source extends Model
         'updated_at',
         'deleted_at',
     ];
-    
+
     /**
      * The attributes that aren't mass assignable.
      *

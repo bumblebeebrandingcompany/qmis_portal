@@ -129,21 +129,21 @@ class ProjectController extends Controller
 
     $project_details = $request->except('_token');
 
-    // // Extract essential fields from the request
-    // $essentialFields = $request->input('essential_fields', []);
-    // $project_details['essential_fields'] = array_merge($essentialFields);
+    // Extract essential fields from the request
+    $essentialFields = $request->input('essential_fields', []);
+    $project_details['essential_fields'] = array_merge($essentialFields);
 
-    //  // Extract custom fields from the request
-    // $customFields = $request->input('custom_fields', []);
-    // $project_details['custom_fields'] = array_merge($customFields);
+     // Extract custom fields from the request
+    $customFields = $request->input('custom_fields', []);
+    $project_details['custom_fields'] = array_merge($customFields);
 
-    //   // Extract sales fields from the request
-    // $salesFields = $request->input('sales_fields', []);
-    // $project_details['sales_fields'] = array_merge($salesFields);
+      // Extract sales fields from the request
+    $salesFields = $request->input('sales_fields', []);
+    $project_details['sales_fields'] = array_merge($salesFields);
 
-    //  // Extract system fields from the request
-    //  $systemFields = $request->input('system_fields', []);
-    //  $project_details['system_fields'] = array_merge($systemFields);
+     // Extract system fields from the request
+     $systemFields = $request->input('system_fields', []);
+     $project_details['system_fields'] = array_merge($systemFields);
 
 
     // Add other project details
@@ -179,18 +179,18 @@ class ProjectController extends Controller
 
         $project_details = $request->except(['_method', '_token']);
 
-    //      $customFields = $request->input('custom_fields', []);
-    //      $project_details['custom_fields'] = array_merge($customFields);
+         $customFields = $request->input('custom_fields', []);
+         $project_details['custom_fields'] = array_merge($customFields);
 
-    //      $essentialFields = $request->input('essential_fields', []);
-    //      $project_details['essential_fields'] = array_merge($essentialFields);
+         $essentialFields = $request->input('essential_fields', []);
+         $project_details['essential_fields'] = array_merge($essentialFields);
 
-    //      $salesFields = $request->input('sales_fields', []);
-    //      $project_details['sales_fields'] = array_merge($salesFields);
+         $salesFields = $request->input('sales_fields', []);
+         $project_details['sales_fields'] = array_merge($salesFields);
 
-    //  // Extract system fields from the request
-    //      $systemFields = $request->input('system_fields', []);
-    //      $project_details['system_fields'] = array_merge($systemFields);
+     // Extract system fields from the request
+         $systemFields = $request->input('system_fields', []);
+         $project_details['system_fields'] = array_merge($systemFields);
 
         // Update the model with the array
         $project->update($project_details);
@@ -285,13 +285,33 @@ class ProjectController extends Controller
 
     public function getRequestBodyRow(Request $request)
     {
-        if($request->ajax()) {
+        if ($request->ajax()) {
             $project_id = $request->input('project_id');
             $webhook_key = $request->get('webhook_key');
             $rb_key = $request->get('rb_key');
-            $tags = $this->util->getWebhookFieldsTags($project_id);
+
+
+            // $customFields = [];
+
+            if (!empty($project_id)) {
+                $project = Project::find($project_id);
+                if ($project) {
+                    $customFields = $project->custom_fields ?? [];
+                    $essentialFields = $project->essential_fields ?? [];
+                    $salesFields = $project->sales_fields ?? [];
+                    $systemFields = $project->system_fields ?? [];
+                }
+            }
+
+            // Log::info('Custom Fields:', json_encode($customFields));
+
             return view('admin.projects.partials.request_body_input')
-                ->with(compact('webhook_key', 'rb_key', 'tags'));
+                ->with('webhook_key', $webhook_key)
+                ->with('rb_key', $rb_key)
+                ->with('customFields', $customFields)
+                ->with('essentialFields', $essentialFields)
+                ->with('salesFields', $salesFields)
+                ->with('systemFields', $systemFields);
         }
     }
 

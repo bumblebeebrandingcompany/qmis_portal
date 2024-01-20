@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\LeadsExport;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\MassDestroyLeadRequest;
+
+use App\Http\Requests\MassDestroyFollowupRequest;
+
 use App\Http\Requests\StoreFollowupRequest;
 use App\Http\Requests\UpdateLeadRequest;
 use App\Models\Campaign;
@@ -106,4 +108,5 @@ class FollowUpController extends Controller
 
         return back();
     }
+
 }

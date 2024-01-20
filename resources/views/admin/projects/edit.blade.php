@@ -73,7 +73,7 @@
                     <span class="help-block">{{ trans('cruds.project.fields.description_helper') }}</span>
                 </div>
                 {{-- essential fields --}}
-                {{-- <div class="form-group">
+                <div class="form-group">
                     <div class="row">
                         <div class="col-md-6">
                             <label for="essential_fields">{{ trans('cruds.project.fields.essential') }}</label>
@@ -112,10 +112,10 @@
                             @endforeach
                         @endif
                     </div>
-                </div> --}}
+                </div>
 
                 {{-- sales fields --}}
-                {{-- <div class="form-group">
+                <div class="form-group">
                     <div class="row">
                         <div class="col-md-6">
                             <label for="sales_fields">{{ trans('cruds.project.fields.sales') }}</label>
@@ -154,10 +154,10 @@
                             @endforeach
                         @endif
                     </div>
-                </div> --}}
+                </div>
 
                 {{-- system fields --}}
-                {{-- <div class="form-group">
+                <div class="form-group">
                     <div class="row">
                         <div class="col-md-6">
                             <label for="system_fields">{{ trans('cruds.project.fields.system') }}</label>
@@ -196,10 +196,10 @@
                             @endforeach
                         @endif
                     </div>
-                </div> --}}
+                </div>
 
                 {{-- custom fields --}}
-                {{-- <div class="form-group">
+                <div class="form-group">
                     <div class="row">
                         <div class="col-md-6">
                             <label for="custom_fields">{{ trans('cruds.project.fields.custom') }}</label>
@@ -244,7 +244,7 @@
                             @endforeach
                         @endif
                     </div>
-                </div> --}}
+                </div>
                 <div class="form-group text-end">
                     <input type="hidden" id="sales-fields-json" name="sales_fields_json" value="">
                     <button class="btn btn-danger" type="submit">

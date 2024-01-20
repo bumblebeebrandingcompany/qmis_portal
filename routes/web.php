@@ -45,7 +45,7 @@ Route::resource('/notes', 'NoteController');
 Route::resource('/notenotinterested', 'NoteNotInterestedController');
 
 Route::resource('/followups', 'FollowUpController');
-
+Route::delete('followups/destroy', 'FollowUpController@massDestroy')->name('followups.massDestroy');
 Route::get('leads/{lead}/initiate-call', 'LeadsController@initiateCall')
 ->name('leads.initiateCall');
 

@@ -52,8 +52,8 @@
                     <tr>
                         <th>
                             {{ trans('messages.source_name') }}
-                            <i class="fas fa-info-circle" data-html="true" 
-                                data-toggle="tooltip" 
+                            <i class="fas fa-info-circle" data-html="true"
+                                data-toggle="tooltip"
                                 title="{{trans('messages.source_name_help_text')}}">
                             </i>
                         </th>
@@ -64,8 +64,8 @@
                     <tr>
                         <th>
                             {{ trans('messages.source_field', ['num' => 1]) }}
-                            <i class="fas fa-info-circle" data-html="true" 
-                                data-toggle="tooltip" 
+                            <i class="fas fa-info-circle" data-html="true"
+                                data-toggle="tooltip"
                                 title="{{ trans('messages.source_custom_field_help_text', ['num' => 1]) }}">
                             </i>
                         </th>
@@ -76,8 +76,8 @@
                     <tr>
                         <th>
                             {{ trans('messages.source_field', ['num' => 2]) }}
-                            <i class="fas fa-info-circle" data-html="true" 
-                                data-toggle="tooltip" 
+                            <i class="fas fa-info-circle" data-html="true"
+                                data-toggle="tooltip"
                                 title="{{ trans('messages.source_custom_field_help_text', ['num' => 2]) }}">
                             </i>
                         </th>
@@ -88,8 +88,8 @@
                     <tr>
                         <th>
                             {{ trans('messages.source_field', ['num' => 3]) }}
-                            <i class="fas fa-info-circle" data-html="true" 
-                                data-toggle="tooltip" 
+                            <i class="fas fa-info-circle" data-html="true"
+                                data-toggle="tooltip"
                                 title="{{ trans('messages.source_custom_field_help_text', ['num' => 3]) }}">
                             </i>
                         </th>
@@ -100,8 +100,8 @@
                     <tr>
                         <th>
                             {{ trans('messages.source_field', ['num' => 4]) }}
-                            <i class="fas fa-info-circle" data-html="true" 
-                                data-toggle="tooltip" 
+                            <i class="fas fa-info-circle" data-html="true"
+                                data-toggle="tooltip"
                                 title="{{ trans('messages.source_custom_field_help_text', ['num' => 4]) }}">
                             </i>
                         </th>
