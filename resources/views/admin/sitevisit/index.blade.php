@@ -347,7 +347,7 @@
 </style> --}}
 
 
-{{-- <script>
+<script>
     const targetTime = new Date();
     targetTime.setHours(19, 0, 0); // 7:00 PM
 
@@ -370,8 +370,8 @@
 
     // Initial update
     updateTimer();
-</script> --}}
-{{-- <style>
+</script>
+<style>
     body {
         font-family: Arial, sans-serif;
         text-align: right;
@@ -386,5 +386,5 @@
     #timer {
         font-weight: bold;
     }
-</style> --}}
+</style>
 <!-- resources/views/countdown/index.blade.php -->
