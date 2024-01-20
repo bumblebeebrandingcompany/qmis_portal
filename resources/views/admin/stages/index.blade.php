@@ -1,3 +1,4 @@
+
 @extends('layouts.admin')
 
 @section('content')
@@ -10,7 +11,6 @@
                     class="my-custom-form">
                     @csrf
                     <div class="row">
-
                         <div class="col-md-5">
                             <div class="form-group">
                                 <label for="parent_stage_id">Parent Stage:</label>
@@ -21,12 +21,11 @@
                                 </select>
                             </div>
                         </div>
-
                         <div class="col-md-5">
                             <div class="form-group">
                                 <label for="selected_child_stages">Select Child Stages:</label>
                                 <br>
-                                <select multiple name="selected_child_stages[]" id="selected_child_stages"
+                                <select name="selected_child_stages[]" id="selected_child_stages"
                                     class="form-control select2" required>
                                     @foreach ($parentStages as $childStage)
                                         <option value="{{ $childStage->id }}">{{ $childStage->name }}</option>

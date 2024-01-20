@@ -112,7 +112,7 @@ class HomeController
                     }
                 }
             })
-            ->where('user_type', 'Client')
+            ->where('user_type', 'Clients')
             ->{$settings2['aggregate_function'] ?? 'count'}($settings2['aggregate_field'] ?? '*');
         }
 
