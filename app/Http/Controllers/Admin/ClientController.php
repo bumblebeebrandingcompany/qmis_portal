@@ -100,7 +100,7 @@ class ClientController extends Controller
     {
         abort_if(!auth()->user()->is_superadmin, Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $client->load('clientProjects', 'clientUsers');
+        $client->load('clientProjects', 'clientUsers',);
 
         return view('admin.clients.show', compact('client'));
     }

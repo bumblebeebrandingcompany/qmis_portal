@@ -44,6 +44,7 @@ class LeadsController extends Controller
      * All Utils instance.
      *
      */
+
     protected $util;
     protected $lead_view;
     /**
@@ -104,13 +105,14 @@ class LeadsController extends Controller
         if ($request->ajax()) {
 
             $user = auth()->user();
-
             $lead_stage = '';
+            if ($user->is_agency || $user->is_superadmin|| $user->is_presales) {
+                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted', 'enquiry', 'application purchased', 'lost', 'followup', 'rescheduled', 'Site Not Visited', 'Admitted', 'Spam', 'Not Qualified', 'Future Prospect', 'Cancelled', 'RNR', 'virtual call scheduled', 'Virtual Call Conducted', 'virtual call cancelled'.'Admission FollowUp'];
+            } elseif ($user->is_client||$user->is_frontoffice) {
 
-            if ($user->is_agency || $user->is_superadmin) {
-                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted', 'enquiry', 'application purchased', 'lost', 'followup', 'rescheduled', 'Site Not Visited', 'Admitted', 'Spam', 'Not Qualified', 'Future Prospect', 'Cancelled', 'RNR', 'virtual call scheduled', 'Virtual Call Conducted', 'virtual call cancelled'];
-            }  elseif ($user->is_client) {
-                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted', 'application purchased', 'admitted'];
+                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted','Cancelled' ];
+            } elseif ($user->is_admissionteam) {
+                    $lead_stage = ['Admission FollowUp', 'application purchased', 'admitted'];
             }
 
             $query = $this->util->getFIlteredLeads($request);
@@ -120,7 +122,11 @@ class LeadsController extends Controller
                     $q->whereIn('name', $lead_stage);
                 });
 
-                if ($user->is_superadmin) {
+                if ($user->is_admissionteam) {
+                    // If the user is part of the admission team, filter by user_id
+                    $query->where('user_id', $user->id);
+                } elseif ($user->is_superadmin || $user->is_frontoffice) {
+                    // If the user is super admin or front office, include leads with empty parent_stage_id
                     $query->orWhereNull('parent_stage_id');
                 }
             });
@@ -259,29 +265,40 @@ class LeadsController extends Controller
             ->whereIn('campaign_id', $campaign_ids)
             ->get();
 
-        $leads = Lead::all();
+                $leads = Lead::all();
+
+
 
         if (in_array($lead_view, ['list'])) {
             return view('admin.leads.index', compact('projects', 'campaigns', 'sources', 'lead_view', 'leads'));
         } elseif ($lead_view === 'kanban') {
             $user = auth()->user();
             $lead_stage = '';
-            if ($user->is_agency || $user->is_superadmin) {
-                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted', 'enquiry', 'application purchased', 'lost', 'followup', 'rescheduled', 'Site Not Visited', 'Admitted', 'Spam', 'Not Qualified', 'Future Prospect', 'Cancelled', 'RNR', 'virtual call scheduled', 'Virtual Call Conducted', 'virtual call cancelled'];
-            } elseif ($user->is_client) {
-                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted', 'application purchased', 'admitted'];
+            if ($user->is_agency || $user->is_superadmin|| $user->is_presales) {
+                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted', 'enquiry', 'application purchased', 'lost', 'followup', 'rescheduled', 'Site Not Visited', 'Admitted', 'Spam', 'Not Qualified', 'Future Prospect', 'Cancelled', 'RNR', 'virtual call scheduled', 'Virtual Call Conducted', 'virtual call cancelled'.'Admission FollowUp'];
+            } elseif ($user->is_client||$user->is_frontoffice) {
+
+                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted','Cancelled' ];
+            } elseif ($user->is_admissionteam) {
+
+                    $lead_stage = ['Admission FollowUp', 'application purchased', 'admitted'];
+
+
+
+
             }
 
             $query = $this->util->getFIlteredLeads($request);
-
             $query->where(function ($query) use ($lead_stage, $user) {
                 $query->whereHas('parentStage', function ($q) use ($lead_stage) {
                     $q->whereIn('name', $lead_stage);
                 });
 
-                // Check if the user is super admin
-                if ($user->is_superadmin) {
-                    // If not super admin, include leads with empty parent_stage_id
+                if ($user->is_admissionteam) {
+                    // If the user is part of the admission team, filter by user_id
+                    $query->where('user_id', $user->id);
+                } elseif ($user->is_superadmin || $user->is_frontoffice) {
+                    // If the user is super admin or front office, include leads with empty parent_stage_id
                     $query->orWhereNull('parent_stage_id');
                 }
             });
@@ -310,19 +327,17 @@ class LeadsController extends Controller
 
         $project_id = request()->get('project_id', null);
 
-
         return view('admin.leads.create', compact('campaigns', 'projects', 'project_id'));
     }
 
     public function store(StoreLeadRequest $request)
     {
-
         $input = $request->except(['_method', '_token']);
         $input['lead_details'] = $this->getLeadDetailsKeyValuePair($input['lead_details'] ?? []);
         $input['created_by'] = auth()->user()->id;
 
-        $input['parent_stage_id'] = $request->input('parent_stage_id'); // Add this line
-
+        $input['parent_stage_id'] = $request->input('parent_stage_id');// Add this line
+        $input['user_id'] = $request->input('user_id');
         $existingLead = Lead::where('phone', $input['phone'])->first();
 
         if ($existingLead) {

@@ -79,7 +79,7 @@
                         <td>{{ $sitevisit->follow_up_time }}</td>
 
                         <td>
-                            {{ $sitevisit->users->representative_name }}
+                            {{ $sitevisit->users->representative_name ?? ''}}
                         </td>
                         <td>
                             {{ $sitevisit->notes }}

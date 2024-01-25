@@ -41,6 +41,30 @@
                         </a>
                     </li>
                 @endif
+                @if ((auth()->user()->is_admissionteam|| auth()->user()->is_superadmin))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.admission.index') ? 'active' : '' }}"
+                        href="{{ route('admin.admission.index') }}">
+                        <i class="far fa-newspaper nav-icon"></i>
+                        </i>
+                        <p>
+                           Admission followup
+                        </p>
+                    </a>
+                </li>
+            @endif
+            {{-- @if ((auth()->user()->is_admissionteam|| auth()->user()->is_superadmin))
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('admin.home') ? 'active' : '' }}"
+                    href="{{ route('admin.home') }}">
+                    <i class="far fa-newspaper nav-icon"></i>
+                    </i>
+                    <p>
+                       Admission SiteVisit
+                    </p>
+                </a>
+            </li>
+        @endif --}}
                 @if (auth()->user()->is_superadmin)
                     <!-- <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.webhook.incoming.list') ? 'active' : '' }}" href="{{ route('admin.webhook.incoming.list') }}">
@@ -186,19 +210,16 @@
                         </a>
                     </li>
                 @endif
-                @if (auth()->user()->is_superadmin)
+                @if (auth()->user()->is_superadmin|| auth()->user()->is_presales)
                     <li class="nav-item">
                         <a href="{{ route('admin.followups.index') }}"
                             class="nav-link {{ request()->is('admin/followups') || request()->is('admin/followups/*') ? 'active' : '' }}">
-                            <i class="far fa-newspaper nav-icon">
-
-                            </i>
-                            <p>
-                                Lead FollowUp
-                            </p>
+                            <i class="far fa-newspaper nav-icon"></i>
+                            <p>Lead FollowUp</p>
                         </a>
                     </li>
                 @endif
+                @if (auth()->user()->is_superadmin|| auth()->user()->is_presales|| auth()->user()->is_frontoffice|| auth()->user()->is_client)
                 <li class="nav-item">
                     <a href="{{ route('admin.sitevisit.index') }}"
                         class="nav-link {{ request()->is('admin/sitevisit') || request()->is('admin/sitevisit/*') ? 'active' : '' }}">
@@ -210,6 +231,7 @@
                         </p>
                     </a>
                 </li>
+                @endif
                 @if (auth()->user()->is_superadmin)
                     <li class="nav-item">
                         <a href="{{ route('admin.callog.index') }}"
@@ -302,12 +324,24 @@
                         </p>
                     </a>
                 </li>
+                @if (auth()->user()->is_client || auth()->user()->is_frontoffice)
+
+                <li class="nav-item">
+                    <a href="{{ route('admin.walkinform.index') }}"
+                        class="nav-link {{ request()->is('admin/walkin') || request()->is('admin/walkin/*') ? 'active' : '' }}">
+                        <i class="fas fa-phone fa-flip-horizontal nav-icon"></i>
+                        </i>
+                        <p>
+                           Walkin Form
+                        </p>
+                    </a>
+                </li>
+                @endif
                 @if (auth()->user()->is_superadmin)
                     <li class="nav-item">
                         <a href="{{ route('admin.systemCalendar') }}"
                             class="nav-link {{ request()->is('admin/system-calendar') || request()->is('admin/system-calendar/*') ? 'active' : '' }}">
                             <i class="fas fa-fw fa-calendar nav-icon">
-
                             </i>
                             <p>
                                 {{ trans('global.systemCalendar') }}

@@ -11,6 +11,7 @@
     </div>
 
     <ul class="nav nav-tabs" id="myTabs">
+
         <li class="nav-item">
             <a class="nav-link active" id="rescheduleTab" data-toggle="tab" href="#reschedule">Upcoming SiteVisits</a>
         </li>
@@ -187,19 +188,23 @@
                                             <i class="fas fa-check-double" style="font-size:18px"></i>
                                         </div>
                                     </td>
-
                                     <td>Cancelled
                                         <div class="float-right"
                                             style="background-color: rgb(240, 18, 18); padding: 2px; display: inline-block; border-radius: 5px;"title="Cancelled">
                                             <i class="fa fa-close" style="font-size:20px"></i>
                                         </div>
                                     </td>
-
                                     <td>Scheduled
                                         <div class="float-right"
                                             style="background-color: rgb(47, 230, 236); padding: 2px; display: inline-block; border-radius: 5px;"title="Scheduled">
                                             <i class="fas fa-calendar-check nav-icon"></i>
                                         </div>
+                                    </td>
+                                    <td>Application Purchased
+                                        <div style="background-color: rgb(235, 202, 19); padding: 5px; display: inline-block; border-radius: 5px;"
+                                        title="Application Purchased">
+                                        <i class="	fas fa-receipt nav-icon"></i>
+                                    </div>
                                     </td>
                                 </tr>
                             </table>

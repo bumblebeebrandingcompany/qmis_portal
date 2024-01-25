@@ -50,7 +50,9 @@ class SourceController extends Controller
                         ->orWhereIn('sources.campaign_id', $campaign_ids);
                 })->groupBy('sources.id');
             }
-
+            // $essential_fields=DB::table('leads')->get()->toArray();
+            // echo "<pre>";
+            // print_r($essential_fields);
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -240,7 +242,9 @@ class SourceController extends Controller
         $source = Source::with(['project'])->findOrFail($id);
 
         $lead = Lead::where('source_id', $id)->latest()->first();
-
+        // $lead=Lead::table('leads')->get()->toArray();
+        // echo "<pre>";
+        // print_r($lead);
 
         return view('admin.sources.webhook', compact('source', 'lead'));
     }

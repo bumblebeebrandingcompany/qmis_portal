@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\LeadsExport;
 use App\Http\Controllers\Controller;
 
-use App\Http\Requests\MassDestroyFollowupRequest;
+
 
 use App\Http\Requests\StoreFollowupRequest;
 use App\Http\Requests\UpdateLeadRequest;
@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 use DateTimeInterface;
 
-class FollowUpController extends Controller
+class AdmissionFollowUpController extends Controller
 {
     /**
      * All Utils instance.
@@ -65,7 +65,7 @@ class FollowUpController extends Controller
     $sources = Source::whereIn('project_id', $project_ids)
         ->whereIn('campaign_id', $campaign_ids)
         ->get();
-        return view('admin.leads.followup.index', compact('campaigns', 'agencies', 'lead', 'followUps','projects','sources'));
+        return view('admin.admissionfollowup.index', compact('campaigns', 'agencies', 'lead', 'followUps','projects','sources'));
     }
 
     public function store(StoreFollowupRequest $request)
@@ -78,14 +78,14 @@ class FollowUpController extends Controller
         // Check if the lead is not null before proceeding
         if ($lead) {
             $parentStageId = $request->input('parent_stage_id');
+
             $followup = new Followup();
             $followup->lead_id = $lead->id;
-            $followup->user_id = $input['user_id']?? '';
+            $followup->user_id = $input['user_id'];
             $followup->follow_up_date = $input['follow_up_date'];
             $followup->follow_up_time = $input['follow_up_time'];
             $followup->notes = $input['notes'];
             $followup->parent_stage_id = $parentStageId;
-
             $followup->save();
 
             // Check if $followup->lead is not null before updating

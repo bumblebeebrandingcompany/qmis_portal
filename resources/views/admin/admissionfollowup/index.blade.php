@@ -43,6 +43,7 @@
                     <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
                 </select>
             </form>
+
                 </div>
                 <div class="table-responsive">
 
@@ -64,7 +65,8 @@
                     @php
                     $counter = 1;
                 @endphp
-          @foreach ($followUps->where('parent_stage_id', 9) as $followUp)
+          @foreach ($followUps->where('parent_stage_id', 25) as $followUp)
+
                         <tr data-created-at="{{ $followUp->follow_up_date}}">
                             <td>{{ $counter++ }}</td>
                             <td>
@@ -113,7 +115,7 @@
             </table>
                 </div>
             <div class="d-flex justify-content-end">
-                {{-- {{ $followUps->where('parent_stage_id', 9)->links('pagination::bootstrap-4') }} --}}
+                {{ $followUps->links('pagination::bootstrap-4') }}
             </div>
         </div>
     </div>
@@ -266,31 +268,7 @@
                 retrieve: true,
                 aaSorting: [],
                 ajax: "{{ route('admin.followups.index') }}",
-                // columns: [{
-                //         data: 'placeholder',
-                //         name: 'placeholder'
-                //     },
-                //     {
-                //         data: 'name',
-                //         name: 'name'
-                //     },
-                //     {
-                //         data: 'email',
-                //         name: 'email'
-                //     },
-                //     {
-                //         data: 'website',
-                //         name: 'website'
-                //     },
-                //     {
-                //         data: 'contact_number_1',
-                //         name: 'contact_number_1'
-                //     },
-                //     {
-                //         data: 'actions',
-                //         name: '{{ trans('global.actions') }}'
-                //     }
-                // ],
+
                 orderCellsTop: true,
                 order: [
                     [1, 'desc']

@@ -11,7 +11,7 @@ class StoreFollowupRequest extends FormRequest
 {
     public function authorize()
     {
-        return auth()->user()->is_superadmin || auth()->user()->is_channel_partner;
+        return auth()->user()->is_superadmin || auth()->user()->is_admissionteam;
     }
 
     public function rules()

@@ -25,7 +25,7 @@
                             <div class="form-group">
                                 <label for="selected_child_stages">Select Child Stages:</label>
                                 <br>
-                                <select name="selected_child_stages[]" id="selected_child_stages"
+                                <select multiple name="selected_child_stages[]" id="selected_child_stages"
                                     class="form-control select2" required>
                                     @foreach ($parentStages as $childStage)
                                         <option value="{{ $childStage->id }}">{{ $childStage->name }}</option>
