@@ -63,7 +63,7 @@ Route::match(['post', 'put'], '/admin/sitevisits/{id}/reschedule', 'SiteVisitCon
     //call record
     Route::resource('/callog', 'CallRecordController');
 
-    Route::resource('/walkinform', 'walkinController');
+    Route::resource('/walkinform', 'WalkinController');
     Route::resource('/admission', 'AdmissionFollowUpController');
     // Users
     Route::get('users/{id}/edit-password', 'UsersController@editPassword')

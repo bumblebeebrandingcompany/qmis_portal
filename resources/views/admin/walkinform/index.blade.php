@@ -28,7 +28,7 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
-                            <th>Referred By</th>
+                            <th>Source</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -43,7 +43,7 @@
                                     <td> {{ $walkin->name }}</td>
                                     <td> {{ $walkin->email }}</td>
                                     <td> {{ $walkin->phone }}</td>
-                                    <td> {{ $walkin->referred_by }}</td>
+                                    <td> {{ $walkin->sources->name ?? '' }}</td>
                                     <td>
                                         <div class="d-flex justify-content-between flex-nowrap">
                                             <div class="col-md-4">

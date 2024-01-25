@@ -13,9 +13,9 @@ class Walkin extends Model
 
     public $table = 'walkinform';
 
-    // public static $searchable = [
-    //     'name',
-    // ];
+    public static $searchable = [
+        'name',
+    ];
 
     protected $dates = [
         'created_at',
@@ -26,12 +26,7 @@ class Walkin extends Model
         'name',
         'email',
         'phone',
-        'referred_by',
-
-
-        'created_at',
-        'updated_at',
-
+        'source_id'
     ];
 
     public function leads()
@@ -39,4 +34,12 @@ class Walkin extends Model
     return $this->hasMany(Lead::class);
 }
 
+public function sources()
+{
+    return $this->belongsto(Source::class);
+}
+public function projectLeads()
+{
+    return $this->hasMany(Lead::class, 'project_id', 'id');
+}
 }

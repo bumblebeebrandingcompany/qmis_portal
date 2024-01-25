@@ -32,7 +32,8 @@ class WalkinController extends Controller
         $client=Clients::all();
         $sources=Source::all();
         $campaign=Campaign::all();
-        return view('admin.walkinform.index', compact('walkins','client','sources','campaign'));
+        $projects=Project::all();
+        return view('admin.walkinform.index', compact('walkins','client','sources','campaign','projects'));
     }
 
     // public function show(Walkin $cpwalkin)
@@ -42,6 +43,7 @@ class WalkinController extends Controller
 
     public function create()
     {
+        $projects=Project::all();
         $client=Clients::all();
         $sources=Source::all();
         $campaigns=Campaign::all();
@@ -51,7 +53,7 @@ class WalkinController extends Controller
             $project_id = request()->get('project_id', null);
             $phone = request()->get('phone', null);
             $action = request()->get('action', null);
-        return view('admin.walkinform.create', compact('projects', 'project_id', 'phone', 'action','client','sources','campaigns'));
+        return view('admin.walkinform.create', compact('projects', 'project_id', 'phone', 'action','client','sources','campaigns','projects'));
     }
     public function store(Request $request)
     {
@@ -61,20 +63,20 @@ class WalkinController extends Controller
 
             'phone' => 'required|string|max:255',
 
-            'referred_by' => 'required|string|max:255',
 
         ]);
         $walkin = Walkin::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'phone' => $request->input('phone'),
-            'referred_by' => $request->input('referred_by'),
+            'source_id' => $request->input('source_id')
         ]);
         $lead=Lead::create([
             'walkin_id'=>$walkin->id,
             'name' => $walkin->name,
             'email' => $walkin->email,
             'phone' => $walkin->phone,
+            'source_id' => $walkin->source_id,
             'additional_email'=>$request->input('additional_email'),
             'secondary_phone'=>$request->input('secondary_phone'),
         ]);
@@ -87,7 +89,7 @@ class WalkinController extends Controller
         if(!empty($request->get('redirect_to')) && $request->get('redirect_to') == 'ceoi') {
             return redirect()->route('admin.eoi.create', ['phone' => $lead->phone]);
         }
-        return redirect()->route('admin.walkin.index')->with('success', 'Form created successfully');
+        return redirect()->route('admin.walkinform.index')->with('success', 'Form created successfully');
     }
     public function edit(Walkin $walkin)
 
@@ -119,7 +121,6 @@ class WalkinController extends Controller
         'email' => $request->input('email'),
         'lead_id' => $request->input('lead_id'),
         'phone' => $request->input('phone'),
-        'referred_by' => $request->input('referred_by'),
     ]);
 
     // Retrieve the associated Lead using the relationship

@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('walkinform', function (Blueprint $table) {
-            $table->bigInteger('user_id');
+            $table->bigInteger('source_id');
         });
     }
+
     /**
      * Reverse the migrations.
      */
