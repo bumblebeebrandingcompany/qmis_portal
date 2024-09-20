@@ -146,11 +146,14 @@ class ApplicationController extends Controller
                 ],
             ]
         ];
+        $parentStageId = $request->input('stage_id');
 
+        // Find the stage by the given `stage_id`
+        $stage = ParentStage::find($parentStageId);
         // Add custom field values (CUF) to the actions array
         $customFields = [
 
-            ['field_name' => 'lead_stage', 'value' => $lead->parentStage->name ?? ''],
+            ['field_name' => 'lead_stage', 'value' => $stage->name ?? ''],
             ['field_name' => 'lead_app_number', 'value' =>$applicationpurchased->application_no ?? ""],
 
         ];
