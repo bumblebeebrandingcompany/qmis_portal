@@ -36,7 +36,7 @@ class CallRecordController extends Controller
         $itemsPerPage = request('perPage', 10);
 
         $callRecords = CallRecord::paginate($itemsPerPage);
-       $data = $response->json();
+        $data = $response->json();
         return view('admin.callog.index', compact('agencies', 'campaigns', 'lead', 'callRecords', 'data'));
     }
     public function show($id)

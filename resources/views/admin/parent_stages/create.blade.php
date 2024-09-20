@@ -14,7 +14,7 @@
                             <div class="form-group">
                                 <label for="stage_id">Parent Stage:</label>
                                 <select name="stage_id" id="stage_id" class="form-control" required>
-                                    @foreach ($parentStages as $parentStage)
+                                    @foreach ($parentStages as $parentstage)
                                         <option value="{{ $parentStage->id }}">{{ $parentStage->name }}</option>
                                     @endforeach
                                 </select>
@@ -26,14 +26,12 @@
                                 <select name="selected_child_stages[]" id="selected_child_stages"
                                     class="form-control select2" multiple required
                                     data-minimum-results-for-search="Infinity">
-
                                     @foreach ($parentStages as $childStage)
                                         <option value="{{ $childStage->id }}">{{ $childStage->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-
                         <div class="col-md-2 d-flex align-items-end">
                             <div class="form-group">
                                 <button class="btn btn-danger" type="submit">
@@ -41,8 +39,6 @@
                                 </button>
                             </div>
                         </div>
-
-
                 </form>
 
                 {{-- Display all created stages in a table --}}

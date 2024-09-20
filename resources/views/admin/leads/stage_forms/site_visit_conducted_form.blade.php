@@ -6,7 +6,7 @@ enctype="multipart/form-data">
 
         <div class="modal-body">
             <input type="hidden" name="lead_id" value="{{ $lead->id }}">
-            <input type="hidden" name="stage_id" value="11">
+            <input type="hidden" name="stage_id" value="29">
             <input type="hidden" name="stage" value="site_visit_conducted">
 
             <div class="form-group">

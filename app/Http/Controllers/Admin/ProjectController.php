@@ -14,6 +14,8 @@ use App\Models\User;
 use App\Models\Source;
 use App\Models\Campaign;
 use Gate;
+use App\Models\Client;
+use App\Models\Field;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,22 +44,14 @@ class ProjectController extends Controller
 
     public function index(Request $request)
     {
-        $user = auth()->user();
-        abort_if(($user->is_agency || $user->is_channel_partner || $user->is_channel_partner_manager), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
+        $user=auth()->user();
         if ($request->ajax()) {
 
             $__global_clients_filter = $this->util->getGlobalClientsFilter();
 
-            $query = Project::with(['user', 'client'])->select(sprintf('%s.*', (new Project)->table));
+            $query = Project::with(['created_by', 'client'])->select(sprintf('%s.*', (new Project)->table));
 
-            if (!$user->is_superadmin) {
-                $query = $query->where(function ($q) use ($user) {
-                    $q->where('user', $user->id)
-                        ->orWhere('client_id', $user->client_id);
-                });
-            }
-
+            // Remove user-specific filtering and permission checks
             if (!empty($__global_clients_filter)) {
                 $query->whereIn('projects.client_id', $__global_clients_filter);
             }
@@ -67,29 +61,37 @@ class ProjectController extends Controller
             $table->addColumn('placeholder', '&nbsp;');
             $table->addColumn('actions', '&nbsp;');
 
-            $table->editColumn('actions', function ($row) use ($user) {
-                $viewGate = $user->is_superadmin || $user->is_client;
+            $table->editColumn('actions', function ($row)use($user) {
+                // Remove permission checks for actions
+                $viewGate = $user->is_superadmin;
                 $editGate = $user->is_superadmin;
                 $deleteGate = $user->is_superadmin;
                 $outgoingWebhookGate = $user->is_superadmin;
                 $crudRoutePart = 'projects';
 
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'outgoingWebhookGate',
-                    'crudRoutePart',
-                    'row'
-                )
+                return view(
+                    'partials.datatablesActions',
+                    compact(
+                        'viewGate',
+                        'editGate',
+                        'deleteGate',
+                        'outgoingWebhookGate',
+                        'crudRoutePart',
+                        'row'
+                    )
                 );
             });
+
+            $table->editColumn('ref_num', function ($row) {
+                return $row->ref_num ? $row->ref_num : '';
+            });
+
             $table->editColumn('name', function ($row) {
                 return $row->name ? $row->name : '';
             });
 
             $table->addColumn('created_by_name', function ($row) {
-                return $row->user ? $row->user->name : '';
+                return $row->created_by ? $row->created_by->name : '';
             });
 
             $table->addColumn('client_name', function ($row) {
@@ -99,6 +101,7 @@ class ProjectController extends Controller
             $table->editColumn('client.email', function ($row) {
                 return $row->client ? (is_string($row->client) ? $row->client : $row->client->email) : '';
             });
+
             $table->editColumn('location', function ($row) {
                 return $row->location ? $row->location : '';
             });
@@ -109,54 +112,58 @@ class ProjectController extends Controller
         }
 
         $users = User::get();
-        $clients = Clients::get();
+        $clients = Client::get();
 
         return view('admin.projects.index', compact('users', 'clients'));
     }
-
-    public function create()
+        public function create()
     {
-        abort_if(!auth()->user()->is_superadmin, Response::HTTP_FORBIDDEN, '403 Forbidden');
+        // if (!auth()->user()->checkPermission('project_create')) {
+        //     abort(403, 'Unauthorized.');
+        // }
 
         $created_bies = User::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $clients = Clients::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $fields = Field::all();
 
-        return view('admin.projects.create', compact('clients', 'created_bies'));
+        return view('admin.projects.create', compact('clients', 'created_bies', 'fields'));
     }
 
-    public function store(StoreProjectRequest $request)
+    public function store(Request $request)
     {
-        abort_if(!auth()->user()->is_superadmin, Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'location' => 'nullable|string|max:255',
+        ]);
 
-        $project_details = $request->except('_token');
-
-        // Extract essential fields from the request
-        $essentialFields = $request->input('essential_fields', []);
-        $project_details['essential_fields'] = array_merge($essentialFields);
-
-        // Extract custom fields from the request
-        $customFields = $request->input('custom_fields', []);
-        $project_details['custom_fields'] = array_merge($customFields);
-
-        // Extract sales fields from the request
-        $salesFields = $request->input('sales_fields', []);
-        $project_details['sales_fields'] = array_merge($salesFields);
-
-        // Extract system fields from the request
-        $systemFields = $request->input('system_fields', []);
-        $project_details['system_fields'] = array_merge($systemFields);
-
-
-        // Add other project details
-        $project_details['created_by'] = auth()->user()->id;
-
-        // Create the project
-        $project = Project::create($project_details);
-
-        if ($media = $request->input('ck-media', false)) {
-            Media::whereIn('id', $media)->update(['model_id' => $project->id]);
+        $fields = $request->input('fields');
+        foreach ($fields as $key => $field) {
+            $fields[$key]['enabled'] = filter_var($field['enabled'], FILTER_VALIDATE_BOOLEAN);
         }
+
+        $project = new Project();
+        $project->name = $request->input('name');
+        $project->location = $request->input('location');
+        $project->created_by_id = auth()->user()->id;
+        $project->fields = $fields;
+
+        $nameInitials = strtoupper(substr($request->input('name'), 0, 2));
+
+        $lastProject = Project::where('ref_num', 'like', $nameInitials . '%')
+            ->orderBy('ref_num', 'desc')
+            ->first();
+
+        if ($lastProject) {
+            $lastNumber = intval(substr($lastProject->ref_num, 2));
+            $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+        } else {
+            $newNumber = '001';
+        }
+
+        $project->ref_num = $nameInitials . $newNumber;
+
+        $project->save();
 
         return redirect()->route('admin.projects.index');
     }
@@ -164,15 +171,17 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
     {
-        abort_if((auth()->user()->is_agency || auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        // if (!auth()->user()->checkPermission('project_edit')) {
+        //     abort(403, 'Unauthorized.');
+        // }
 
         $created_bies = User::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $clients = Clients::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $project->load('created_by', 'client');
-
-        return view('admin.projects.edit', compact('clients', 'created_bies', 'project'));
+        $fields = $project->fields;
+        return view('admin.projects.edit', compact('clients', 'created_bies', 'project', 'fields'));
     }
 
     public function update(UpdateProjectRequest $request, Project $project)
@@ -204,7 +213,7 @@ class ProjectController extends Controller
     {
         abort_if((auth()->user()->is_agency || auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $project->load('created_by', 'client', 'projectLeads', 'projectCampaigns');
+        // $project->load('user', 'client');
 
         return view('admin.projects.show', compact('project'));
     }

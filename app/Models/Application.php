@@ -10,7 +10,7 @@ class Application extends Model
 {
     use HasFactory;
 
-    protected $appends = ['is_superadmin', 'is_agency', 'is_channel_partner', 'is_channel_partner_manager','is_presales','is_frontoffice'];
+    // protected $appends = ['is_superadmin', 'is_agency', 'is_channel_partner', 'is_channel_partner_manager','is_presales','is_frontoffice'];
 
     public $table = 'applications';
 
@@ -18,7 +18,7 @@ class Application extends Model
         'created_at',
         'updated_at',
     ];
-    protected $fillable = ['lead_id', 'who_assigned', 'for_whom', 'application_no', 'application_date', 'notes', 'application_time', 'stage_id'];
+    protected $fillable = ['lead_id', 'application_no', 'stage_id'];
     public function lead()
     {
         return $this->belongsTo(Lead::class,'lead_id');
@@ -36,4 +36,9 @@ class Application extends Model
     {
         return $this->belongsTo(User::class,'for_whom');
     }
+    public function followups()
+    {
+        return $this->hasMany(Followup::class, 'lead_id', 'id'); // Adjust 'lead_id' and 'id' as per your schema
+    }
+
 }

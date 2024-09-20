@@ -13,7 +13,6 @@
                     <input type="radio" name="toggle_view" class="toggle_view" id="list" value="list" @if($lead_view == 'list') checked @endif>
                     @lang('messages.list_view')
                 </label>
-
                 {{-- <label class="btn btn-outline-secondary @if($lead_view == 'list') active @endif">
                     <input type="radio" name="toggle_view" class="toggle_view" id="list" value="list" @if($lead_view == 'list') checked @endif>
                     @lang('messages.list_view')
@@ -78,12 +77,12 @@
                             <label for="sub_source_id">
                                 SubSource
                             </label>
-                            <select class="search form-control" name="sub_source_id" id="sub_source_id">
+                            {{-- <select class="search form-control" name="sub_source_id" id="sub_source_id">
                                 <option value>{{ trans('global.all') }}</option>
                                 @foreach($subsources as $subsource)
                                     <option value="{{$subsource->id}}" @if(isset($filters['subsource']) && $filters['subsource'] == $item->id) selected @endif>{{ $subsource->name }}</option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                         </div>
                         <div class="col-md-3">
                             <label for="stage_id"> Stage</label>
@@ -117,9 +116,6 @@
                             <input class="form-control date_range" type="text" name="date" id="added_on" readonly>
                         </div>
                     @endif
-
-
-
                     <!-- <div class="col-md-3">
                         <label for="leads_status">
                             @lang('messages.status')

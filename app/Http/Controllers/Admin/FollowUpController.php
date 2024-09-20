@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFollowupRequest;
 use App\Models\Campaign;
 use App\Models\Lead;
+use App\Models\LeadTimeline;
 use App\Models\Project;
 use App\Models\Source;
 use App\Models\User;
 use App\Models\Followup;
+use App\Models\ParentStage;
+
 use App\Utils\Util;
 use Illuminate\Http\Request;
 
@@ -26,55 +29,39 @@ class FollowUpController extends Controller
 
     public function index(Request $request)
     {
-        $__global_clients_filter = $this->util->getGlobalClientsFilter();
-        if (!empty($__global_clients_filter)) {
-            $project_ids = $this->util->getClientsProjects($__global_clients_filter);
-            $campaign_ids = $this->util->getClientsCampaigns($__global_clients_filter);
-        } else {
-            $project_ids = $this->util->getUserProjects(auth()->user());
-            $campaign_ids = $this->util->getCampaigns(auth()->user(), $project_ids);
-        }
         $lead = Lead::all();
         $agencies = User::all();
-        $campaigns = Campaign::all();
         $followUps = Followup::all();
-        $itemsPerPage = request('perPage', 10);
-        $followUps = Followup::paginate($itemsPerPage);
-        $projects = Project::whereIn('id', $project_ids)
-            ->get();
-        $campaigns = Campaign::whereIn('id', $campaign_ids)
-            ->get();
-
-        $sources = Source::whereIn('project_id', $project_ids)
-            ->whereIn('campaign_id', $campaign_ids)
-            ->get();
-        return view('admin.leads.followup.index', compact('campaigns', 'agencies', 'lead', 'followUps', 'projects', 'sources'));
+        // $itemsPerPage = request('perPage', 1);
+        // $followUps = Followup::paginate($itemsPerPage);
+        // dd($lead);
+        $parentstages = ParentStage::pluck('name', 'id');
+        return view('admin.leads.followup.index', compact( 'agencies', 'lead', 'followUps','parentstages'));
     }
     public function store(StoreFollowupRequest $request)
     {
-
         $input = $request->validated();
         $lead = Lead::findOrFail($input['lead_id']);
-
         if ($lead) {
-            $parentStageId = $request->input('stage_id');
+            $parentStageId = $request->input('parent_stage_id');
             $followup = new Followup();
             $followup->lead_id = $lead->id;
-            $followup->followup_date = $input['follow_up_date'];
-            $followup->followup_time = $input['follow_up_time'];
+            $followup->followup_date = $input['followup_date'];
+            $followup->followup_time = $input['followup_time'];
             $followup->notes = $input['notes'];
             $followup->created_by = auth()->user()->id;
-            $followup->stage_id = $parentStageId;
+            $followup->parent_stage_id = $parentStageId;
             $followup->save();
-            $this->logTimeline($lead, $$followup, 'Followup created', 'followup_created');
             if ($followup->lead) {
-                $followup->lead->update(['stage_id' => $followup->stage_id]);
+                $followup->lead->update(['parent_stage_id' => $followup->parent_stage_id]);
             }
+            $this->logTimeline($lead, $followup, 'Stage Changed', "Stage was updated to {$parentStageId}");
             return redirect()->back()->with('success', 'Form submitted successfully!');
         } else {
             return redirect()->back()->with('error', 'Lead not found!');
         }
     }
+
     public function destroy(Followup $followup)
     {
         abort_if(!auth()->user()->is_superadmin, Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -83,4 +70,19 @@ class FollowUpController extends Controller
 
         return back();
     }
+    public function logTimeline($lead, $followup, $activityType, $description)
+{
+    $timeline = new LeadTimeline();
+    $timeline->lead_id = $lead->id;
+    $timeline->activity_type = $activityType;
+    $payload = [
+        'lead' => $lead->toArray(),
+        'enquiryfollowup' => $followup->toArray()
+    ];
+    $timeline->payload = json_encode($payload); // Convert array to JSON
+    $timeline->description = $description;
+
+    $timeline->created_at = now();
+    $timeline->save();
+}
 }

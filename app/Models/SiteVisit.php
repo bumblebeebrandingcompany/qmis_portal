@@ -27,12 +27,13 @@ class SiteVisit extends Model
     // ];
     protected $fillable = [
         'stage_id',
-        'visit_date',
-        'visit_time',
+   'date',
+   'time_slot',
         'notes',
         'lead_id',
         'application_no',
-        'created_by'
+        'created_by',
+        'ref_num',
     ];
     public function users()
     {
@@ -43,9 +44,6 @@ class SiteVisit extends Model
     {
         return $this->belongsTo(Lead::class);
     }
-
-
-
     public function campaign()
     {
         return $this->belongsTo(Campaign::class, 'campaign_id');

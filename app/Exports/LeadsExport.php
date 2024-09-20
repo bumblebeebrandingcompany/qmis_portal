@@ -56,7 +56,6 @@ class LeadsExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
             $row->application && $row->application->users ? $row->application->users->representative_name : '',
             Carbon::parse($row->created_at)->toDayDateTimeString(),
         ];
-
         if(
             isset($this->additional_columns) &&
             !empty($this->additional_columns) &&
@@ -66,7 +65,6 @@ class LeadsExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
                 $row_values[] = $row->lead_info[$column] ?? '';
             }
         }
-
         return $row_values;
     }
 

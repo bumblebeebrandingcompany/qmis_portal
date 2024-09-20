@@ -1,63 +1,100 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
-
 use App\Models\Campaign;
-
 use App\Models\Lead;
-
-use App\Utils\Util;
+use App\Models\LeadTimeline;
 use App\Models\Note;
-
-
+use App\Utils\Util;
 use Illuminate\Http\Request;
-
 
 class NoteController extends Controller
 {
+    protected $util;
+
     /**
-     * All Utils instance.
+     * NoteController constructor.
      *
+     * @param Util $util
      */
     public function __construct(Util $util)
     {
         $this->util = $util;
-
     }
+
+    /**
+     * Display a listing of notes.
+     */
     public function index()
     {
-        $note = Note::all();
-        $lead = Lead::all();
-        $notes = Note::all();
-        $campaigns = Campaign::all();
         $itemsPerPage = request('perPage', 10);
         $notes = Note::paginate($itemsPerPage);
-        return view('admin.leads.partials.notes', compact('note_text','lead','note','campaigns',));
+        $leads = Lead::all();
+        $campaigns = Campaign::all();
+        return view('admin.leads.partials.notes', compact('notes', 'leads', 'campaigns'));
     }
+
+    /**
+     * Store a newly created note in storage.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
-        $lead = Lead::find($request->lead_id);
+        $input = $request->all();
+        $lead = Lead::findOrFail($input['lead_id']);
+
         if ($lead) {
-            $parentStageId = $request->input('stage_id');
+            // Retrieve the stage_id correctly
+            $stageId = $request->input('stage_id');
+
+            // Create a new Note
             $note = new Note();
             $note->lead_id = $lead->id;
-            $note->stage_id = $parentStageId;
-            $note->note_text = $request->input('note_text');
+            $note->note_text = $input['note_text'];
+            $note->stage_id = $stageId;
             $note->save();
 
-            // Update the stage_id in the leads table
-            $lead->stage_id = $parentStageId;
-            $lead->save();
+            // Update the lead's parent_stage_id if a new stage is provided
+            if ($stageId !== null && $lead->parent_stage_id !== $stageId) {
+                $lead->update(['parent_stage_id' => $stageId]);
 
-            // Log the timeline event
-            // $note->logTimeline($lead->id, 'Note added', 'note_added');
+                // Log the stage change event
+                $this->logTimeline($lead, $note, 'Stage Changed', "Stage was updated to {$stageId}");
+            } else {
+                // Log the note addition event
+                $this->logTimeline($lead, $note, 'note_added', 'Note added');
+            }
 
             return redirect()->back()->with('success', 'Form submitted successfully!');
         } else {
-            // Handle the case where the lead is not found
             return redirect()->back()->with('error', 'Lead not found!');
         }
     }
-}
 
+    /**
+     * Log an event to the lead's timeline.
+     *
+     * @param Lead $lead
+     * @param Note $note
+     * @param string $activityType
+     * @param string $description
+     */
+    protected function logTimeline(Lead $lead, Note $note, string $activityType, string $description)
+    {
+        $timeline = new LeadTimeline();
+        $timeline->lead_id = $lead->id;
+        $timeline->activity_type = $activityType;
+        $payload = [
+            'lead' => $lead->toArray(),
+            'notes' => $note->toArray()
+        ];
+        $timeline->payload = json_encode($payload);
+        $timeline->description = $description;
+        $timeline->created_at = now();
+        $timeline->save();
+    }
+}

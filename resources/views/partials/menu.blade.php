@@ -1,6 +1,21 @@
-<aside class="main-sidebar sidebar-dark-primary " style="min-height: 917px; overflow-y: auto;">
+<style>
+li .select2-container {
+    width:215px;
+}
+.nav-item {
+    width:215px;
+}
+[class*=sidebar-dark-] .nav-sidebar>.nav-item>.nav-link.active {
+    width:215px;
+}
+.sidebar-mini .main-sidebar .nav-link 
+{
+    width:calc(240px - .5rem * 2) !important;
+}
+</style>
+<aside class="main-sidebar sidebar-dark-primary " style="max-height:100vh;overflow-y: auto;">
     <!-- Brand Logo -->
-    <a href="#" class="brand-link">
+    <a href="#" class="brand-link" style="width:215px;">
         <span class="brand-text font-weight-light">
             {{ config('app.name', 'LMS') }}
         </span>
@@ -40,17 +55,17 @@
                         </a>
                     </li>
                 @endif
-                @if (!(auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager))
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.report.index') ? 'active' : '' }}"
-                        href="{{ route('admin.report.index') }}">
-                        <i class="fas fa-fw fa-tachometer-alt nav-icon">
-                        </i>
-                        <p>
-Report                        </p>
-                    </a>
-                </li>
-            @endif
+                {{-- @if (!(auth()->user()->is_channel_partner || auth()->user()->is_channel_partner_manager))
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.report.index') ? 'active' : '' }}"
+                            href="{{ route('admin.report.index') }}">
+                            <i class="fas fa-fw fa-tachometer-alt nav-icon">
+                            </i>
+                            <p>
+                                Report </p>
+                        </a>
+                    </li>
+                @endif --}}
                 {{-- @if (auth()->user()->is_admissionteam || auth()->user()->is_superadmin)
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('admin.home') ? 'active' : '' }}"
@@ -104,7 +119,7 @@ Report                        </p>
                         </ul>
                     </li>
                 @endif
-                @if (auth()->user()->is_superadmin || auth()->user()->is_channel_partner_manager || auth()->user()->is_client)
+                @if (auth()->user()->is_superadmin || auth()->user()->is_channel_partner_manager || auth()->user()->is_agencyanalytics)
                     <li
                         class="nav-item has-treeview {{ request()->is('admin/permissions*') ? 'menu-open' : '' }} {{ request()->is('admin/roles*') ? 'menu-open' : '' }} {{ request()->is('admin/users*') ? 'menu-open' : '' }} {{ request()->is('admin/audit-logs*') ? 'menu-open' : '' }}">
                         <a class="nav-link nav-dropdown-toggle {{ request()->is('admin/permissions*') ? 'active' : '' }} {{ request()->is('admin/roles*') ? 'active' : '' }} {{ request()->is('admin/users*') ? 'active' : '' }} {{ request()->is('admin/audit-logs*') ? 'active' : '' }}"
@@ -143,7 +158,7 @@ Report                        </p>
                             @endif
                         </ul>
                     </li>
-                    @if (auth()->user()->is_superadmin || auth()->user()->is_client)
+                    @if (auth()->user()->is_superadmin || auth()->user()->is_agencyanalytics)
                         <li class="nav-item has-treeview {{ request()->is('admin/clients*') ? 'menu-open' : '' }}">
                             <a class="nav-link nav-dropdown-toggle {{ request()->is('admin/clients*') ? 'active' : '' }}"
                                 href="#">
@@ -195,7 +210,7 @@ Report                        </p>
                         </li>
                     @endif
                 @endif
-                @if (auth()->user()->is_superadmin || auth()->user()->is_client)
+                @if (auth()->user()->is_superadmin || auth()->user()->is_agencyanalytics)
                     <li class="nav-item">
                         <a href="{{ route('admin.projects.index') }}"
                             class="nav-link {{ request()->is('admin/projects') || request()->is('admin/projects/*') ? 'active' : '' }}">
@@ -208,8 +223,43 @@ Report                        </p>
                         </a>
                     </li>
                 @endif
+                {{-- @if (auth()->user()->is_superadmin || auth()->user()->is_client)
 
-                @if (auth()->user()->is_superadmin || auth()->user()->is_presales || auth()->user()->is_client)
+                <li class="nav-item">
+                    <a href="{{ route('admin.srd.index') }}"
+                        class="nav-link {{ request()->is('admin/\srd') || request()->is('admin/srd/*') ? 'active' : '' }}">
+                        <i class="fa-fw nav-icon fas fa-bullhorn">
+
+                        </i>
+                        <p>
+                         Add Campaign
+                        </p>
+                    </a>
+                </li>
+                @endif --}}
+                @if (auth()->user()->is_superadmin || auth()->user()->is_agencyanalytics)
+
+                <li class="nav-item">
+                    <a href="{{ route('admin.urls.index') }}"
+                        class="nav-link {{ request()->is('admin/urls') || request()->is('admin/urls/*') ? 'active' : '' }}">
+                        <i class="fa-fw nav-icon fas fa-external-link-alt"></i>
+                        <p>
+Source                        </p>
+                    </a>
+                </li>
+                @endif
+                @if (auth()->user()->is_superadmin || auth()->user()->is_client)
+                <li class="nav-item">
+                    <a href="{{ route('admin.fields.index') }}"
+                        class="nav-link {{ request()->is('admin/fields') || request()->is('admin/fields/*') ? 'active' : '' }}">
+                        <i class="fa-fw nav-icon fas fa-external-link-alt"></i>
+                        <p>
+                            Fields
+                        </p>
+                    </a>
+                </li>
+                @endif
+                @if (auth()->user()->is_superadmin || auth()->user()->is_presales || auth()->user()->is_agencyanalytics)
                     <li class="nav-item">
                         <a href="{{ route('admin.followups.index') }}"
                             class="nav-link {{ request()->is('admin/followups') || request()->is('admin/followups/*') ? 'active' : '' }}">
@@ -221,7 +271,7 @@ Report                        </p>
                 @if (auth()->user()->is_superadmin ||
                         auth()->user()->is_presales ||
                         auth()->user()->is_frontoffice ||
-                        auth()->user()->is_client)
+                        auth()->user()->is_admissionteam||auth()->user()->is_agencyanalytics)
                     <li class="nav-item">
                         <a href="{{ route('admin.sitevisit.index') }}"
                             class="nav-link {{ request()->is('admin/sitevisit') || request()->is('admin/sitevisit/*') ? 'active' : '' }}">
@@ -234,10 +284,10 @@ Report                        </p>
                         </a>
                     </li>
                 @endif
-                @if (auth()->user()->is_superadmin || auth()->user()->is_client)
+                @if (auth()->user()->is_superadmin || auth()->user()->is_agencyanalytics|| auth()->user()->is_presales)
                     <li class="nav-item">
-                        <a href="{{ route('admin.callog.index') }}"
-                            class="nav-link {{ request()->is('admin/callog') || request()->is('admin/callog/*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.call.index') }}"
+                            class="nav-link {{ request()->is('admin/call') || request()->is('admin/call/*') ? 'active' : '' }}">
                             <i class="fas fa-phone fa-flip-horizontal nav-icon"></i>
 
                             </i>
@@ -247,18 +297,18 @@ Report                        </p>
                         </a>
                     </li>
                 @endif
-                @if (auth()->user()->is_admissionteam || auth()->user()->is_superadmin || auth()->user()->is_client)
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.admission.index') ? 'active' : '' }}"
-                        href="{{ route('admin.admission.index') }}">
-                        <i class="far fa-newspaper nav-icon"></i>
-                        </i>
-                        <p>
-                            Admission followup
-                        </p>
-                    </a>
-                </li>
-            @endif
+                @if (auth()->user()->is_admissionteam || auth()->user()->is_superadmin || auth()->user()->is_agencyanalytics|| auth()->user()->is_frontoffice)
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.admission.index') ? 'active' : '' }}"
+                            href="{{ route('admin.admission.index') }}">
+                            <i class="far fa-newspaper nav-icon"></i>
+                            </i>
+                            <p>
+                                Admission followup
+                            </p>
+                        </a>
+                    </li>
+                @endif
                 {{-- @if (!(auth()->user()->is_channel_partner || auth()->user()->is_agency || auth()->user()->is_channel_partner_manager))
                     <li class="nav-item">
                         <a href="{{ route("admin.stages.index") }}" class="nav-link {{ request()->is("admin/stages") || request()->is("admin/stages/*") ? "active" : "" }}">
@@ -272,7 +322,7 @@ Report                        </p>
                         </a>
                     </li>
                 @endif --}}
-                @if (auth()->user()->is_superadmin || auth()->user()->is_client)
+                {{-- @if (auth()->user()->is_superadmin || auth()->user()->is_client)
                     <li class="nav-item">
                         <a href="{{ route('admin.campaigns.index') }}"
                             class="nav-link {{ request()->is('admin/campaigns') || request()->is('admin/campaigns/*') ? 'active' : '' }}">
@@ -284,7 +334,7 @@ Report                        </p>
                             </p>
                         </a>
                     </li>
-                @endif
+                @endif --}}
                 {{-- @if (auth()->user()->is_superadmin)
                     <li class="nav-item">
                         <a href="{{ route("admin.sources.index") }}" class="nav-link {{ request()->is("admin/sources") || request()->is("admin/sources/*") ? "active" : "" }}">
@@ -295,7 +345,7 @@ Report                        </p>
                         </a>
                     </li>
                 @endif --}}
-                @if (auth()->user()->is_superadmin || auth()->user()->is_client)
+                {{-- @if (auth()->user()->is_superadmin || auth()->user()->is_client)
                     <li class="nav-item">
                         <a href="{{ route('admin.sources.index') }}"
                             class="nav-link {{ request()->is('admin/sources') || request()->is('admin/sources/*') ? 'active' : '' }}">
@@ -307,17 +357,17 @@ Report                        </p>
                     </li>
                 @endif
                 @if (auth()->user()->is_superadmin || auth()->user()->is_client)
-                <li class="nav-item">
-                    <a href="{{ route('admin.subsource.index') }}"
-                        class="nav-link {{ request()->is('admin/subsource') || request()->is('admin/subsource/*') ? 'active' : '' }}">
-                        <i class="fa-fw nav-icon fas fa-external-link-alt"></i>
-                        <p>
-                           SubSource
-                        </p>
-                    </a>
-                </li>
-            @endif
-                @if (auth()->user()->is_superadmin || auth()->user()->is_client)
+                    <li class="nav-item">
+                        <a href="{{ route('admin.subsource.index') }}"
+                            class="nav-link {{ request()->is('admin/subsource') || request()->is('admin/subsource/*') ? 'active' : '' }}">
+                            <i class="fa-fw nav-icon fas fa-external-link-alt"></i>
+                            <p>
+                                SubSource
+                            </p>
+                        </a>
+                    </li>
+                @endif --}}
+                @if (auth()->user()->is_superadmin || auth()->user()->is_agencyanalytics)
                     <li class="nav-item">
                         <a href="{{ route('admin.parent-stages.index') }}"
                             class="nav-link {{ request()->is('admin/parent-stages') || request()->is('admin/parent-stages/*') ? 'active' : '' }}">
@@ -328,35 +378,66 @@ Report                        </p>
                         </a>
                     </li>
                 @endif
-                @if (auth()->user()->is_superadmin || auth()->user()->is_client)
+                {{-- @if (auth()->user()->is_superadmin || auth()->user()->is_client)
                     <li class="nav-item">
                         <a href="{{ route('admin.notenotinterested.index') }}"
-                            class="nav-link {{ request()->is('admin/notenotinterested') || request()->is('admin/notenotinterested/*') ? 'active' : '' }}">
+                            class="nav-link {{ request()->is('walki/notenotinterested') || request()->is('admin/notenotinterested/*') ? 'active' : '' }}">
                             <i class="far fa-sticky-note nav-icon"></i>
                             <p>
                                 Note for Not Interested </p>
                         </a>
                     </li>
+                @endif --}}
+                {{-- @if (auth()->user()->is_superadmin || auth()->user()->is_client)
+                    <li class="nav-item">
+                        <a href="{{ route('admin.urls.index') }}"
+                            class="nav-link {{ request()->is('admin/urls') || request()->is('admin/urls/*') ? 'active' : '' }}">
+                            <i class="fa-fw nav-icon fas fa-external-link-alt"></i>
+                            <p>
+                                project
+                            </p>
+                        </a>
+                    </li>
+                @endif --}}
+                @if (auth()->user()->is_superadmin||auth()->user()->is_presales||auth()->user()->is_admissionteam||auth()->user()->is_frontoffice||auth()->user()->is_qmisadmin||auth()->user()->is_mdadmin||auth()->user()->is_agencyanalytics )
+                    <li class="nav-item">
+                        <a href="{{ route('admin.leads.index', ['view' => 'kanban']) }}" id="lead_menu_link"
+                            class="nav-link {{ request()->is('admin/leads') || request()->is('admin/leads/*') ? 'active' : '' }}">
+                            <i class="fa-fw nav-icon fas fa-handshake">
+                            </i>
+                            <p>
+                                {{ trans('cruds.lead.title') }}
+                            </p>
+                        </a>
+                    </li>
                 @endif
+                @if (auth()->user()->is_superadmin||auth()->user()->is_agencyanalytics)
                 <li class="nav-item">
-                    <a href="{{ route('admin.leads.index', ['view' => 'kanban']) }}" id="lead_menu_link"
-                        class="nav-link {{ request()->is('admin/leads') || request()->is('admin/leads/*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.get.razorLogs') }}" id="lead_menu_link"
+                        class="nav-link {{ request()->is('admin/get-razorpay') ? 'active' : '' }}">
                         <i class="fa-fw nav-icon fas fa-handshake">
                         </i>
                         <p>
-                            {{ trans('cruds.lead.title') }}
+                            RazorPay Log
                         </p>
                     </a>
                 </li>
-
-                @if (auth()->user()->is_client ||
-                        auth()->user()->is_frontoffice ||
-                        auth()->user()->is_superadmin ||
-                        auth()->user()->is_client)
+                <li class="nav-item">
+                    <a href="{{ route('admin.get.mailLogs') }}" id="lead_menu_link"
+                        class="nav-link {{ request()->is('admin/get-email')  ? 'active' : '' }}">
+                        <i class="fa-fw nav-icon fas fa-handshake">
+                        </i>
+                        <p>
+                            Email Log
+                        </p>
+                    </a>
+                </li>
+                @endif
+                {{-- @if (auth()->user()->is_client || auth()->user()->is_frontoffice || auth()->user()->is_superadmin || auth()->user()->is_client)
                     <li class="nav-item">
                         <a href="{{ route('admin.walkinform.index') }}"
                             class="nav-link {{ request()->is('admin/walkinform') || request()->is('admin/walkinform/*') ? 'active' : '' }}">
-                            {{-- <i class='fas fa-walking' style='font-size:20px'></i> --}}
+
                             <i class="fa-fw nav-icon fas fa-walking" style='font-size:22px'>
                             </i>
                             <p>
@@ -364,19 +445,21 @@ Report                        </p>
                             </p>
                         </a>
                     </li>
-                @endif
-                <li class="nav-item">
-                    <a href="{{ route('admin.importfile.index') }}"
-                        class="nav-link {{ request()->is('admin/importfile') || request()->is('admin/importfile/*') ? 'active' : '' }}">
-                        {{-- <i class='fas fa-walking' style='font-size:20px'></i> --}}
-                        <i class="fa-fw nav-icon fas fa-walking" style='font-size:22px'>
-                        </i>
-                        <p>
-                           CSV import
-                        </p>
-                    </a>
-                </li>
-                @if (auth()->user()->is_superadmin)
+                @endif --}}
+                {{-- @if (auth()->user()->is_superadmin)
+                    <li class="nav-item">
+                        <a href="{{ route('admin.importfile.index') }}"
+                            class="nav-link {{ request()->is('admin/importfile') || request()->is('admin/importfile/*') ? 'active' : '' }}">
+                            {{-- <i class='fas fa-walking' style='font-size:20px'></i> --}}
+                            {{-- <i class="fa-fw nav-icon fas fa-walking" style='font-size:22px'>
+                            </i>
+                            <p>
+                                CSV import
+                            </p>
+                        </a>
+                    </li>
+                @endif  --}}
+                {{-- @if (auth()->user()->is_superadmin)
                     <li class="nav-item">
                         <a href="{{ route('admin.systemCalendar') }}"
                             class="nav-link {{ request()->is('admin/system-calendar') || request()->is('admin/system-calendar/*') ? 'active' : '' }}">
@@ -387,8 +470,8 @@ Report                        </p>
                             </p>
                         </a>
                     </li>
-                @endif
-                @if (auth()->user()->is_superadmin || auth()->user()->is_frontoffice || auth()->user()->is_client)
+                @endif --}}
+                @if (auth()->user()->is_superadmin || auth()->user()->is_frontoffice || auth()->user()->is_agencyanalytics|| auth()->user()->is_admissionteam)
                     <li class="nav-item">
                         <a href="{{ route('admin.applications.index') }}"
                             class="nav-link {{ request()->is('admin/applications') || request()->is('admin/applications/*') ? 'active' : '' }}">
@@ -400,22 +483,22 @@ Report                        </p>
                         </a>
                     </li>
                 @endif
-                @if (auth()->user()->is_superadmin || auth()->user()->is_admissionteam )
-                <li class="nav-item">
-                    <a href="{{ route('admin.application.index') }}"
-                        class="nav-link {{ request()->is('admin/application') || request()->is('admin/application/*') ? 'active' : '' }}">
-                        <i class="	fas fa-receipt nav-icon"></i>
-                        </i>
-                        <p>
-                            App not Purchased
-                        </p>
-                    </a>
-                </li>
-            @endif
+                {{-- @if (auth()->user()->is_superadmin || auth()->user()->is_admissionteam)
+                    <li class="nav-item">
+                        <a href="{{ route('admin.application.index') }}"
+                            class="nav-link {{ request()->is('admin/application') || request()->is('admin/application/*') ? 'active' : '' }}">
+                            <i class="	fas fa-receipt nav-icon"></i>
+                            </i>
+                            <p>
+                                App not Purchased
+                            </p>
+                        </a>
+                    </li>
+                @endif --}}
                 @if (auth()->user()->is_admissionteam || auth()->user()->is_superadmin || auth()->user()->is_client)
                     <li class="nav-item">
-                        <a href="{{ route('admin.admission.index') }}"
-                            class="nav-link {{ request()->is('admin/Admission') || request()->is('admin/Admission/*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.admissions.index') }}"
+                            class="nav-link {{ request()->is('admin/Admissions') || request()->is('admin/Admissions/*') ? 'active' : '' }}">
                             <i class="fas fa fa-check nav-icon"></i>
                             </i>
                             <p>

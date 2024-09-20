@@ -6,10 +6,10 @@ class="myForm" enctype="multipart/form-data">
         <div class="modal-body">
             <input type="hidden" name="lead_id" value="{{ $lead->id }}">
             <input type="hidden" name="stage_id" value="13">
-            <label for="application_no">Application Number:</label>
-            <input class="form-control" type="text" name="application_no" value="" required>
+            {{-- <label for="application_no">Application Number:</label>
+            <input class="form-control" type="text" name="application_no" value="" required> --}}
             <label for="user_id">Select Representative:</label>
-            <select class="form-control select2 {{ $errors->has('client') ? 'is-invalid' : '' }}"
+            {{-- <select class="form-control select2 {{ $errors->has('client') ? 'is-invalid' : '' }}"
                 name="user_id" id="user_id" required>
                 @foreach ($users as $user)
                     @if ($user->user_type == 'Admissionteam')
@@ -19,8 +19,8 @@ class="myForm" enctype="multipart/form-data">
                         </option>
                     @endif
                 @endforeach
-            </select>
-            <div class="form-group">
+            </select> --}}
+            {{-- <div class="form-group">
                 <label for="Date">Select Date </label>
                 <input type="date"
                     class="form-control datepicker {{ $errors->has('form-control datepicker') ? 'is-invalid' : '' }}"
@@ -33,14 +33,13 @@ class="myForm" enctype="multipart/form-data">
                     class="form-control timepicker {{ $errors->has('form-control timepicker') ? 'is-invalid' : '' }}"
                     name="follow_up_time" id="follow_up_time" rows="3"
                     required>{{ old('follow_up_time') }}
-            </div>
+            </div> --}}
             <br>
             <div class="form-group">
                 <label class=float-left for="noteContent">Note Content</label>
                 <textarea class="form-control {{ $errors->has('notes') ? 'is-invalid' : '' }}" name="notes" id="notes"
                     rows="4" required>{{ old('notes') }}</textarea>
             </div>
-
             <div class="modal-footer">
                 <button class="btn btn-danger" type="submit">Save</button>
             </div>

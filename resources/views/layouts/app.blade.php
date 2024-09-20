@@ -22,4 +22,13 @@
     @yield('scripts')
 </body>
 
+<footer>
+ 
+    {{-- <link href="{{ asset('css/client.css') }}" rel="stylesheet" /> --}}
+    <link href="{{ asset('css/adminltev3.css') }}" rel="stylesheet" />
+
+
+
+
+
 </html>

@@ -22,7 +22,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $appends = ['is_superadmin', 'is_client','is_agency', 'is_channel_partner', 'is_channel_partner_manager','is_presales','is_admissionteam','is_frontoffice'];
+    protected $appends = ['is_superadmin', 'is_client','is_agency', 'is_channel_partner', 'is_channel_partner_manager','is_presales','is_admissionteam','is_frontoffice','is_qmisadmin','is_agencyanalytics'];
 
     public $table = 'users';
 
@@ -50,7 +50,9 @@ class User extends Authenticatable
         'Frontoffice'=>'Frontoffice',
         'Presales'=>'Presales',
         'Admissionteam'=>'Admissionteam',
-
+        'Agencyanalytics'=>'Agencyanalytics',
+        'Qmisadmin'=>'Qmisadmin',
+        'Mdadmin'=>'Mdadmin'
     ];
 
     /**
@@ -143,7 +145,6 @@ class User extends Authenticatable
         return $this->belongsTo(Agency::class, 'agency_id');
     }
 
-
     public function leads()
     {
         return $this->hasMany(Lead::class, 'added_by');
@@ -158,6 +159,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Application::class, 'for_whom');
     }
+
+    public function admission()
+    {
+        return $this->hasManyThrough(Admission::class, Application::class, 'for_whom', 'application_id');
+    }
+
+
     /**
      *
      * is user super admin?
@@ -235,4 +243,32 @@ class User extends Authenticatable
     {
         return $this->user_type == 'Frontoffice';
     }
+  /**
+ * is user Qmisadmin?
+ *
+ * @return boolean
+ */
+public function getIsQmisadminAttribute()
+{
+    return $this->user_type == 'Qmisadmin';
+}
+  /**
+ * is user Mdadmin?
+ *
+ * @return boolean
+ */
+public function getIsMdadminAttribute()
+{
+    return $this->user_type == 'Mdadmin';
+}
+  /**
+ * is user Agencyanalytics?
+ *
+ * @return boolean
+ */
+public function getIsAgencyanalyticsAttribute()
+{
+    return $this->user_type == 'Agencyanalytics';
+}
+
 }

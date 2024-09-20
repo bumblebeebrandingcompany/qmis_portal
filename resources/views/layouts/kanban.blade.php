@@ -17,7 +17,6 @@
                     <a class="nav-link" data-widget="pushmenu" href="#"><i class="fa fa-bars"></i></a>
                 </li>
             </ul>
-            <!-- Right navbar links -->
             @if(count(config('panel.available_languages', [])) > 1)
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item dropdown">
@@ -42,7 +41,6 @@
                 @yield('content')
             </section>
         </div>
-
         <footer class="main-footer">
             <div class="float-right d-none d-sm-block">
                 {{config('app.name', 'Laravel')}} | Copyright <strong> &copy;</strong> {{Date('Y')}} {{ trans('global.allRightsReserved') }}

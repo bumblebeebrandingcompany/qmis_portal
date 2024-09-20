@@ -96,96 +96,138 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-    function checkParentStageId(selectElement) {
-        var selectedOption = selectElement.options[selectElement.selectedIndex];
-        var selectedName = selectedOption.text.trim().toLowerCase();
+function checkParentStageId(selectElement) {
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var selectedName = selectedOption.text.trim().toLowerCase();
 
-        // Hide all modals initially
+    // Hide all sections initially
+    var formSections = [
+        'showenquiryfollowup', 'showrescheduled', 'showsitevisitScheduled', 'showadmissionfollowup','showqualifiedfollowup','showinterviewfollowup',
+        'notvisitedContent', 'spamContent', 'notqualifiedContent', 'lostContent',
+        'futureprospectContent', 'cancelledContent', 'rnrContent', 'sitevisitconductedContent',
+        'applicationpurchasedContent', 'AdmissionContent', 'applicationacceptedContent',
+        'applicationnotpurchasedContent', 'admissionwithdrawnContent'
+    ];
 
-        document.getElementById('showfollowup').style.display = 'none';
-        document.getElementById('showrescheduled').style.display = 'none';
-        document.getElementById('showsitevisitScheduled').style.display = 'none';
-        document.getElementById('showadmissionfollowup').style.display = 'none';
-        document.getElementById('notvisitedContent').style.display = 'none';
-        document.getElementById('spamContent').style.display = 'none';
-        document.getElementById('notqualifiedContent').style.display = 'none';
-        document.getElementById('lostContent').style.display = 'none';
-        document.getElementById('futureprospectContent').style.display = 'none';
-        document.getElementById('cancelledContent').style.display = 'none';
-        document.getElementById('rnrContent').style.display = 'none';
-        document.getElementById('sitevisitconductedContent').style.display = 'none';
-        document.getElementById('applicationpurchasedContent').style.display = 'none';
-        document.getElementById('AdmissionContent').style.display = 'none';
-        document.getElementById('applicationnotpurchasedContent').style.display = 'none';
-        document.getElementById('admissionwithdrawnContent').style.display = 'none';
-        // Check the selected option and display the corresponding modal
-        if (selectedName === 'followup') {
-            $("#showfollowup").show();
-        } else if (selectedName === 'site visit scheduled') {
-            $("#showsitevisitScheduled").show();
-        } else if (selectedName === 'admission followup') {
-            $("#showadmissionfollowup").show();
-        } else if (selectedName === 'rescheduled') {
-            $("#showrescheduled").show();
-        } else if (selectedName === 'site not visited') {
-            document.getElementById('notvisitedContent').style.display = 'block';
-        } else if (selectedName === 'spam') {
-            document.getElementById('spamContent').style.display = 'block';
-        } else if (selectedName === 'not qualified') {
-            document.getElementById('notqualifiedContent').style.display = 'block';
-        } else if (selectedName === 'lost') {
-            document.getElementById('lostContent').style.display = 'block';
-        } else if (selectedName === 'future prospect') {
-            document.getElementById('futureprospectContent').style.display = 'block';
-        } else if (selectedName === 'cancelled') {
-            document.getElementById('cancelledContent').style.display = 'block';
-        } else if (selectedName === 'rnr') {
-            document.getElementById('rnrContent').style.display = 'block';
-        } else if (selectedName === 'site visit conducted') {
-            document.getElementById('sitevisitconductedContent').style.display = 'block';
-        } else if (selectedName === 'application purchased') {
-            document.getElementById('applicationpurchasedContent').style.display = 'block';
-        } else if (selectedName === 'admitted') {
-            document.getElementById('AdmissionContent').style.display = 'block';
-        } else if (selectedName === 'application not purchased') {
-            document.getElementById('applicationnotpurchasedContent').style.display = 'block';
-        } else if (selectedName === 'admission withdrawn') {
-            document.getElementById('admissionwithdrawnContent').style.display = 'block';
+    formSections.forEach(function(sectionId) {
+        var section = document.getElementById(sectionId);
+        if (section) {  // Check if the section exists before modifying its style
+            section.style.display = 'none';
         }
+    });
+
+    // Match the option to the form section to show
+    switch (selectedName) {
+        case 'enquiry followup':
+            document.getElementById('showenquiryfollowup').style.display = 'block';
+            break;
+        case 'interview scheduled':
+            document.getElementById('showsitevisitScheduled').style.display = 'block';
+            break;
+        case 'admission followup':
+            document.getElementById('showadmissionfollowup').style.display = 'block';
+            break;
+        case 'rescheduled':
+            document.getElementById('showrescheduled').style.display = 'block';
+            break;
+
+            case 'qualified followup':
+            document.getElementById('showqualifiedfollowup').style.display = 'block';
+            break;
+            case 'interview follow-up':
+            document.getElementById('showinterviewfollowup').style.display = 'block';
+            break;
+        case 'site not visited':
+            document.getElementById('notvisitedContent').style.display = 'block';
+            break;
+        case 'spam':
+            document.getElementById('spamContent').style.display = 'block';
+            break;
+        case 'not qualified':
+            document.getElementById('notqualifiedContent').style.display = 'block';
+            break;
+        case 'lost':
+            document.getElementById('lostContent').style.display = 'block';
+            break;
+        case 'future prospect':
+            document.getElementById('futureprospectContent').style.display = 'block';
+            break;
+        case 'cancelled':
+            document.getElementById('cancelledContent').style.display = 'block';
+            break;
+        case 'rnr':
+            document.getElementById('rnrContent').style.display = 'block';
+            break;
+        case 'interview conducted':
+            document.getElementById('sitevisitconductedContent').style.display = 'block';
+            break;
+        case 'application purchased':
+            document.getElementById('applicationpurchasedContent').style.display = 'block';
+            break;
+        case 'admitted':
+            document.getElementById('AdmissionContent').style.display = 'block';
+            break;
+        case 'application accepted':
+            document.getElementById('applicationacceptedContent').style.display = 'block';
+            break;
+        case 'application not purchased':
+            document.getElementById('applicationnotpurchasedContent').style.display = 'block';
+            break;
+        case 'admission withdrawn':
+            document.getElementById('admissionwithdrawnContent').style.display = 'block';
+            break;
+        default:
+            console.log('No matching section to show.');
+            break;
     }
-    document.addEventListener('DOMContentLoaded', function() {
-        checkParentStageId(document.getElementById('stage_id'));
-    });
+}
 
-    $(document).ready(function() {
-        $('#tag_id').change(function() {
-            var selectedTagId = $('#tag_id option:selected').val();
-            // Check if childStages is not null
-            var childStages = {!! json_encode($lead->parentStage->childStages ?? null) !!};
-            console.log("Child Stages:", childStages);
-            var selectedChildStages = [];
+// Run this function when the page loads to check the current selected option
+document.addEventListener('DOMContentLoaded', function() {
+    checkParentStageId(document.getElementById('parent_stage_id'));
+});
 
-            // Check if childStages is not null and has the selected_child_stages property
-            if (childStages && childStages.length > 0 && childStages[0].selected_child_stages) {
-                selectedChildStages = JSON.parse(childStages[0].selected_child_stages);
+
+
+$(document).ready(function() {
+    $('#tag_id').change(function() {
+        var selectedTagId = $('#tag_id option:selected').val();
+        var childStages = {!! json_encode($lead->parentStage->childStages ?? null) !!};
+        var selectedChildStages = [];
+
+        if (childStages && childStages.length > 0 && childStages[0].selected_child_stages) {
+            selectedChildStages = JSON.parse(childStages[0].selected_child_stages);
+        }
+
+        $('#child_stage_id').html('<option value="" selected disabled>Please Select a Tag First</option>');
+        @php
+    $excludedStages = [];
+    if (auth()->user()->is_presales) {
+        $excludedStages = ['Interview Scheduled','Rescheduled','Admitted','admission followup','Interview Conducted'];
+    }
+@endphp
+
+
+if (selectedTagId && selectedChildStages) {
+    @foreach ($parentStages as $stage)
+        if ("{{ $stage->tag_id }}" == selectedTagId && selectedChildStages.includes("{{ $stage->id }}")) {
+            // Check for 'qualified' stage
+            if ("{{ strtolower($stage->name) }}" !== 'qualified') {
+                // Exclude stages based on user type
+                if (!excludedStages.includes("{{ $stage->name }}")) {
+                    $('#child_stage_id').append(
+                        '<option value="{{ $stage->id }}" data-tag="{{ $stage->tag_id }}">{{ $stage->name }}</option>'
+                    );
+                }
             }
+        }
+    @endforeach
+}
 
-            console.log("Selected Child Stages:", selectedChildStages);
-
-            $('#child_stage_id').html(
-                '<option value="" selected disabled>Please Select a Tag First</option>');
-
-            if (selectedTagId && selectedChildStages) {
-                // Filter child stages based on the selected tag and lead's selected_child_stages
-                @foreach ($parentStages as $stage)
-                    if ("{{ $stage->tag_id }}" == selectedTagId && selectedChildStages.includes(
-                            "{{ $stage->id }}")) {
-                        $('#child_stage_id').append(
-                            '<option value="{{ $stage->id }}" data-tag="{{ $stage->tag_id }}">{{ $stage->name }}</option>'
-                        );
-                    }
-                @endforeach
-            }
-        });
     });
+});
+
+</script>
+<script>
+    const excludedStages = @json($excludedStages);
 </script>

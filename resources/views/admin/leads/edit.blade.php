@@ -1,247 +1,132 @@
 @extends('layouts.admin')
+
 @section('content')
-<div class="row mb-2">
-   <div class="col-sm-6">
-        <h2>
-        {{ trans('global.edit') }} {{ trans('cruds.lead.title_singular') }}
-        </h2>
-   </div>
-</div>
-<div class="card card-primary card-outline">
-    <div class="card-body">
-        <form method="POST" action="{{ route("admin.leads.update", [$lead->id]) }}" enctype="multipart/form-data">
-            @method('PUT')
-            @csrf
-            <input type="hidden" name="lead_id" value="{{$lead->id}}" id="lead_id">
-            <div class="form-group">
-                <label for="name" class="required">
-                    @lang('messages.name')
-                </label>
-                <input type="text" name="name" id="name" value="{{ old('name') ?? $lead->name }}" class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" required>
-            </div>
-            <div class="form-group">
-                <label for="email" @if(!auth()->user()->is_superadmin) class="required" @endif>
-                    @lang('messages.email')
-                </label>
-                <input type="email" name="email" id="email" value="{{ old('email') ?? $lead->email }}" class="form-control" @if(!auth()->user()->is_superadmin) required @endif>
-            </div>
-            <div class="form-group">
-                <label for="additional_email_key">
-                    @lang('messages.additional_email_key')
-                </label>
-                <input type="email" name="secondary_email" id="additional_email_key" value="{{ old('secondary_email') ?? $lead->secondary_email }}" class="form-control">
-            </div>
-            <input type="hidden" name="stage_id" value="{{ $lead->stage_id }}">
+    <h2>Edit Lead</h2>
+    <form action="{{ route('admin.leads.update', $lead->id) }}" method="POST">
+        @csrf
+        @method('PUT')
 
-            <div class="form-group">
-                <label for="phone" @if(!auth()->user()->is_superadmin) class="required" @endif>
-                    @lang('messages.phone')
-                </label>
-                <input type="text" name="phone" id="phone" value="{{ old('phone') ?? $lead->phone }}" class="form-control input_number" @if(!auth()->user()->is_superadmin) required @endif>
-            </div>
-            <div class="form-group">
-                <label for="secondary_phone_key">
-                    @lang('messages.secondary_phone_key')
-                </label>
-                <input type="text" name="secondary_phone" id="secondary_phone_key" value="{{ old('secondary_phone') ?? $lead->secondary_phone }}" class="form-control input_number">
-            </div>
-            <div class="form-group">
-                <label class="required" for="project_id">{{ trans('cruds.lead.fields.project') }}</label>
-                <br>
-                <select class="form-control select2 {{ $errors->has('project') ? 'is-invalid' : '' }}" name="project_id" id="project_id" required>
-                    @foreach($projects as $id => $entry)
-                        <option value="{{ $id }}" {{ (old('project_id') ? old('project_id') : $lead->project->id ?? '') == $id ? 'selected' : '' }}>{{ $entry }}</option>
-                    @endforeach
-                </select>
-                <br>
-                @if($errors->has('project'))
-                    <span class="text-danger">{{ $errors->first('project') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.lead.fields.project_helper') }}</span>
-            </div>
-            @if(!auth()->user()->is_channel_partner)
-                <div class="form-group">
-                    <label for="campaign_id">{{ trans('cruds.lead.fields.campaign') }}</label>
-                    <br>
-                    <select class="form-control select2 {{ $errors->has('campaign') ? 'is-invalid' : '' }}" name="campaign_id" id="campaign_id">
-                        @foreach($campaigns as $id => $entry)
-                            <option value="{{ $id }}" {{ (old('campaign_id') ? old('campaign_id') : $lead->campaign->id ?? '') == $id ? 'selected' : '' }}>{{ $entry }}</option>
-                        @endforeach
-                    </select>
-                    <br>
-                    @if($errors->has('campaign'))
-                        <span class="text-danger">{{ $errors->first('campaign') }}</span>
-                    @endif
-                    <span class="help-block">{{ trans('cruds.lead.fields.campaign_helper') }}</span>
-                </div>
-                <div class="form-group">
-                    <label class="required" for="source_id">{{ trans('messages.source') }}</label>
-                    <br>
-                    <select class="form-control select2 {{ $errors->has('source_id') ? 'is-invalid' : '' }}" name="source_id" id="source_id" required>
+        <input type="hidden" name="parent_stage_id" id="parent_stage_id" value="13">
 
-                    </select>
-                    <br>
-                    @if($errors->has('source_id'))
-                        <span class="text-danger">{{ $errors->first('source_id') }}</span>
-                    @endif
+        <!-- Father Details -->
+        <strong>Welcome To Qmis</strong>
+        <div class="card p-2 mb-2">
+            <h5>Father Details</h5>
+            <div class="form-group">
+                <input type="text" name="father_details[name]" placeholder="Father's Name" id="father_name" class="form-control form-control-sm" value="{{ old('father_details.name', $lead->father_details['name'] ?? '') }}">
+            </div>
+            <div class="form-group">
+                <input type="text" name="father_details[phone]" placeholder="Phone" id="father_phone" class="form-control form-control-sm" value="{{ old('father_details.phone', $lead->father_details['phone'] ?? '') }}">
+            </div>
+            <div class="form-group">
+                <input type="email" name="father_details[email]" placeholder="Email" id="father_email" class="form-control form-control-sm" value="{{ old('father_details.email', $lead->father_details['email'] ?? '') }}">
+            </div>
+            <div class="form-group">
+                <input type="text" name="father_details[occupation]" placeholder="Occupation" id="father_occupation" class="form-control form-control-sm" value="{{ old('father_details.occupation', $lead->father_details['occupation'] ?? '') }}">
+            </div>
+            <div class="form-group">
+                <input type="text" name="father_details[income]" placeholder="Annual income" id="father_income" class="form-control form-control-sm" value="{{ old('father_details.income', $lead->father_details['income'] ?? '') }}">
+            </div>
+        </div>
+
+        <!-- Mother Details -->
+        <div class="card p-2 mb-2">
+            <h5>Mother Details</h5>
+            <div class="form-group">
+                <input type="text" name="mother_details[name]" placeholder="Mother's Name" id="mother_name" class="form-control form-control-sm" value="{{ old('mother_details.name', $lead->mother_details['name'] ?? '') }}">
+            </div>
+            <div class="form-group">
+                <input type="text" name="mother_details[phone]" placeholder="Phone" id="mother_phone" class="form-control form-control-sm" value="{{ old('mother_details.phone', $lead->mother_details['phone'] ?? '') }}">
+            </div>
+            <div class="form-group">
+                <input type="email" name="mother_details[email]" placeholder="Email" id="mother_email" class="form-control form-control-sm" value="{{ old('mother_details.email', $lead->mother_details['email'] ?? '') }}">
+            </div>
+            <div class="form-group">
+                <input type="text" name="mother_details[occupation]" placeholder="Occupation" id="mother_occupation" class="form-control form-control-sm" value="{{ old('mother_details.occupation', $lead->mother_details['occupation'] ?? '') }}">
+            </div>
+            <div class="form-group">
+                <input type="text" name="mother_details[income]" placeholder="Annual income" id="mother_income" class="form-control form-control-sm" value="{{ old('mother_details.income', $lead->mother_details['income'] ?? '') }}">
+            </div>
+        </div>
+
+        <!-- Guardian Details -->
+        <div class="card p-2 mb-2">
+            <h5>Guardian Details</h5>
+            <div class="form-group">
+                <input type="text" name="guardian_details[name]" placeholder="Guardian's Name" id="guardian_name" class="form-control form-control-sm" value="{{ old('guardian_details.name', $lead->guardian_details['name'] ?? '') }}">
+            </div>
+            <div class="form-group">
+                <input type="text" name="guardian_details[phone]" placeholder="Phone" id="guardian_phone" class="form-control form-control-sm" value="{{ old('guardian_details.phone', $lead->guardian_details['phone'] ?? '') }}">
+            </div>
+            <div class="form-group">
+                <input type="email" name="guardian_details[email]" placeholder="Email" id="guardian_email" class="form-control form-control-sm" value="{{ old('guardian_details.email', $lead->guardian_details['email'] ?? '') }}">
+            </div>
+            <div class="form-group">
+                <input type="text" name="guardian_details[occupation]" placeholder="Occupation" id="guardian_occupation" class="form-control form-control-sm" value="{{ old('guardian_details.occupation', $lead->guardian_details['occupation'] ?? '') }}">
+            </div>
+            <div class="form-group">
+                <input type="text" name="guardian_details[income]" placeholder="Annual income" id="guardian_income" class="form-control form-control-sm" value="{{ old('guardian_details.income', $lead->guardian_details['income'] ?? '') }}">
+            </div>
+        </div>
+        <div class="card p-2 mb-2">
+            <h5>Common details</h5>
+            <div class="form-group">
+                <input type="text" name="common_details[address]" placeholder="address" id="common_details" class="form-control form-control-sm" value="{{ old('common_details.address', $lead->common_details['address'] ?? '') }}">
+            </div>
+        </div>
+        <!-- Child Details -->
+        <div id="childDetailsContainer">
+            @if(is_array($lead->student_details) && count($lead->student_details) > 0)
+                @foreach ($lead->student_details as $index => $child)
+                <div class="card p-2 mb-2 child-details">
+                    <h5>Child Details</h5>
+                    <div class="form-group">
+                        <input type="text" name="student_details[{{ $index }}][name]" placeholder="Child Name" class="form-control form-control-sm" value="{{ old('student_details.' . $index . '.name', $child['name'] ?? '') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="dob">Date of Birth</label><br>
+                        <input type="date" name="student_details[{{ $index }}][dob]" class="form-control form-control-sm" value="{{ old('student_details.' . $index . '.dob', $child['dob'] ?? '') }}">
+                    </div>
+                    <div class="form-group">
+                        <select name="student_details[{{ $index }}][grade]" class="form-control grade-select">
+                            <option value="">Select Grade</option>
+                            <option value="pre kg" {{ old('student_details.' . $index . '.grade', $child['grade'] ?? '') == 'pre kg' ? 'selected' : '' }}>Pre KG</option>
+                            <option value="kg" {{ old('student_details.' . $index . '.grade', $child['grade'] ?? '') == 'kg' ? 'selected' : '' }}>KG</option>
+                            <option value="1" {{ old('student_details.' . $index . '.grade', $child['grade'] ?? '') == '1' ? 'selected' : '' }}>Grade 1</option>
+                            <option value="2" {{ old('student_details.' . $index . '.grade', $child['grade'] ?? '') == '2' ? 'selected' : '' }}>Grade 2</option>
+                        </select>
+                    </div>
                 </div>
+                @endforeach
+            @else
+                <p>No child details available.</p>
             @endif
-            <div class="form-group">
-                <label for="comments">{{ trans('messages.comments') }}</label>
-                <textarea name="comments" class="form-control" id="comments" rows="2">{!! old('comments') ?? $lead->comments !!}</textarea>
-            </div>
-            @if(auth()->user()->is_channel_partner)
-                <div class="form-group">
-                    <label for="cp_comments">{{ trans('messages.cp_comments') }}</label>
-                    <textarea name="cp_comments" class="form-control" id="cp_comments" rows="2">{!! old('comments') ?? $lead->cp_comments !!}</textarea>
-                </div>
-            @endif
-            @if(!auth()->user()->is_channel_partner)
-                <h4>
-                    {{ trans('cruds.lead.fields.lead_details') }}/@lang('messages.additional_fields')
-                    <i class="fas fa-info-circle" data-html="true" data-toggle="tooltip" title="{{trans('messages.lead_details_help_text')}}"></i>
-                </h4>
-                <div class="lead_details">
-                    @php
-                        $index_count = 0;
-                    @endphp
-                    @if(empty($lead->lead_info))
-                        @php
-                            $index_count = -1;
-                        @endphp
-                        <!-- @includeIf('admin.leads.partials.lead_detail', ['key' => '', 'value' => '', $index = 0]) -->
-                    @else
-                        @foreach($lead->lead_info as $key => $value)
-                            @php
-                                $index_count = $loop->index;
-                            @endphp
-                            @includeIf('admin.leads.partials.lead_detail', ['key' => $key, 'value' => $value, $index = $loop->index])
-                        @endforeach
-                    @endif
-                </div>
-            @endif
-            <div class="form-group">
-                @if(!auth()->user()->is_channel_partner)
-                    <input type="hidden" id="index_count" value="{{$index_count ?? -1}}">
-                    <button type="button" class="btn btn-outline-primary add_lead_detail">
-                        @lang('messages.add_lead_detail')
-                    </button>
-                    <button type="button" class="btn btn-outline-primary add_prefilled_lead_detail">
-                        @lang('messages.add_prefilled_lead_detail')
-                    </button>
-                @endif
-                <button class="btn btn-primary float-right" type="submit">
-                    {{ trans('global.update') }}
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-@endsection
-@section('scripts')
-<script>
-    $(function() {
-        function getCampaigns() {
-            let data = {
-                project_id: $('#project_id').val()
-            };
+        </div>
 
-            $.ajax({
-                method:"GET",
-                url: "{{route('admin.get.campaigns')}}",
-                data: data,
-                dataType: "json",
-                success: function(response) {
-                    $('#campaign_id').select2('destroy').empty().select2({data: response});
-                    $('#campaign_id').val("{{$lead->campaign_id}}").change();
-                    getSource();
-                }
-            });
-        }
 
-        function getSource() {
-            let data = {
-                project_id: $('#project_id').val(),
-                campaign_id: $('#campaign_id').val(),
-            };
-            $.ajax({
-                method:"GET",
-                url: "{{route('admin.get.sources')}}",
-                data: data,
-                dataType: "json",
-                success: function(response) {
-                    $('#source_id').select2('destroy').empty().select2({data: response});
-                    $('#source_id').val("{{$lead->source_id}}").change();
-                }
-            });
-        }
 
-        $(document).on('change', '#project_id', function() {
-            getCampaigns();
-            getLeadDetailsRowHtml();
-        });
+        <!-- Add Child Button -->
+        {{-- <button type="button" class="btn btn-success mb-2" id="addChildBtn">Add Child</button> --}}
 
-        $(document).on('change', '#campaign_id', function() {
-            getSource();
-        });
+        <!-- Source and Subsource -->
+        {{-- <div class="form-group">
+            <select class="form-control form-control-lg" name="source_name" id="sub_source_id">
+                <option value="" selected disabled>Source</option>
+                <option value="Parent referral" {{ old('source_name', $lead->source_name ?? '') == 'Parent referral' ? 'selected' : '' }}>Parent referral</option>
+                <option value="Teacher referral" {{ old('source_name', $lead->source_name ?? '') == 'Teacher referral' ? 'selected' : '' }}>Teacher referral</option>
+                <option value="Management referral" {{ old('source_name', $lead->source_name ?? '') == 'Management referral' ? 'selected' : '' }}>Management referral</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="text" name="sub_source_name" placeholder="Sub Source" class="form-control form-control-lg" id="sub_source_name" value="{{ old('sub_source_name', $lead->sub_source_name ?? '') }}">
+        </div> --}}
+        {{-- <input type="hidden" name="project_id" id="project_id" value="48">
+        <input type="hidden" name="campaign_name" id="campaign_name" value="qmis"> --}}
+        <!-- Comments -->
+        <div class="form-group">
+            <textarea name="comments" class="form-control form-control-lg" id="comments" rows="2" placeholder="Comments">{{ old('comments', $lead->comments ?? '') }}</textarea>
+        </div>
+        <button class="btn btn-primary" type="submit">Save Lead</button>
+    </form>
 
-        $(document).on('click', '.add_lead_detail', function() {
-            let index = $("#index_count").val();
-            $.ajax({
-                method:"GET",
-                url: "{{route('admin.lead.detail.html')}}",
-                data: {
-                    index: index
-                },
-                dataType: "html",
-                success: function(response) {
-                    $("div.lead_details").append(response);
-                    $("#index_count").val(+index + 1);
-                }
-            });
-        });
-
-        $(document).on('click', '.delete_lead_detail_row', function() {
-            if(confirm('Do you want to remove?')) {
-                $(this).closest('.row').remove();
-            }
-        });
-
-        function getLeadDetailsRowHtml() {
-            $.ajax({
-                method:"GET",
-                url: "{{route('admin.lead.details.rows')}}",
-                data: {
-                    project_id: $('#project_id').val(),
-                    lead_id: $('#lead_id').val()
-                },
-                dataType: "json",
-                success: function(response) {
-                    $("div.lead_details").html(response.html);
-                    $("#index_count").val(response.count);
-                }
-            });
-        }
-
-        $(document).on('click', '.add_prefilled_lead_detail', function() {
-            let index = $("#index_count").val();
-            $.ajax({
-                method:"GET",
-                url: "{{route('admin.lead.detail.html')}}",
-                data: {
-                    index: index,
-                    project_id: $('#project_id').val()
-                },
-                dataType: "html",
-                success: function(response) {
-                    $("div.lead_details").append(response);
-                    $("#index_count").val(+index + 1);
-                    $(".select-tags").select2();
-                }
-            });
-        });
-
-        getCampaigns();
-    });
-</script>
 @endsection

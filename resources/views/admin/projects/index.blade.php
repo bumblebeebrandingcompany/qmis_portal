@@ -27,12 +27,10 @@
                 <thead>
                     <tr>
                         <th width="10">
-
                         </th>
                         <th>
                             {{ trans('cruds.project.fields.name') }}
                         </th>
-
                         <th>
                             {{ trans('cruds.project.fields.created_by') }}
                         </th>
@@ -42,7 +40,6 @@
                         <th>
                             {{ trans('cruds.client.fields.email') }}
                         </th>
-
                         <th>
                             &nbsp;
                         </th>

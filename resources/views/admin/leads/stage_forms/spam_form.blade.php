@@ -1,4 +1,4 @@
-<form id="SpamFormId" method="POST" action="{{ route('admin.stage-notes.store') }}"
+<form id="SpamFormId" method="POST" action="{{ route('admin.notes.store') }}"
 class="myForm" enctype="multipart/form-data">
 @csrf
 <div id="spamContent" style="display: none;">
@@ -11,24 +11,10 @@ class="myForm" enctype="multipart/form-data">
         <div class="form-group">
             <div class="form-group">
                 <label class=float-left for="noteContent">Note Content</label>
-                <textarea class="form-control {{ $errors->has('notes') ? 'is-invalid' : '' }}" name="notes" id="notes"
-                    rows="4" required>{{ old('notes') }}</textarea>
+                <textarea class="form-control {{ $errors->has('note_text') ? 'is-invalid' : '' }}" name="note_text" id="note_text"
+                    rows="4" required>{{ old('note_text') }}</textarea>
             </div>
-            {{-- <select id="myselection" name="notes">
-                <option>Select Option</option>
-                @foreach ($noteNotInterested as $id => $notes)
-                    <option value="{{ $notes->notes }}"
-                        {{ old('notes_id') == $notes->id ? 'selected' : '' }}>
-                        {{ $notes->notes }}
-                    </option>
-                @endforeach --}}
-            {{-- <option value="Others">Others</option> --}}
-            {{-- </select> --}}
-            {{-- <div id="showOthers" class="myDiv">
-                <label for="OthersNoteContent">Note Content</label>
-                <textarea class="form-control {{ $errors->has('notes') ? 'is-invalid' : '' }}" name="notes" id="notes"
-                    rows="4" required>{{ old('notes') }}</textarea>
-            </div> --}}
+
         </div>
         <div class="modal-footer">
             <button class="btn btn-danger" type="submit">Save</button>

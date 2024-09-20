@@ -6,11 +6,12 @@ use App\Traits\Auditable;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Lead extends Model
 {
-    use Auditable, HasFactory;
+    use Auditable, HasFactory, SoftDeletes;
 
     public $table = 'leads';
 
@@ -29,7 +30,9 @@ class Lead extends Model
     public const DEFAULT_WEBHOOK_FIELDS = [
         'father_name',
         'email',
+        'user_id',
         'phone',
+        'walkin_no',
         'predefined_comments',
         'predefined_cp_comments',
         'predefined_created_by',
@@ -43,7 +46,7 @@ class Lead extends Model
         'predefined_source_field2',
         'predefined_source_field3',
         'predefined_source_field4',
-        'predefined_lead_ref_no'
+        'predefined_lead_ref_no',
     ];
 
     /**
@@ -63,9 +66,18 @@ class Lead extends Model
         'subsource' => 'json',
         'webhook_response' => 'array',
         'lead_event_webhook_response' => 'array',
+        'father_details' => 'array',
+        'mother_details' => 'array',
+        'student_details' => 'array',
+        'guardian_details' => 'array',
+        'payload' => 'array',
 
     ];
+        // Allow mass assignment for these fields
+        // protected $fillable = ['source'];
 
+        // Or ensure 'source' is not in the $guarded array
+        // protected $guarded = [];
 
     protected function serializeDate(DateTimeInterface $date)
     {
@@ -99,12 +111,12 @@ class Lead extends Model
 
     public function parentStage()
     {
-        return $this->belongsTo(ParentStage::class, 'stage_id');
+        return $this->belongsTo(ParentStage::class, 'parent_stage_id');
     }
 
     public function stage()
     {
-        return $this->belongsTo(Stage::class, 'stage_id');
+        return $this->belongsTo(Stage::class, 'parent_stage_id');
     }
 
     public function users()
@@ -117,7 +129,6 @@ class Lead extends Model
         return $this->hasMany(SiteVisit::class);
     }
 
-
     // Define a method to get the parent_stage_name
     public function getParentStageNameAttribute()
     {
@@ -128,8 +139,10 @@ class Lead extends Model
     {
         $singleDimArr = [];
         foreach ($datas as $key => $data) {
-            if (!empty($data) && !is_array($data))
+            if (!empty($data) && !is_array($data)) {
                 $singleDimArr[$key] = $data;
+            }
+
             if (!empty($data) && is_array($data)) {
                 $singleDimArr = array_merge($singleDimArr, $this->flattenData($data));
             }
@@ -145,12 +158,15 @@ class Lead extends Model
         $lead_info = [];
         $lead_details = $this->lead_details;
 
-        if (empty($lead_details))
+        if (empty($lead_details)) {
             return $lead_info;
+        }
 
         foreach ($lead_details as $key => $lead_detail) {
-            if (!empty($lead_detail) && !is_array($lead_detail))
+            if (!empty($lead_detail) && !is_array($lead_detail)) {
                 $lead_info[$key] = $lead_detail;
+            }
+
             if (!empty($lead_detail) && is_array($lead_detail)) {
                 $lead_info = array_merge($lead_info, $this->flattenData($lead_detail));
             }
@@ -158,12 +174,15 @@ class Lead extends Model
 
         return $lead_info;
     }
-
+    public function tag()
+    {
+        return $this->belongsTo(Tag::class, 'tag_id');
+    }
     public static function getStages()
     {
 
-        $stages = Lead::whereNotNull('stage_id')
-            ->pluck('stage_id', )
+        $stages = Lead::whereNotNull('parent_stage_id')
+            ->pluck('parent_stage_id', )
             ->toArray();
         $unique_stages = array_unique($stages);
 
@@ -171,7 +190,7 @@ class Lead extends Model
         $lead_stages = [];
         foreach ($unique_stages as $stage) {
             $parentStage = ParentStage::find($stage); // Adjust the model name accordingly
-            $dataForStage = Lead::where('stage_id', $stage)->get();
+            $dataForStage = Lead::where('parent_stage_id', $stage)->get();
             $lead_stages[$stage] = [
                 'class' => $card_classes[array_rand($card_classes)],
                 'title' => $parentStage ? $parentStage->name : ucfirst(str_replace('_', ' ', $stage)),
@@ -212,7 +231,6 @@ class Lead extends Model
         return $this->hasMany(Admission::class);
     }
 
-
     public function walkin()
     {
         return $this->belongsTo(Walkin::class, 'walkin_id');
@@ -231,5 +249,18 @@ class Lead extends Model
     {
         return $this->belongsTo(SubSource::class, 'sub_source_id');
     }
-}
+    protected static function boot()
+    {
+        parent::boot();
 
+        static::creating(function ($lead) {
+            $lead->login_token = Str::random(32);
+        });
+
+    }
+
+    public function url()
+    {
+        return $this->belongsTo(Url::class, 'url_id'); // Assuming you have a url_id column
+    }
+}

@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-12">
-        @if (count($timelineItems) > 0)
-            <div class="timeline">
+        @if ($timelineItems->isNotEmpty())
+        <div class="timeline">
                 @foreach ($timelineItems as $index => $item)
                     <div class="time-label">
                         <span
@@ -107,7 +107,7 @@
                     </div>
                 @endforeach
             </div>
-        @else
+            @else
             <div class="callout callout-warning">
                 <h5>No record found.</h5>
             </div>

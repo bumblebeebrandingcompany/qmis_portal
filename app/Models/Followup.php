@@ -10,15 +10,14 @@ class Followup extends Model
 {
     use HasFactory;
 
-    protected $appends = ['is_superadmin', 'is_agency', 'is_channel_partner', 'is_channel_partner_manager','is_presales','is_frontoffice'];
+    //  protected $appends = ['is_superadmin', 'is_agency', 'is_channel_partner', 'is_channel_partner_manager','is_presales','is_front_office'];
 
-    public $table = 'followups';
+    public $table = 'follow_ups';
 
     protected $dates = [
         'created_at',
         'updated_at',
-        'followup_date',
-        'followup_time',
+
     ];
     public function users()
     {
@@ -26,17 +25,26 @@ class Followup extends Model
     }
 
     protected $fillable = [
-        'stage_id','lead_id',
-        'created_by','notes'
+        'parent_stage_id','lead_id',
+        'created_by','notes','followup_date','followup_time'
     ];
 
-    public function timeline()
-    {
-        return $this->hasMany(LeadTimeline::class);
-    }
+    // public function timeline()
+    // {
+    //     return $this->hasMany(LeadTimeline::class);
+    // }
 
     public function lead()
     {
         return $this->belongsTo(Lead::class);
     }
+    public function timeline()
+    {
+        return $this->hasMany(LeadTimeline::class, 'payload');
+    }
+    public function application()
+{
+    return $this->belongsTo(Application::class, 'lead_id', 'id'); // Adjust 'lead_id' and 'id' as per your schema
+}
+
 }

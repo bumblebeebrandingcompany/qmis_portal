@@ -1,10 +1,10 @@
-@extends('layouts.admin')
+{{-- @extends('layouts.admin')
 @section('content')
     <h1>Call Records</h1>
     <form action="{{ route('admin.callog.store') }}" method="post">
         @csrf
         <div class="card">
-            @if(!auth()->user()->is_client)
+            @if (!auth()->user()->is_client)
             <div class="card-header">
                 <h3 class="card-title">Call Records Table</h3>
                 <button class="btn btn-primary float-right" type="submit">
@@ -169,4 +169,70 @@
                         }
                     });
                 </script>
-            @endsection
+            @endsection --}}
+@extends('layouts.admin')
+
+@section('content')
+    <div class="container">
+        <h2>Call Logs</h2>
+        <div class="container-fluid h-100 mt-3">
+            <div class="card-body">
+                <div class="card-body table-responsive p-0" style="height: 600px;">
+                    {{-- <input type="text" id="searchInput" class="form-control" placeholder="Search in table..."> --}}
+                    <br>
+                    <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-followup">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Call Date</th>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Call Duration (With Ringing)</th>
+                                <th>Call Duration (Talk Time)</th>
+                                <th>Type</th>
+                                <th>Remote ID</th>
+                                <th>Call Disposition</th>
+                                <th>Recording</th>
+                            </tr>
+                        </thead>
+                        <tbody class="followupTable">
+                            @foreach ($callLogs as $callLog)
+                                <tr>
+                                    <td>{{ $callLog->id }}</td>
+                                    <td>{{ $callLog->calldate }}</td>
+                                    <td>{{ $callLog->source }}</td>
+                                    <td>{{ $callLog->destination }}</td>
+                                    <td>{{ $callLog->call_duration_with_ringing }}</td>
+                                    <td>{{ $callLog->call_duration_talk_time }}</td>
+                                    <td>{{ $callLog->type }}</td>
+                                    <td>{{ $callLog->remote_id }}</td>
+                                    <td>{{ $callLog->call_disposition }}</td>
+                                    <td>
+                                        @if ($callLog->recording_url)
+                                            <audio controls>
+                                                <source src="{{ $callLog->recording_url }}" type="audio/mpeg">
+                                                Your browser does not support the audio element.
+                                            </audio>
+                                        @else
+                                            No recording available
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('scripts')
+    @parent
+    <script>
+        $(function() {
+            let table = $('.datatable-followup').DataTable();
+            table.on('draw.dt', function() {});
+        });
+    </script>
+@endsection

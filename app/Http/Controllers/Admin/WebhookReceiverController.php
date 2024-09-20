@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Srd;
+use App\Models\Url;
 use Illuminate\Http\Request;
 use App\Models\Source;
 use App\Utils\Util;
@@ -33,17 +35,34 @@ class WebhookReceiverController extends Controller
      * webhook coming during
      * form submission
      */
-    public function processor(Request $request, $secret)
-    {
-        $source = Source::where('webhook_secret', $secret)
-            ->firstOrFail();
 
-        if (!empty($source) && !empty($request->all())) {
-            $response = $this->util->createLead($source, $request->all());
-            return response()->json($response['msg']);
-        }
+     public function processor(Request $request, $secret)
+     {
+         // Use whereRaw to search within the JSON structure in the sub_source_name column
+         $source = Url::whereRaw("JSON_CONTAINS(sub_source_name, '{\"webhook_secret\":\"$secret\"}', '$')")->firstOrFail();
 
-    }
+         // Decode the JSON in the sub_source_name column to retrieve the sub_source_name
+         $subSources = json_decode($source->sub_source_name, true);
+
+         // Initialize $subSourceName to null or empty string
+         $subSourceName = null;
+
+         // Loop through the decoded JSON to find the entry with the webhook_secret
+         foreach ($subSources as $subSource) {
+             if (isset($subSource['webhook_secret']) && $subSource['webhook_secret'] === $secret) {
+                 $subSourceName = $subSource['sub_source_name'] ?? null;
+                 break;
+             }
+         }
+
+         if (!empty($request->all())) {
+             $response = $this->util->createLead($source, $subSourceName, $request->all());
+             return response()->json($response['msg']);
+         }
+
+         return response()->json(['error' => 'Invalid request'], 400);
+     }
+
 
     public function incomingWebhookList(Request $request)
     {
@@ -86,9 +105,6 @@ class WebhookReceiverController extends Controller
                 'sell_do_is_exist' => 0,
                 'sell_do_lead_created_at' => $req_data['payload']['recieved_on'] ?? null,
             ];
-
-            // ... other details logic ...
-
             $lead = Lead::create($details);
             $lead->ref_num = $this->util->generateLeadRefNum($lead);
             $lead->stage_id = 8;

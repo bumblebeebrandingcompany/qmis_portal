@@ -34,7 +34,6 @@ class Walkin extends Model
     {
         return $this->hasMany(Lead::class,'walkin_id');
     }
-
     public function subsource()
     {
         return $this->belongsTo(SubSource::class, 'sub_source_id');

@@ -9,14 +9,10 @@
                     <tr>
                         <th>ID</th>
                         <th>Reference Number</th>
-                        <th>Parent Name</th>
-                        <th>Child name</th>
-                        <th>Grade</th>
+                        <th>Father Name</th>
+                        <th>Mother name</th>
+                        <th>Child Details</th>
                         <th>Application No</th>
-                        <th>Assigned By</th>
-                        <th> Date</th>
-                        <th>Time</th>
-                        <th>Notes</th>
                         <th>Created At</th>
                     </tr>
                 </thead>
@@ -26,7 +22,6 @@
                     @endphp
                     @foreach ($admissions as $admission)
                         <td>{{ $counter++ }}</td>
-
                         <td>
                             @foreach ($lead as $leads)
                                 @if ($leads->id === $admission->lead_id)
@@ -37,29 +32,30 @@
                             @endforeach
                         </td>
                         <td>
-                            {{ $admission->lead->name ?? '' }}
+                            {{ $admission->lead->father_details['name'] ?? '' }}
                         </td>
                         <td>
-                            {{ $admission->lead->child_name ?? 'Not Updated' }}
+                            {{ $admission->lead->mother_details['name'] ?? 'Not Updated' }}
                         </td>
                         <td>
-                            {{ $admission->lead->grade_enquired ?? ''}}
+                            {{-- @php
+                                $leadInstance = $lead->firstWhere('id', $admission->lead_id);
+                            @endphp --}}
+
+                                @foreach ($lead as $leads)
+                                @if ($leads->id === $admission->lead_id)
+                                    {{ $leads->student_details['name'] ?? '' }}
+                                @endif
+                            @endforeach
+
                         </td>
                         <td>
                             {{ $admission->application->application_no ?? '' }}
                         </td>
-                        <td>
-                            {{ $admission->application->user->representative_name ?? 'No User Assigned' }}
-                        </td>
-                        <td>
-                            {{ $admission->follow_up_date ?? ''}}
-                        </td>
-                        <td>
-                            {{ $admission->follow_up_time ?? ''}}
-                        </td>
-                        <td>
-                            {{ $admission->notes ?? ''}}
-                        </td>
+
+                        {{-- <td>
+                            {{ $admission->notes ?? '' }}
+                        </td> --}}
                         <td>
                             {{ $admission->created_at->format('Y-m-d') }}
                         </td>
@@ -75,8 +71,7 @@
     <script>
         $(function() {
             let table = $('.datatable-Admission').DataTable();
-            table.on('draw.dt', function() {
-            });
+            table.on('draw.dt', function() {});
         });
     </script>
 @endsection

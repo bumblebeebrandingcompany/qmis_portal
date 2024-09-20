@@ -9,10 +9,10 @@ class Stage extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['stage_id', 'selected_child_stages'];
+    protected $fillable = ['parent_stage_id', 'selected_child_stages'];
 
     public function parentStage()
     {
-        return $this->belongsTo(ParentStage::class,'stage_id');
+        return $this->belongsTo(ParentStage::class,'parent_stage_id');
     }
 }

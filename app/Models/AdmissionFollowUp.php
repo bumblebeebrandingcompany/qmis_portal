@@ -6,9 +6,10 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AdmissionFollowup extends Model
+class AdmissionFollowUp extends Model
 {
     use HasFactory;
+
 
     protected $appends = ['is_superadmin', 'is_agency', 'is_channel_partner', 'is_channel_partner_manager','is_presales','is_frontoffice'];
 

@@ -2,47 +2,47 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\LeadsExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MassDestroyLeadRequest;
 use App\Http\Requests\StoreLeadRequest;
-use App\Http\Requests\UpdateLeadRequest;
-use App\Models\Application;
-use App\Models\Campaign;
-use App\Models\Lead;
-use App\Models\LeadTimeline;
-use App\Models\SubSource;
-use App\Models\SiteVisit;
-use App\Models\Followup;
-use App\Models\CallRecord;
-use App\Models\Project;
-use App\Models\Clients;
 use App\Models\Agency;
+use App\Models\Application;
+use App\Models\CallRecord;
+use App\Models\Campaign;
+use App\Models\Clients;
+use App\Models\Document;
+use App\Models\Followup;
+use App\Models\Lead;
+use App\Models\LeadEvents;
+use App\Models\LeadTimeline;
+use App\Models\Lost;
 use App\Models\Note;
-use App\Models\ParentStage;
-use App\Models\Tag;
-use App\Models\Admission;
 use App\Models\NoteNotInterested;
+use App\Models\ParentStage;
+use App\Models\Project;
+use App\Models\SiteVisit;
+use App\Models\Stage;
+use App\Models\SubSource;
+use App\Models\Tag;
+use App\Models\Url;
 use App\Models\User;
-
-use Gate;
+use App\Models\RazorLog;
+use App\Models\EmailLog;
+use App\Notifications\LeadDocumentShare;
+use App\Utils\Util;
+use Carbon\Carbon;
+use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
-use App\Utils\Util;
-use App\Models\Source;
-use App\Models\Stage;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\View;
-use App\Exports\LeadsExport;
-use App\Models\Document;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Models\LeadEvents;
-
 use Illuminate\Support\Facades\Notification;
-use App\Notifications\LeadDocumentShare;
-use Exception;
-
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 
 class LeadsController extends Controller
@@ -64,509 +64,333 @@ class LeadsController extends Controller
         $this->lead_view = ['list', 'kanban'];
     }
 
+
     public function initiateCall(Lead $lead)
     {
+        $user = auth()->user();
+        $agentNumber = $user->contact_number_1;
+        $source = $user->source;
 
-        $destination_number = $lead->phone;
-        $agent_number = '+919677222567';
+        $customerNumber = $lead->father_details['phone']
+            ?? $lead->mother_details['phone']
+            ?? $lead->guardian_details['phone'];
 
-        $apiKey = config('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2N1c3RvbWVyLnNlcnZldGVsLmluL2FwaS92MS9hdXRoL2xvZ2luIiwiaWF0IjoxNjk4NjY0NTAxLCJleHAiOjE2OTg2NjgxMDEsIm5iZiI6MTY5ODY2NDUwMSwianRpIjoiaFBDRUIwblllUjBjU2N2MCIsInN1YiI6IjE3MDQ0MCJ9.V_qQ_Vtm9d2ojWyqR1ZBfxjQRt2JJnz3YHXgXJ3WIxQ');
-        $apiKey = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNzA0NDAiLCJpc3MiOiJodHRwczovL2N1c3RvbWVyLnNlcnZldGVsLmluL3Rva2VuL2dlbmVyYXRlIiwiaWF0IjoxNjk4NjYxMjYwLCJleHAiOjE5OTg2NjEyNjAsIm5iZiI6MTY5ODY2MTI2MCwianRpIjoiTWtYY0h0OXlpNG5Ea2FuaSJ9.L23vhUJ0UIGc3nffLeMK0NMczroLgwwkECFnaCaY-A8';
+        if (!$customerNumber) {
+            return response()->json(['message' => 'No valid customer phone number found'], 400);
+        }
 
-        $baseURL = 'https://api.servetel.in/v1';
-        $client = new Client();
+        $apiKey = '4e4173ce50aaae6da770dd5cb3729e33';
+        $remoteId = '12345';
+        $apiUrl = 'https://0xq3m25xe2.execute-api.ap-south-1.amazonaws.com/V1/selldo_c2c';
 
-        $requestBody = [
-            "agent_number" => '+919677222567',
-            "destination_number" => $lead->phone,
-        ];
-        $response = $client->post("$baseURL/click_to_call", [
-            'headers' => [
-                'Authorization' => "Bearer $apiKey",
-                'Content-Type' => 'application/json',
-            ],
-            'json' => $requestBody,
+        $response = Http::get($apiUrl, [
+            'agent_number' => $agentNumber,
+            'customer_number' => $customerNumber,
+            'apikey' => $apiKey,
+            'remote_id' => $remoteId,
         ]);
 
-        if ($response->getStatusCode() == 200) {
-            $responseBody = $response->getBody()->getContents();
+        Log::info('Source value:', ['source' => $source]);
+
+        $lead->source = $source;
+        $lead->save();
+
+        if ($response->successful()) {
+            return response()->json(['message' => 'Call initiated successfully'], 200);
         } else {
-            $errorResponse = json_decode($response->getBody()->getContents(), true);
+            return response()->json(['message' => 'Failed to initiate call'], $response->status());
+        }
+    }
+    public function projectViseLeads(Request $request, $id)
+    {
+        // Find the project by ID
+        $project = Project::find($id);
+
+        // If project not found, redirect with an error message
+        if (!$project) {
+            return redirect()->route('admin.leads.index')->with('error', 'Project not found.');
         }
 
-        return back();
+        // Get all URL records
+        $urls = Url::all();
+
+        // Get the search term from the request
+        $search = $request->input('search');
+
+        // Start the query for leads based on project_id
+        $query = Lead::where('project_id', $project->id);
+
+        // Define the stages for front office or admission team
+        $frontOfficeStages = [13, 11, 14, 19, 29, 25, 30,9];
+
+        // Check if the user is a front office user or admission team
+        if (auth()->user()->is_admissionteam || auth()->user()->is_frontoffice) {
+            // Filter the leads to show only specified stages
+            $query->whereIn('parent_stage_id', $frontOfficeStages);
+        }
+
+        // Apply search filter if a search term is provided
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('ref_num', 'LIKE', "%{$search}%")
+                  ->orWhere('payload', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Execute the query and get the leads
+        $leads = $query->get();
+
+        // Map the matching campaign and source based on sub_source_name
+        foreach ($leads as $lead) {
+            // Initialize campaign and source as empty
+            $lead->campaign_name = '';
+            $lead->source_name = '';
+
+            // Decode additional_details JSON if it exists
+            if (!empty($lead->additional_details)) {
+                $additionalDetails = json_decode($lead->additional_details, true);
+                $lead->campaign_name = $additionalDetails['campaign'] ?? '';
+                $lead->source_name = $additionalDetails['source'] ?? '';
+            }
+
+            // Check for sub_source_name match in URLs
+            if ($lead->sub_source_name) {
+                foreach ($urls as $url) {
+                    if (isset($url->sub_source_name) && $url->sub_source_name == $lead->sub_source_name) {
+                        // Update campaign and source if URL match found
+                        $lead->campaign_name = $url->campaign_name ?? $lead->campaign_name;
+                        $lead->source_name = $url->source_name ?? $lead->source_name;
+                        break; // Stop if match is found
+                    }
+                }
+            }
+        }
+
+        // Retrieve stages and group leads by stage
+        $lead_stages = Lead::getStages($project->id);
+        $stages = ParentStage::whereIn('id', $frontOfficeStages)->pluck('name', 'id')->toArray(); // Only retrieve the defined stages
+        $stage_wise_leads = $leads->groupBy(function ($lead) {
+            return $lead->parent_stage_id ?? 'no_stage';
+        });
+
+        // Determine view type (list or kanban)
+        $lead_view = $request->input('view', 'list');
+
+        // Return the view with the necessary data
+        return view('admin.leads.index', compact('leads', 'lead_view', 'stage_wise_leads', 'lead_stages', 'stages', 'project'));
     }
+    
     public function index(Request $request)
     {
-        $lead_view = empty($request->view) ? 'list' : (in_array($request->view, $this->lead_view) ? $request->view : 'list');
-        $__global_clients_filter = $this->util->getGlobalClientsFilter();
-        if (!empty($__global_clients_filter)) {
-            $project_ids = $this->util->getClientsProjects($__global_clients_filter);
-            $campaign_ids = $this->util->getClientsCampaigns($__global_clients_filter);
-        } else {
-            $project_ids = $this->util->getUserProjects(auth()->user());
-            $campaign_ids = $this->util->getCampaigns(auth()->user(), $project_ids);
-        }
 
-        if ($request->ajax()) {
-            $user = auth()->user();
-            $lead_stage = '';
-            if ($user->is_agency || $user->is_superadmin || $user->is_presales) {
-                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted', 'enquiry', 'application purchased', 'lost', 'followup', 'rescheduled', 'Site Not Visited', 'Admitted', 'Spam', 'Not Qualified', 'Future Prospect', 'Cancelled', 'RNR', 'virtual call scheduled', 'Virtual Call Conducted', 'virtual call cancelled' . 'Admission FollowUp', 'admission withdrawn'];
-            } elseif ($user->is_client || $user->is_frontoffice) {
+        $projects = Project::all();
 
-                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted', 'Cancelled', 'rescheduled'];
-            } elseif ($user->is_admissionteam) {
-
-                $lead_stage = ['Admission FollowUp', 'application purchased', 'Admitted', 'admission withdrawn'];
-            }
-            $stageId = $request->input('stage_id');
-            $admissionName = $request->input('admission_team_name');
-            $frontoffice = $request->input('supervised_by');
-
-            $query = $this->util->getFilteredLeads($request);
-            $query->where(function ($query) use ($lead_stage, $user, $stageId, $admissionName, $frontoffice) {
-                $query->whereHas('parentStage', function ($q) use ($lead_stage, $stageId) {
-                    $q->whereIn('name', $lead_stage);
-                    if (!empty ($stageId)) {
-                        $q->where('id', $stageId);
-                    }
-                });
-
-                if ($admissionName) {
-                    $query->whereHas('application.users', function ($q) use ($admissionName) {
-                        $q->where('representative_name', 'like', '%' . $admissionName . '%');
-                    });
-                }
-
-                if ($frontoffice) {
-                    $query->whereHas('application.user', function ($q) use ($frontoffice) {
-                        $q->where('representative_name', 'like', '%' . $frontoffice . '%');
-                    });
-                }
-
-
-
-                if ($user->is_admissionteam) {
-                    $query->where('user_id', $user->id);
-                } elseif ($user->is_superadmin || $user->is_frontoffice) {
-                    $query->orWhereNull('stage_id');
-                }
-            });
-            $table = Datatables::of($query);
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
-
-            $table->editColumn('actions', function ($row) use ($user) {
-                $viewGate = true;
-                $editGate = $user->is_superadmin;
-                $deleteGate = $user->is_superadmin;
-                $crudRoutePart = 'leads';
-
-                return view(
-                    'partials.datatablesActions',
-                    compact(
-                        'viewGate',
-                        'editGate',
-                        'deleteGate',
-                        'crudRoutePart',
-                        'row'
-                    )
-                );
-            });
-
-            $table->addColumn('email', function ($row) use ($user) {
-                $email_cell = $row->email ? $row->email : '';
-                if (!empty ($email_cell) && $user->is_channel_partner_manager) {
-                    return maskEmail($email_cell);
-                } else {
-                    return $email_cell;
-                }
-            });
-
-            $table->addColumn('overall_status', function ($row) {
-                $overall_status = '';
-                if ($row->sell_do_is_exist) {
-                    $overall_status = '<b class="text-danger">Duplicate</b>';
-                } else {
-                    $overall_status = '<b class="text-success">New</b>';
-                }
-                return $overall_status;
-            });
-
-            // $table->addColumn('sell_do_date', function ($row) {
-            //     $date = '';
-            //     if (!empty ($row->sell_do_lead_created_at)) {
-            //         $date = Carbon::parse($row->sell_do_lead_created_at)->format('d/m/Y');
-            //     }
-            //     return $date;
-            // });
-
-            // $table->addColumn('sell_do_time', function ($row) {
-            //     $time = '';
-            //     if (!empty ($row->sell_do_lead_created_at)) {
-            //         $time = Carbon::parse($row->sell_do_lead_created_at)->format('h:i A');
-            //     }
-            //     return $time;
-            // });
-
-            // $table->addColumn('sell_do_lead_id', function ($row) {
-            //     $sell_do_lead_id = '';
-            //     if (!empty ($row->sell_do_lead_id)) {
-            //         $sell_do_lead_id = $row->sell_do_lead_id;
-            //     }
-            //     return $sell_do_lead_id;
-            // });
-            $table->addColumn('father_name', function ($row) use ($user) {
-                $father_name = $row->father_name ? $row->father_name : '';
-                if (!empty ($father_name) && $user->is_channel_partner_manager) {
-                    return $father_name;
-                } else {
-                    return 'Not Updated';
-                }
-            });
-            $table->addColumn('mother_name', function ($row) use ($user) {
-                $mother_name = $row->mother_name ? $row->mother_name : '';
-                if (!empty ($mother_name) && $user->is_channel_partner_manager) {
-                    return $mother_name;
-                } else {
-                    return 'Not Updated';
-                }
-            });
-            $table->addColumn('phone', function ($row) use ($user) {
-                $phone = $row->phone ? $row->phone : '';
-                if (!empty ($phone) && $user->is_channel_partner_manager) {
-                    return maskNumber($phone);
-                } else {
-                    return $phone;
-                }
-            });
-
-            $table->editColumn('secondary_phone', function ($row) use ($user) {
-                $secondary_phone = $row->secondary_phone ? $row->secondary_phone : '';
-                if (!empty ($secondary_phone) && $user->is_channel_partner_manager) {
-                    return maskNumber($secondary_phone);
-                } else {
-                    return $secondary_phone;
-                }
-            });
-
-            $table->addColumn('project_name', function ($row) {
-                if (isset ($row->sub_source_id) && $row->sub_source_id !== null) {
-                    $subSourceArray = json_decode($row->sub_source_id, true);
-                    if ($subSourceArray !== null && is_array($subSourceArray)) {
-                        if (!empty ($subSourceArray)) {
-                            $subsource = SubSource::find($subSourceArray[0]);
-                            return $subsource->project->name ?? '';
-                        } else {
-                            return 'Yet to be Updated';
-                        }
-                    } else {
-                        $subsource = SubSource::find($subSourceArray);
-                        return $subsource->project->name ?? '';
-                    }
-                } else {
-                    return 'Yet to be Updated';
-                }
-            });
-            $table->addColumn('parent_stage_name', function ($row) {
-                return $row->parentStage ? $row->parentStage->name : '';
-            });
-            $table->addColumn('application_num', function ($row) {
-                return $row->application ? $row->application->application_no : 'Yet to be Updated';
-            });
-
-            $table->addColumn('supervised_by', function ($row) {
-                if ($row->application) {
-                    if ($row->application->user) {
-                        return $row->application->user->representative_name;
-                    } else {
-                        return 'User not found';
-                    }
-                } else {
-                    return 'Yet to be Updated';
-                }
-            });
-            $table->addColumn('admission_team_name', function ($row) {
-                if ($row->application) {
-                    if ($row->application->users) {
-                        return $row->application->users->representative_name;
-                    } else {
-                        return 'User not found';
-                    }
-                } else {
-                    return 'Yet to be Updated';
-                }
-            });
-
-            $table->addColumn('campaign_campaign_name', function ($row) {
-                if (isset ($row->sub_source_id) && $row->sub_source_id !== null) {
-                    $subSourceArray = json_decode($row->sub_source_id, true);
-                    if ($subSourceArray !== null && is_array($subSourceArray)) {
-                        if (!empty ($subSourceArray)) {
-                            $subsource = SubSource::find($subSourceArray[0]);
-                            return $subsource->campaign->name ?? '';
-                        } else {
-                            return 'Yet to be Updated';
-                        }
-                    } else {
-                        $subsource = SubSource::find($subSourceArray);
-                        return $subsource->campaign->name ?? '';
-                    }
-                } else {
-                    return 'Yet to be Updated';
-                }
-            });
-
-            $table->addColumn('source_name', function ($row) {
-                if (isset ($row->sub_source_id) && $row->sub_source_id !== null) {
-                    $subSourceArray = json_decode($row->sub_source_id, true);
-                    if ($subSourceArray !== null && is_array($subSourceArray)) {
-                        if (!empty ($subSourceArray)) {
-                            $subsource = SubSource::find($subSourceArray[0]);
-                            return $subsource->source->name ?? '';
-                        } else {
-                            return 'Yet to be Updated';
-                        }
-                    } else {
-                        $subsource = SubSource::find($subSourceArray);
-                        return $subsource->source->name ?? '';
-                    }
-                } else {
-                    return 'Yet to be Updated';
-                }
-            });
-            $table->addColumn('sub_source_name', function ($row) {
-                if (isset ($row->sub_source_id) && $row->sub_source_id !== null) {
-                    $subSourceArray = json_decode($row->sub_source_id, true);
-                    if ($subSourceArray !== null && is_array($subSourceArray)) {
-                        if (!empty ($subSourceArray)) {
-                            $subsource = SubSource::find($subSourceArray[0]);
-                            return $subsource->name ?? '';
-                        } else {
-                            return 'Yet to be Updated';
-                        }
-                    } else {
-                        $subsource = SubSource::find($subSourceArray);
-                        return $subsource->name ?? '';
-                    }
-                } else {
-                    return 'Yet to be Updated';
-                }
-            });
-
-            $table->addColumn('added_by', function ($row) {
-                return $row->createdBy ? $row->createdBy->name : '';
-            });
-
-            $table->addColumn('created_at', function ($row) {
-                return $row->created_at;
-            });
-
-            $table->addColumn('updated_at', function ($row) {
-                return $row->updated_at;
-            });
-
-            $table->filter(function ($query) {
-                $search = request()->get('search');
-                $search_term = $search['value'] ?? '';
-                if (request()->has('search') && !empty ($search_term)) {
-                    $query->where(function ($q) use ($search_term) {
-                        $q->where('name', 'like', "%" . $search_term . "%")
-                            ->orWhere('ref_num', 'like', "%" . $search_term . "%")
-                            ->orWhere('sell_do_lead_id', 'like', "%" . $search_term . "%")
-                            ->orWhere('email', 'like', "%" . $search_term . "%")
-                            ->orWhere('secondary_email', 'like', "%" . $search_term . "%")
-                            ->orWhere('phone', 'like', "%" . $search_term . "%")
-                            ->orWhere('secondary_phone', 'like', "%" . $search_term . "%");
-                    });
-                }
-            });
-
-            $table->rawColumns(['actions', 'email', 'phone', 'secondary_phone', 'placeholder', 'project', 'campaign', 'created_at', 'updated_at', 'source_name', 'added_by', 'overall_status', 'sell_do_date', 'sell_do_time', 'sell_do_lead_id']);
-
-            return $table->make(true);
-        }
-        $subsources = SubSource::all();
-        $projects = Project::whereIn('id', $project_ids)
-            ->get();
-        $campaigns = Campaign::whereIn('id', $campaign_ids)
-            ->get();
-        $parentStages = ParentStage::all();
-        $admission = Admission::all();
-        $sources = Source::whereIn('project_id', $project_ids)
-            ->whereIn('campaign_id', $campaign_ids)
-            ->get();
-        $parentStages = ParentStage::all(); // Fetch all parent stages
-        $sales = User::where('user_type', 'Presales')->get(); // Fetch all parent stages
-        $frontoffice = User::where('user_type', 'Frontoffice')->get(); // Fetch all parent stages
-        $admissionteams = User::where('user_type', 'Admissionteam')->get(); // Fetch all parent stages
-
-
-
-
-        $leads = Lead::all();
-
-
-        if (in_array($lead_view, ['list'])) {
-            return view('admin.leads.index', compact('projects', 'campaigns', 'sources', 'lead_view', 'leads', 'parentStages', 'sales', 'frontoffice', 'admissionteams', 'subsources'));
-        } elseif ($lead_view === 'kanban') {
-            $user = auth()->user();
-            $lead_stage = '';
-            if ($user->is_agency || $user->is_superadmin || $user->is_presales) {
-                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted', 'enquiry', 'application purchased', 'lost', 'followup', 'rescheduled', 'Site Not Visited', 'Admitted', 'Spam', 'Not Qualified', 'Future Prospect', 'Cancelled', 'RNR', 'virtual call scheduled', 'Virtual Call Conducted', 'virtual call cancelled' . 'Admission FollowUp', 'application not purchased', 'admission withdrawn'];
-            } elseif ($user->is_client || $user->is_frontoffice) {
-
-                $lead_stage = ['Site Visit Scheduled', 'Site Visit Conducted', 'Cancelled', 'rescheduled'];
-            } elseif ($user->is_admissionteam) {
-                $lead_stage = ['Admission FollowUp', 'application purchased', 'Admitted', 'application not purchased'];
-
-            }
-
-            $query = $this->util->getFIlteredLeads($request);
-            $query->where(function ($query) use ($lead_stage, $user) {
-                $query->whereHas('parentStage', function ($q) use ($lead_stage) {
-                    $q->whereIn('name', $lead_stage);
-                });
-                if ($user->is_admissionteam) {
-                    // If the user is part of the admission team, filter by user_id
-                    $query->where('user_id', $user->id);
-                } elseif ($user->is_superadmin || $user->is_frontoffice) {
-                    // If the user is super admin or front office, include leads with empty stage_id
-                    $query->orWhereNull('stage_id');
-                }
-            });
-            $stage_wise_leads = $query->get()->groupBy('stage_id');
-            $lead_stages = Lead::getStages();
-            $parentStages = ParentStage::all(); // Fetch all parent stages
-            $sales = User::where('user_type', 'Presales')->get(); // Fetch all parent stages
-            $frontoffice = User::where('user_type', 'Frontoffice')->get(); // Fetch all parent stages
-            $admissionteams = User::where('user_type', 'Admissionteam')->get();
-            $stageId = $request->input('stage_id');
-            $admissionName = $request->input('admission_team_name');
-            $front_office = $request->input('supervised_by');// Fetch all parent stages
-            $query->where(function ($query) use ($lead_stage, $user, $stageId, $admissionName, $front_office) {
-                $query->whereHas('parentStage', function ($q) use ($lead_stage, $stageId) {
-                    $q->whereIn('name', $lead_stage);
-                    if (!empty ($stageId)) {
-                        $q->where('id', $stageId);
-                    }
-                });
-
-                if ($admissionName) {
-                    $query->whereHas('application.users', function ($q) use ($admissionName) {
-                        $q->where('representative_name', 'like', '%' . $admissionName . '%');
-                    });
-                }
-
-                if ($front_office) {
-                    $query->whereHas('application.user', function ($q) use ($front_office) {
-                        $q->where('representative_name', 'like', '%' . $front_office . '%');
-                    });
-                }
-
-
-
-                if ($user->is_admissionteam) {
-                    $query->where('user_id', $user->id);
-                } elseif ($user->is_superadmin || $user->is_frontoffice) {
-                    $query->orWhereNull('parent_stage_id');
-                }
-            });
-            $filters = $request->except(['view']);
-            return view('admin.leads.kanban_index', compact('projects', 'campaigns', 'sources', 'lead_view', 'stage_wise_leads', 'lead_stages', 'filters', 'leads', 'parentStages', 'sales', 'frontoffice', 'admissionteams', 'subsources'));
-        }
+        return view('admin.leads.project_leads', compact('projects'));
     }
-    public function create()
+
+    public function create(Request $request)
     {
-        if (!(auth()->user()->is_superadmin || auth()->user()->is_channel_partner)) {
-            abort(403, 'Unauthorized.');
+        // Get the URL ID from the query parameter or another logic
+        $urlId = $request->query('url_id');
+        $url = Url::find($urlId);
+
+        // Fetch unique project IDs from the Url model
+        $projectIds = Url::distinct()->pluck('project_id');
+
+        // Fetch the project names corresponding to the project IDs
+        $projects = Project::whereIn('id', $projectIds)->pluck('name', 'id');
+
+        // Fetch distinct campaigns and sub-sources
+        $campaigns = Url::distinct()->pluck('campaign_name');
+        $subSources = Url::distinct()->pluck('sub_source_name');
+
+        // Fetch lead ID if needed (e.g., from a query parameter)
+        $lead_id = $request->query('lead_id');
+        $lead = Lead::find($lead_id); // Find the lead based on the lead_id
+
+        // Fetch the stage name using the parent_stage_id from the lead
+        $stageName = null;
+        if ($lead && $lead->parent_stage_id) {
+            $stage = ParentStage::find($lead->parent_stage_id);
+            $stageName = $stage ? $stage->name : null; // Get the stage name or null if not found
         }
 
-        $project_ids = $this->util->getUserProjects(auth()->user());
-        $campaign_ids = $this->util->getCampaigns(auth()->user());
-        $subsources = SubSource::all();
-        $projects = Project::whereIn('id', $project_ids)
-            ->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $campaigns = Campaign::whereIn('id', $campaign_ids)
-            ->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $sub_source_id = request()->get('sub_source_id', null);
-        $subsources = SubSource::all();
-        return view('admin.leads.create', compact('campaigns', 'projects', 'sub_source_id', 'subsources', 'subsources'));
+        // Fetch all parent stages for the dropdown selection
+        $stage = ParentStage::pluck('name', 'id');
+
+        return view('admin.leads.create', compact('projects', 'campaigns', 'url', 'subSources', 'lead_id', 'stage', 'stageName'));
     }
-    // Add country code to phone number if missing
-    public function store(StoreLeadRequest $request)
+
+
+    public function store(Request $request)
     {
-        $input = $request->except(['_method', '_token']);
+        // Extract input data and handle lead details
+        $input = $request->except(['_method', '_token', 'redirect_to']);
         $input['lead_details'] = $this->getLeadDetailsKeyValuePair($input['lead_details'] ?? []);
         $input['created_by'] = auth()->user()->id;
-        $input['stage_id'] = $request->input('stage_id');
-        $subSourceIdArray = $request->input('sub_source_id');
 
-        // Convert sub_source_id array to JSON
-        $subSourceIdJson = json_encode($subSourceIdArray);
-        $input['user_id'] = $request->input('user_id');
-        // $input['sub_source_id'] = $request->input('sub_source_id');
-
-
-        // Check if a lead with the same mobile number or email already exists
-        $existingLead = Lead::where(function ($query) use ($input) {
-            $query->where('phone', $input['phone'])
-                ->orWhere('email', $input['email']);
-        })->first();
-
-        if ($existingLead) {
-            $existingSubSourceIds = json_decode($existingLead->sub_source_id, true);
-
-            if (!is_array($existingSubSourceIds)) {
-                $existingSubSourceIds = [$existingLead->sub_source_id];
+        // Initialize payload array
+        $payload = [];
+        $inputPayload = $request->input('payload', []);
+        foreach ($inputPayload as $key => $value) {
+            if (is_array($value)) {
+                foreach ($value as $subKey => $subValue) {
+                    $payload["{$key}][{$subKey}"] = $subValue;
+                }
+            } else {
+                $payload[$key] = $value;
             }
-
-            $newSubSourceIds = is_array($subSourceIdArray) ? $subSourceIdArray : [$subSourceIdArray];
-
-            $mergedSubSourceIds = array_values(array_unique(array_merge($existingSubSourceIds, $newSubSourceIds)));
-
-            $existingLead->sub_source_id = $mergedSubSourceIds;
-            $existingLead->save();
-            $this->logTimeline($existingLead, 'lead_subSource_updated', 'SubSource IDs updated for the lead.');
-
-            return redirect()->route('admin.leads.index')->with('success', 'SubSource IDs updated for the existing lead.');
         }
 
-        // If no existing lead is found, proceed with creating a new lead
+        // Create the lead
         $lead = Lead::create($input);
-        $lead->sub_source_id = $subSourceIdJson;
-        $lead->ref_num = $this->util->generateLeadRefNum($lead);
-        $lead->save();
-        $this->logTimeline($lead, 'lead_created', 'Lead Created Successfully');
+        \Log::info('Lead created:', ['lead' => $lead]);
 
-        // Update source and campaign for the new lead if necessary
-        if (auth()->user()->is_channel_partner) {
-            // $source = Source::where('is_cp_source', 1)
-            //     ->where('project_id', $input['project_id'])
-            //     ->first();
+        if (!$lead) {
+            \Log::error('Lead creation failed.', ['input' => $input]);
+            return redirect()->back()->withErrors('Lead creation failed.');
+        }
 
-            // if (!empty($source)) {
-                // $lead->source_id = $source->id;
-                // $lead->campaign = $source->campaign;
-            //     $lead->save();
-            // }
+        // Handling selectedValue for subSource
+        $selectedValue = $request->input('subSource');
+        \Log::info('Selected SubSource:', ['selectedValue' => $selectedValue]);
 
-            $this->util->storeUniqueWebhookFields($lead);
-
-            if (!empty($lead->project->outgoing_apis)) {
-                $this->util->sendApiWebhook($lead->id);
+        if ($selectedValue) {
+            list($srdId, $subSourceName) = explode('|', $selectedValue);
+            $srd = Url::find($srdId);
+            if ($srd) {
+                \Log::info('Found Url:', ['srd' => $srd]);
+                // Set sub_source_name and sub_source_id based on ip_source
+                if ($srd->ip_source == 0) {
+                    $lead->sub_source_name = $subSourceName;
+                } else if ($srd->ip_source == 1) {
+                    $lead->sub_source_name = auth()->user()->name;
+                }
+                $lead->sub_source_id = $srdId;
+                $payload['bbc_lms[lead][sub_source]'] = $subSourceName;
+                $payload['bbc_lms[lead][project]'] = $srd->project->name;
+                $payload['bbc_lms[lead][campaign]'] = $srd->campaign;
+                $payload['bbc_lms[lead][source]'] = $srd->source;
+                $payload['bbc_lms[lead][mother_name]'] = $request->input('name');
+                $payload['bbc_lms[lead][mother_phone]'] = $request->input('phone');
+                $payload['bbc_lms[lead][mother_email]'] = $request->input('secondary_phone');
+                $payload['bbc_lms[lead][email]'] = $request->input('email');
+                $payload['bbc_lms[lead][addl_email]'] = $request->input('addl_email');
+                $lead->project_id = $srd->project_id;
+            } else {
+                \Log::error('Url not found:', ['srdId' => $srdId]);
             }
         }
 
-        return redirect()->route('admin.leads.index')->with('success', 'Lead created successfully.');
+        // Now handle URL creation or retrieval based on validated data
+        $validatedData = $request->validate([
+            'project_id' => 'required',
+            'campaign_name' => 'required',
+            'source_name' => 'required',
+            'sub_source_name' => 'sometimes'
+        ]);
+
+        $url = Url::where('project_id', $validatedData['project_id'] ?? null)
+            ->where('campaign_name', $validatedData['campaign_name'] ?? null)
+            ->where('source_name', $validatedData['source_name'] ?? null)
+            ->where('sub_source_name', $validatedData['sub_source_name'] ?? null)
+            ->first();
+
+        // If no such Url record exists, create a new one
+        if (!$url) {
+            $url = new Url([
+                'project_id' => $validatedData['project_id'] ?? null,
+                'campaign_name' => $validatedData['campaign_name'] ?? null,
+                'source_name' => $validatedData['source_name'] ?? null,
+                'sub_source_name' => $validatedData['sub_source_name'] ?? null,
+            ]);
+            $url->save();
+        }
+
+        $lead->project_id = $url->project_id;
+        $lead->parent_stage_id;
+        $lead->ref_num = $this->util->generateLeadRefNum($lead);
+        \Log::info('Generated Reference Number:', ['ref_num' => $lead->ref_num]);
+
+        $lead->save();
+        \Log::info('Lead saved:', ['lead' => $lead]);
+
+        $this->logTimeline($lead, 'lead_created', 'Lead Created Successfully');
+        return redirect()->back()->with('success', 'Lead created successfully.');
     }
 
+    // public function store(Request $request)
+    // {
+    //     // Log incoming request data
+    //     Log::info('Incoming request data:', $request->all());
 
+    //     $name = null;
+    //     $email = null;
 
+    //     // Check if it's a POST request with JSON data
+    //     if ($request->isMethod('post')) {
+    //         $validatedData = $request->validate([
+    //             'api' => 'required|array',
+    //             'api.*.request_body' => 'required|array',
+    //             'api.*.request_body.*.key' => 'required|array',
+    //             'api.*.request_body.*.value' => 'required|array',
+    //         ]);
 
+    //         // Log validated data for debugging
+    //         Log::info('Validated data:', $validatedData);
 
+    //         // Process the JSON data
+    //         foreach ($validatedData['api'] as $webhookKey => $apiData) {
+    //             foreach ($apiData['request_body'] as $rbKey => $requestBody) {
+    //                 $keys = $requestBody['key'];
+    //                 $values = $requestBody['value'];
 
+    //                 foreach ($keys as $index => $key) {
+    //                     $value = $values[$index];
+
+    //                     // Log each key-value pair
+    //                     Log::info("Processing key: {$key} with value: {$value}");
+
+    //                     // Store data based on the specific key
+    //                     if ($key === 'bbc_lms[lead][mother_name]') {
+    //                         $name = $value;
+    //                     } elseif ($key === 'bbc_lms[lead][mother_email]') {
+    //                         $email = $value;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     } else {
+    //         // Handle query string data
+    //         $queryData = $request->query();
+
+    //         // Log query data
+    //         Log::info('Query data:', $queryData);
+
+    //         if (!empty($queryData)) {
+    //             if (isset($queryData['bbc_lms[lead][mother_name]'])) {
+    //                 $name = $queryData['bbc_lms[lead][mother_name]'];
+    //             }
+    //             if (isset($queryData['bbc_lms[lead][mother_email]'])) {
+    //                 $email = $queryData['bbc_lms[lead][mother_email]'];
+    //             }
+    //         }
+    //     }
+
+    //     // Log the final values to be stored
+    //     Log::info('Final data to be stored:', ['name' => $name, 'email' => $email]);
+
+    //     // At this point, you have the `name` and `email` variables filled with the correct values.
+    //     // You can now store these in your database or process them as needed.
+
+    //     // For example, storing them in the database (assuming you have a model called `Lead`):
+    //     $lead = new Lead();
+    //     $lead->name = $name;
+    //     $lead->email = $email;
+    //     $lead->save();
+
+    //     return response()->json(['message' => 'Data received and stored successfully'], 200);
+    // }
 
     public function showTimeline($leadId)
     {
@@ -577,130 +401,197 @@ class LeadsController extends Controller
     }
     public function edit(Lead $lead)
     {
-        if (!auth()->user()->is_superadmin) {
-            abort(403, 'Unauthorized.');
-        }
-
-        $project_ids = $this->util->getUserProjects(auth()->user());
-        $campaign_ids = $this->util->getCampaigns(auth()->user(), $project_ids);
-
-        $projects = Project::whereIn('id', $project_ids)
-            ->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $campaigns = Campaign::whereIn('id', $campaign_ids)
-            ->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $lead->load('project', 'campaign');
-
-        return view('admin.leads.edit', compact('campaigns', 'lead', 'projects'));
+        // if (!auth()->user()->is_superadmin) {
+        //     abort(403, 'Unauthorized.');
+        // }
+        $urls = Url::all();
+        $leads = Lead::all();
+        return view('admin.leads.edit', compact('lead', 'leads', 'urls'));
     }
+
     private function logTimeline(Lead $lead, $type, $description)
     {
         $timeline = new LeadTimeline;
         $timeline->activity_type = $type;
         $timeline->lead_id = $lead->id;
         $timeline->payload = json_encode($lead->toArray()); // Convert array to JSON
-        // $timeline->description = $description;
+        $timeline->description = $description;
         $timeline->save();
     }
-
-
-
-    public function update(UpdateLeadRequest $request, Lead $lead)
+    public function update(Request $request, Lead $lead)
     {
+        // Extract input data
         $input = $request->except(['_method', '_token']);
+        $input['parent_stage_id'] = $request->input('parent_stage_id');
 
-        $input['stage_id'] = $request->input('stage_id');
+        // Map fields to JSON columns
+        $lead->father_details = [
+            'name' => $request->input('father_details.name'),
+            'phone' => $request->input('father_details.phone'),
+            'email' => $request->input('father_details.email'),
+            'occupation' => $request->input('father_details.occupation'),
+            'income' => $request->input('father_details.income'),
+        ];
 
-        $this->logTimeline($lead, 'Stage Changed', "Stage was updated to {$input['stage_id']}");
+        // Update mother details
+        $lead->mother_details = [
+            'name' => $request->input('mother_details.name'),
+            'phone' => $request->input('mother_details.phone'),
+            'email' => $request->input('mother_details.email'),
+            'occupation' => $request->input('mother_details.occupation'),
+            'income' => $request->input('mother_details.income'),
+        ];
 
+        // Update guardian details
+        $lead->guardian_details = [
+            'name' => $request->input('guardian_details.name'),
+            'phone' => $request->input('guardian_details.phone'),
+            'email' => $request->input('guardian_details.email'),
+            'occupation' => $request->input('guardian_details.occupation'),
+            'income' => $request->input('guardian_details.income'),
+        ];
+        $lead->student_details = $request->input('student_details'); // Assuming it's an array of students
+        $lead->common_details = $request->input('common_details');
+        $lead->parent_stage_id = $input['parent_stage_id'];
+        $lead->save();
 
-        $lead->update($input);
-
-
+        // Redirect with success message
         return redirect()->back()->with('success', 'Form submitted successfully!');
     }
 
     public function show(Lead $lead, Request $request)
     {
-        if (
-            auth()->user()->is_channel_partner &&
-            ($lead->created_by != auth()->user()->id)
-        ) {
+        if (auth()->user()->is_channel_partner && ($lead->created_by != auth()->user()->id)) {
             abort(403, 'Unauthorized.');
         }
 
-        $lead->load('project', 'campaign', 'source', 'createdBy');
-        $timelineItems = LeadTimeline::where('lead_id', $lead->id)->orderBy('created_at', 'asc')->get();
+        // Fetch the lead events for the timeline
         $lead_events = LeadEvents::where('lead_id', $lead->id)
             ->select('event_type', 'webhook_data', 'created_at as added_at', 'source')
             ->orderBy('added_at', 'desc')
             ->get();
+        $timelineItems = LeadTimeline::where('lead_id', $lead->id)->get();
 
-        $project_ids = $this->util->getUserProjects(auth()->user());
-        $projects_list = Project::whereIn('id', $project_ids)->pluck('name', 'id')
-            ->toArray();
-
-        //   $lead->parentStages()->sync($request->interested_stages);
-
+        // Other necessary data
+        $notintrested = Lost::all();
         $parentStages = ParentStage::all();
         $stages = Stage::all();
         $tags = Tag::all();
         $leads = Lead::all();
-        $admission = Admission::all();
         $sitevisits = SiteVisit::all();
         $allActivities = $this->getLeadActivities($lead);
         $noteNotInterested = NoteNotInterested::all();
         $client = Clients::all();
-        $lead->load('project', 'campaign', 'source', 'createdBy');
+
+        // Eager load the `url` relationship
+        $lead->load('url');
+        $url = $lead->url;
+
+        // Match sub_source_name and get campaign_name and source_name from Url model
+        $matchedUrl = Url::where('sub_source_name', $lead->sub_source_name)->first();
+        $campaignName = $matchedUrl ? $matchedUrl->campaign_name : null;
+        $sourceName = $matchedUrl ? $matchedUrl->source_name : null;
+
+        // Check in additional_details if campaign and source names are missing
+        if (is_null($campaignName) || is_null($sourceName)) {
+            if (!empty($lead->additional_details)) {
+                $additionalDetails = json_decode($lead->additional_details, true);
+                $campaignName = $campaignName ?? ($additionalDetails['campaign'] ?? '');
+                $sourceName = $sourceName ?? ($additionalDetails['source'] ?? '');
+
+            }
+        }
+        $lead->additional_details = json_decode($lead->additional_details, true);
+
+        // Time slots and other data
+        $timeSlots = [
+            '09:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM',
+            '12:00 PM - 01:00 PM', '01:00 PM - 02:00 PM', '02:00 PM - 03:00 PM',
+            '03:00 PM - 04:00 PM', '04:00 PM - 05:00 PM', '05:00 PM - 06:00 PM',
+            '06:00 PM - 07:00 PM', '07:00 PM - 08:00 PM', '08:00 PM - 09:00 PM',
+            '09:00 PM - 10:00 PM'
+        ];
         $agencies = Agency::all();
         $users = User::all();
-        $application = Application::all();
-        $user_id = request()->get('user_id'); // Get the user ID from the request
+        $user_id = $request->get('user_id');
+
+        // Fetch follow-ups, call records, site visit, and notes filtered by user_id if provided
         $followUps = Followup::where('lead_id', $lead->id)
             ->when($user_id, function ($query) use ($user_id) {
                 return $query->where('user_id', $user_id);
-            })
-            ->get();
+            })->get();
+
         $callRecords = CallRecord::where('lead_id', $lead->id)
             ->when($user_id, function ($query) use ($user_id) {
                 return $query->where('user_id', $user_id);
-            })
-            ->get();
+            })->get();
+
         $sitevisit = SiteVisit::where('lead_id', $lead->id)
             ->when($user_id, function ($query) use ($user_id) {
                 return $query->where('user_id', $user_id);
-            })
-            ->get();
+            })->first();
 
-        $note = Note::where('lead_id', $lead->id)->when($user_id, function ($query) use ($user_id) {
-            return $query->where('user_id', $user_id);
-        })->get();
-        $itemsPerPage = request('perPage', 10);
-        // $followUps = Followup::paginate($itemsPerPage);
+        $note = Note::where('lead_id', $lead->id)
+            ->when($user_id, function ($query) use ($user_id) {
+                return $query->where('user_id', $user_id);
+            })->get();
+            $logs = RazorLog::where('lead_id', $lead->id)
+            ->when($user_id, function ($query) use ($user_id) {
+                return $query->where('user_id', $user_id);
+            })->get();
+
+        $applications = Application::where('lead_id', $lead->id)->get();
+
+        // Pagination for notes
+        $itemsPerPage = $request->input('perPage', 10);
         $notes = Note::paginate($itemsPerPage);
 
-        //   $note = Note::where('lead_id', $lead->id)
-        //       ->when($user_id, function ($query) use ($user_id) {
-        //           return $query->where('user_id', $user_id);
-        //       })
-        //       ->get();
-//     $followUps = $followUps->filter(function ($followUp) {
-//     return $followUp->stage_id == 28 || $followUp->stage_id == 9;
-// });
-        $sitevisits = SiteVisit::all();
         $campaigns = Campaign::all();
-        return view('admin.leads.show', compact( 'lead', 'lead_events', 'timelineItems', 'projects_list', 'parentStages', 'stages', 'tags', 'agencies', 'user_id', 'followUps', 'campaigns', 'sitevisit', 'client', 'leads', 'note', 'sitevisits', 'callRecords', 'notes', 'allActivities', 'noteNotInterested', 'users', 'application'));
+        $url = Url::all();
+
+        // Pass all necessary data to the view
+        return view('admin.leads.show', compact(
+            'lead',
+            'lead_events',
+            'notintrested',
+            'parentStages',
+            'stages',
+            'tags',
+            'agencies',
+            'user_id',
+            'followUps',
+            'campaigns',
+            'sitevisit',
+            'client',
+            'leads',
+            'note',
+            'sitevisits',
+            'callRecords',
+            'notes',
+            'allActivities',
+            'noteNotInterested',
+            'users',
+            'timeSlots',
+            'timelineItems',
+            'applications',
+            'campaignName', // Pass campaign name to the view
+            'sourceName' ,   // Pass source name to the view
+            'logs'
+        ));
     }
+
+
+
+
     public function destroy(Lead $lead)
     {
         if (!auth()->user()->is_superadmin) {
             abort(403, 'Unauthorized.');
         }
-
         $lead->delete();
 
         return back();
     }
-
     public function massDestroy(MassDestroyLeadRequest $request)
     {
         if (!auth()->user()->is_superadmin) {
@@ -764,7 +655,7 @@ class LeadsController extends Controller
 
             return [
                 'html' => $html,
-                'count' => !empty($webhook_fields) ? count($webhook_fields) - 1 : 0
+                'count' => !empty($webhook_fields) ? count($webhook_fields) - 1 : 0,
             ];
         }
     }
@@ -822,7 +713,6 @@ class LeadsController extends Controller
     {
         $leadActivities = $lead->timeline()->get();
 
-
         return collect([])
             ->merge($leadActivities)
 
@@ -838,4 +728,377 @@ class LeadsController extends Controller
 
         return response()->json($leads);
     }
+    public function getCampaignsByProject(Request $request)
+    {
+        $project = $request->input('project');
+        $campaigns = Url::where('project', $project)->distinct()->pluck('campaign_name');
+
+        return response()->json($campaigns);
+    }
+    public function getSubSources(Request $request)
+    {
+        // Retrieve all unique sub_source_name values
+        $subSources = Url::distinct()->pluck('sub_source_name');
+
+        return response()->json($subSources);
+    }
+    public function getLeadDetails(Request $request)
+    {
+        $leadId = $request->input('lead_id');
+
+        $lead = Lead::find($leadId);
+
+        if ($lead) {
+            return response()->json([
+                'status' => 'success',
+                'lead' => $lead
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Lead not found.'
+            ], 404);
+        }
+    }
+    public function updateLead(Request $request, $leadId)
+    {
+        $user = auth()->user(); // Get the authenticated user
+
+        $lead = Lead::find($leadId);
+
+        if (!$lead) {
+            return response()->json(['status' => 'error', 'message' => 'Lead not found.'], 404);
+        }
+
+        // Update lead details
+        $lead->parent_stage_id = $request->input('parent_stage_id');
+        $fatherCountryCode = $request->input('country_code');
+        $fatherPhone = $request->input('father_details.phone');
+        $fullFatherPhoneNumber = $fatherCountryCode . $fatherPhone;
+
+        // Concatenate country code and phone number for mother
+        $motherCountryCode = $request->input('mother_country_code');
+        $motherPhone = $request->input('mother_details.phone');
+        $fullMotherPhoneNumber = $motherCountryCode . $motherPhone;
+
+        // Concatenate country code and phone number for guardian
+        $guardianCountryCode = $request->input('guardian_country_code');
+        $guardianPhone = $request->input('guardian_details.phone');
+        $fullGuardianPhoneNumber = $guardianCountryCode . $guardianPhone;
+
+        // Update father details
+        $lead->father_details = [
+            'name' => $request->input('father_details.name'),
+            'phone' => $fullFatherPhoneNumber,  // Store the full phone number with country code
+            'email' => $request->input('father_details.email'),
+            'occupation' => $request->input('father_details.occupation'),
+            'income' => $request->input('father_details.income'),
+        ];
+
+        // Update mother details
+        $lead->mother_details = [
+            'name' => $request->input('mother_details.name'),
+            'phone' => $fullMotherPhoneNumber,  // Store the full phone number with country code
+            'email' => $request->input('mother_details.email'),
+            'occupation' => $request->input('mother_details.occupation'),
+            'income' => $request->input('mother_details.income'),
+        ];
+
+        // Update guardian details
+        $lead->guardian_details = [
+            'name' => $request->input('guardian_details.name'),
+            'phone' => $fullGuardianPhoneNumber,  // Store the full phone number with country code
+            'email' => $request->input('guardian_details.email'),
+            'occupation' => $request->input('guardian_details.occupation'),
+            'income' => $request->input('guardian_details.income'),
+        ];
+
+        // Update student details
+        $lead->student_details = $request->input('student_details'); // Assuming it's an array of students
+
+        // Update WhatsApp number (user_id) with country code
+
+        // Validate input
+        $validatedData = $request->validate([
+            'project_id' => 'required',
+            'campaign_name' => 'required',
+            'source_name' => 'required',
+            'sub_source_name' => 'sometimes' // Optional field
+        ]);
+
+        // Find or create a URL record
+        $url = Url::where('project_id', $validatedData['project_id'] ?? null)
+            ->where('campaign_name', $validatedData['campaign_name'] ?? null)
+            ->where('source_name', $validatedData['source_name'] ?? null)
+            ->where('sub_source_name', $validatedData['sub_source_name'] ?? null)
+            ->first();
+
+        if (!$url) {
+            $url = Url::create([
+                'project_id' => $validatedData['project_id'],
+                'campaign_name' => $validatedData['campaign_name'],
+                'source_name' => $validatedData['source_name'],
+                'sub_source_name' => $validatedData['sub_source_name'] ?? null,
+            ]);
+        }
+
+        // Update lead's project_id and sub_source_name with the values from URL
+        $lead->project_id = $url->project_id;
+        $lead->sub_source_name = $url->sub_source_name;
+        $lead->created_by = $user->id;
+        $lead->walkin_no=1;
+
+        $lead->save();
+        $this->createUserInExternalApi($request, $lead);
+
+        $params = [
+            'father_name' => $lead->father_details['name'] ?? null,
+            'father_phone' => $lead->father_details['phone'] ?? null,
+            'father_email' => $lead->father_details['email'] ?? null,
+            'mother_name' => $lead->mother_details['name'] ?? null,
+            'mother_phone' => $lead->mother_details['phone'] ?? null,
+            'mother_email' => $lead->mother_details['email'] ?? null,
+            // 'relationship' => $relationship,
+            'enquiry_number' => $lead->ref_num,
+        ];
+        $chatRaceId = $lead->user_id;
+        // Send flow request to ChatRace API
+        $flowResponse = Http::withHeaders([
+            'X-Access-Token' => '1025340.dxtJ2Ma7me2STSkWkcF1u7JBICU4RhQ', // Replace with your actual access token
+            'Content-Type' => 'application/json',
+        ])->post("https://inbox.thebumblebee.in/api/users/$chatRaceId/send/1725964346073", $params);
+
+        // Capture and store the flow response
+        $flowSuccess = $flowResponse->successful();
+
+        $lead->update(['flow_response' => $flowSuccess]);
+        // $lead->url = "https://portal.qmis.edu.in/client/parent-details/$lead->id";
+        $lead->save();
+
+        // Get the maximum id from Application and generate application number
+        $maxId = Application::max('id');
+        $applicationNo = '20' . str_pad($maxId + 1, 2, '0', STR_PAD_LEFT);
+
+        // Create a new Application
+        $application = new Application();
+        $application->lead_id = $lead->id;
+        $application->application_no = $applicationNo;
+        $application->stage_id = 13; // Assuming 13 is the stage you want to set
+        $application->save();
+        // $this->createUserInExternalApplication($request, $lead, $application);
+
+        // Call the sendApplicationFlow method after creating the user
+        // $this->sendApplicationFlow($request, $lead, $application->id);
+        // Redirect to the lead details page
+        return redirect()->route('admin.leads.show', ['lead' => $lead->id]);
+    }
+    public function validateOtp(Request $request)
+{
+    $request->validate([
+        'otp' => 'required|numeric',
+        'lead_id' => 'required|exists:leads,id'
+    ]);
+
+    $lead = Lead::find($request->input('lead_id'));
+
+    if (!$lead) {
+        return response()->json(['status' => 'invalid', 'message' => 'Lead not found.']);
+    }
+
+    // Check if the OTP is valid
+    if (Hash::check($request->input('otp'), $lead->otp_walkin)) {
+        return response()->json(['status' => 'valid']);
+    } else {
+        return response()->json(['status' => 'invalid', 'message' => 'Invalid OTP.']);
+    }
+}
+public function showUpdateForm($leadId, Request $request)
+{
+    // Find the lead by ID
+    $lead = Lead::find($leadId);
+
+    if (!$lead) {
+        return abort(404);
+    }
+
+    // Get url_id from the request query string (or another source)
+    $urlId = $request->query('url_id');
+
+    // Fetch the corresponding URL
+    $url = Url::find($urlId);
+
+    // Fetch unique project IDs from the Url model
+    $projectIds = Url::distinct()->pluck('project_id');
+
+    // Fetch the project names corresponding to the project IDs
+    $projects = Project::whereIn('id', $projectIds)->pluck('name', 'id');
+
+    // Fetch distinct campaigns and sub-sources
+    $campaigns = Url::distinct()->pluck('campaign_name');
+    $subSources = Url::distinct()->pluck('sub_source_name');
+
+    // Pass all variables using compact, including 'url'
+    return view(view: 'admin.leads.walkin.form_details', data: compact( 'lead', 'projects', 'campaigns', 'subSources', 'url'));
+}
+public function searchLead(Request $request)
+{
+    $primaryPhone = $request->input('primary_phone');
+    $secondaryPhone = $request->input('secondary_phone');
+
+    try {
+        // Validate that at least one phone number is provided
+        if (!$primaryPhone && !$secondaryPhone) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Please provide at least one phone number.'
+            ], 400);
+        }
+
+        // Search for leads matching either phone number in any of the JSON fields
+        $lead = Lead::where(function ($query) use ($primaryPhone, $secondaryPhone) {
+            if ($primaryPhone) {
+                $query->whereJsonContains('mother_details->phone', $primaryPhone)
+                      ->orWhereJsonContains('father_details->phone', $primaryPhone)
+                      ->orWhereJsonContains('guardian_details->phone', $primaryPhone);
+            }
+            if ($secondaryPhone) {
+                $query->orWhereJsonContains('mother_details->phone', $secondaryPhone)
+                      ->orWhereJsonContains('father_details->phone', $secondaryPhone)
+                      ->orWhereJsonContains('guardian_details->phone', $secondaryPhone);
+            }
+        })->first();
+
+        // If a lead is found, return success response
+        if ($lead) {
+            return response()->json([
+                'status' => 'found',
+                'disclaimer' => 'Lead found! Please review the details.',
+                'lead' => $lead,
+                'lead_id' => $lead->id // Include lead ID
+            ]);
+        } else {
+            // Create a new lead and generate OTP
+            $lead = new Lead();
+            $lead->phone = $primaryPhone ?? $secondaryPhone; // Set the phone number
+            $lead->otp = rand(1000, 9999); // Generate OTP
+            $lead->save(); // Save first to get the ID
+
+            // Generate and set the reference number
+            $lead->ref_num = $this->util->generateLeadRefNum($lead);
+            $lead->save(); // Save reference number
+
+            // Store OTP in the database (no need to hash for comparison, but consider encrypting if sensitive)
+            $lead->otp_walkin = Hash::make($lead->otp);
+            $lead->save();
+
+            // Send OTP via SMS
+            $response = Http::post('https://www.smsalert.co.in/api/push.json', [
+                'apikey' => '654dfc01824b7',
+                'sender' => 'TBBBC',
+                'mobileno' => $lead->phone,
+                'text' => "One time password: {$lead->otp} is your verification code. Please enter this to complete your submission. Powered by The Bumblebee Branding Company",
+            ]);
+
+            if ($response->failed()) {
+                throw new Exception('Failed to send OTP. Please try again later.');
+            }
+
+            return response()->json([
+                'status' => 'not_found',
+                'message' => 'No lead found with the provided phone numbers. An OTP has been sent to the provided phone number.',
+                'show_otp_container' => true, // Signal to show OTP container
+                'lead_id' => $lead->id // Include lead ID
+            ]);
+        }
+    } catch (\Exception $e) {
+        // Log the error for debugging purposes
+        \Log::error('Error in searchLead: ' . $e->getMessage());
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Something went wrong! Please try again later.'
+        ], 500);
+    }
+}
+protected function createUserInExternalApi(Request $request, Lead $lead)
+    {
+        $chatRaceData = [
+            'phone' => $lead->father_details['phone'] ?? $lead->mother_details['phone'] ?? $lead->guardian_details['phone'],
+            'first_name' => $lead->father_details['name'] ?? $lead->mother_details['name'] ?? $lead->guardian_details['name'],
+            'last_name' => '',
+            'gender' => 'unknown',
+            'actions' => [
+                [
+                    'action' => 'send_flow',
+                    'flow_id' => 11111, // Replace with the correct flow ID
+                ],
+                [
+                    'action' => 'add_tag',
+                    'tag_name' => 'YOUR_TAG_NAME', // Replace with the actual tag name
+                ],
+            ]
+        ];
+
+        // Add custom field values (CUF) to the actions array
+        $customFields = [
+            ['field_name' => 'lead_project', 'value' => $lead->project->name ?? ''],
+            ['field_name' => 'Lead_Campaign', 'value' => $lead->common_details['utm_campaign'] ?? ''],
+            ['field_name' => 'lead_source', 'value' => $lead->common_details['utm_source'] ?? ''],
+            ['field_name' => 'Lead_Sub_source', 'value' => $lead->common_details['sub_source'] ?? ''],
+            ['field_name' => 'lead_stage', 'value' => $lead->stage->name ?? ''],
+            ['field_name' => 'lead_enquiry_number', 'value' => $lead->ref_num],
+            ['field_name' => 'student_relationship', 'value' => !empty($lead->father_details) ? 'father' : (!empty($lead->mother_details) ? 'mother' : '')],
+            ['field_name' => 'father_name', 'value' => $lead->father_details['name'] ?? ''],
+            ['field_name' => 'mother_name', 'value' => $lead->mother_details['name'] ?? ''],
+            ['field_name' => 'father_phone', 'value' => $lead->father_details['phone'] ?? ''],
+            ['field_name' => 'mother_phone', 'value' => $lead->mother_details['phone'] ?? ''],
+            ['field_name' => 'father_email', 'value' => $lead->father_details['email'] ?? ''],
+            ['field_name' => 'mother_email', 'value' => $lead->mother_details['email'] ?? ''],
+            ['field_name' => 'lead_browser', 'value' => $lead->common_details['browser'] ?? ''],
+            ['field_name' => 'lead_city', 'value' => $lead->common_details['user_city'] ?? ''],
+            ['field_name' => 'lead_device', 'value' => $lead->common_details['user_device'] ?? ''],
+            ['field_name' => 'lead_ip', 'value' => $lead->common_details['user_ip'] ?? ''],
+            ['field_name' => 'lead_page_url', 'value' => $lead->common_details['landing_page'] ?? ''],
+            ['field_name' => 'lead_referral_page_url', 'value' => $lead->common_details['org_ref'] ?? ''],
+            ['field_name' => 'lead_traffic_source', 'value' => $lead->common_details['traffic_src'] ?? ''],
+        ];
+
+
+
+        // Append each custom field to the actions array
+        foreach ($customFields as $field) {
+            $chatRaceData['actions'][] = [
+                'action' => 'set_field_value',
+                'field_name' => $field['field_name'],
+                'value' => $field['value']
+            ];
+        }
+
+        // Send request to the external API
+        $response = Http::withHeaders([
+            'X-Access-Token' => '1025340.dxtJ2Ma7me2STSkWkcF1u7JBICU4RhQ', // Replace with actual access token
+            'Content-Type' => 'application/json',
+        ])->post('https://inbox.thebumblebee.in/api/users', $chatRaceData);
+
+        if ($response->successful()) {
+            $responseData = $response->json();
+            $chatRaceId = $responseData['data']['id'] ?? null;
+            $lead->user_id = $chatRaceId;
+            $lead->save();
+        } else {
+            \Log::error('Failed to create user via external API: ' . $response->body());
+            throw new Exception('Failed to create user via external API.');
+        }
+    }
+
+    public function razorLog(Request $request) {
+        $logs = RazorLog::get();
+        return view('admin.razor.index', compact('logs'));
+    }
+
+    public function emailLog(Request $request) {
+        $logs = EmailLog::get();
+        return view('admin.email.index', compact('logs'));
+    }
+
 }

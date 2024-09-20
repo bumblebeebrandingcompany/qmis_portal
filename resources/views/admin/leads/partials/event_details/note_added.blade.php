@@ -1,51 +1,12 @@
 @php
-    $payload = $event->webhook_data['payload'] ?? [];
+$payload = json_decode($item->payload, true);
+$note = $payload['notes'] ?? null;
 @endphp
-<div class="row">
-    <div class="col-md-12">
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>
-                            @lang('messages.key')
-                        </th>
-                        <th>
-                            @lang('messages.value')
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($payload as $label => $value)
-                        @if(
-                            !empty($label) && 
-                            !empty($value) &&
-                            in_array($label, ['content', 'note_type'])
-                        )
-                            <tr>
-                                <td>
-                                    {{ucfirst(str_replace('_', ' ', $label))}}
-                                </td>
-                                <td>
-                                    @if(!empty($value) && is_array($value))
-                                        @foreach($value as $data)
-                                            {{$data}} <br>
-                                        @endforeach
-                                    @else
-                                        {{$value ?? ''}}
-                                    @endif
-                                </td>
-                            </tr>
-                        @endif
-                    @empty
-                        <tr>
-                            <td colspan="2" class="text-center">
-                                No data found
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+
+@if($note)
+<p>Notes: {{ $note['note_text'] ?? 'No note text found' }}</p>
+{{-- <p>Date: {{ isset($note['created_at']) ? \Carbon\Carbon::parse($note['created_at'])->format('Y-m-d H:i:s') : 'No date found' }}</p> --}}
+@else
+<p>Notes: No note text found</p>
+<p>Date: No date found</p>
+@endif

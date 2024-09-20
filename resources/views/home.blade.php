@@ -125,7 +125,7 @@
                             </div>
                             <!-- /.info-box -->
                         </div>
-                        <div class="{{ $settings8['column_class'] }}">
+                        {{-- <div class="{{ $settings8['column_class'] }}">
                             <div class="info-box">
                                 <span class="info-box-icon bg-success" >
                                     <i class="fas fa-user-plus"></i>
@@ -138,7 +138,7 @@
                                 <!-- /.info-box-content -->
                             </div>
                             <!-- /.info-box -->
-                        </div>
+                        </div> --}}
                         {{-- Widget - latest entries --}}
                         <div class="{{ $settings9['column_class'] }} mt-3">
                             <h4>{{ $settings9['chart_title'] }}</h4>
@@ -181,7 +181,7 @@
                         </div>
 
                         {{-- Widget - latest entries --}}
-                        <div class="{{ $settings10['column_class'] }} mt-3">
+                        {{-- <div class="{{ $settings10['column_class'] }} mt-3">
                             <h4>{{ $settings10['chart_title'] }}</h4>
                                 <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
@@ -226,7 +226,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </div> --}}
                         @if(auth()->user()->is_superadmin)
                             <div class="{{ $chart11->options['column_class'] }} mt-3">
                                 <h3>{!! $chart11->options['chart_title'] !!}</h3>

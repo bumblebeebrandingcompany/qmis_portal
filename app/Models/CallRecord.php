@@ -19,7 +19,6 @@ class CallRecord extends Model
 
 protected $fillable = ['called_by', 'called_on', 'call_duration', 'call_on_time', 'status','call_recordings','call_id','direction','dscription','did number','lead_id','client_number','call_flow'];
 
-
 public function lead()
 {
     return $this->belongsTo(Lead::class, 'lead_id');

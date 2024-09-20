@@ -1,215 +1,267 @@
-@extends('layouts.admin')
-@section('content')
-    <div class="row mb-2">
-        <div class="col-sm-6">
-            <h2>
-                {{ trans('global.create') }} {{ trans('cruds.lead.title_singular') }}
-            </h2>
-        </div>
-    </div>
-    <div class="card card-primary card-outline">
-        <div class="card-body">
-            <form method="POST" action="{{ route('admin.leads.store') }}" enctype="multipart/form-data">
-                @csrf
-                <div class="form-group">
-                    <label for="name" class="required">
-                        Name </label>
-                    <input type="text" name="name" id="name" value="{{ old('name') }}"
-                        class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" required>
-                </div>
-                <div class="form-group">
-                    <label for="email" @if (!auth()->user()->is_superadmin) class="required" @endif>
-                        @lang('messages.email')
-                    </label>
-                    <input type="email" name="email" id="email" value="{{ old('email') }}" class="form-control"
-                        @if (!auth()->user()->is_superadmin) required @endif>
-                </div>
-                <div class="form-group">
-                    <label for="additional_email_key">
-                        @lang('messages.additional_email_key')
-                    </label>
-                    <input type="email" name="additional_email" id="additional_email_key"
-                        value="{{ old('additional_email') }}" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="phone" @if (!auth()->user()->is_superadmin) class="required" @endif>
-                        @lang('messages.phone')
-                    </label>
-                    <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
-                        class="form-control input_number" @if (!auth()->user()->is_superadmin) required @endif>
-                </div>
-                <div class="form-group">
-                    <label for="secondary_phone_key">
-                        @lang('messages.secondary_phone_key')
-                    </label>
-                    <input type="text" name="secondary_phone" id="secondary_phone_key"
-                        value="{{ old('secondary_phone') }}" class="form-control input_number">
-                </div>
-                <input type="hidden" name="stage_id" id="stage_id" value="8">
+<!DOCTYPE html>
+<html lang="en">
 
-                <div class="form-group">
-                    <label class="required" for="sub_source_id">{{ trans('cruds.lead.fields.project') }}</label>
-                    <br>
-                    <select class="form-control select2 {{ $errors->has('project') ? 'is-invalid' : '' }}"
-                        name="sub_source_id" id="sub_source_id" required>
-                        @foreach ($subsources as $id => $entry)
-                            <option value="{{ $entry->id }}"
-                                {{ old('sub_source_id') == $id || $sub_source_id == $id ? 'selected' : '' }}>
-                                {{ $entry->name }}</option>
-                        @endforeach
-                    </select>
-                    @if ($errors->has('sub_source_id'))
-                        <span class="text-danger">{{ $errors->first('sub_source_id') }}</span>
-                    @endif
-                    <span class="help-block">Select the subsource associated with the walk-in</span>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Search and Create Form</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .form-container {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .lead-details-card {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .form-container h2,
+        .lead-details-card h4 {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        #lead-details-card p {
+            font-size: 14px;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .submit-btn img {
+            margin-left: 8px;
+            height: 20px;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 576px) {
+            .form-container {
+                padding: 10px;
+            }
+
+            .lead-details-card {
+                padding: 10px;
+            }
+
+            .form-group {
+                margin-bottom: 10px;
+            }
+
+            h2,
+            h4 {
+                font-size: 1.2rem;
+            }
+
+            .btn-lg {
+                font-size: 16px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-container">
+        <!-- Heading -->
+        <div class="row mb-2">
+            <div class="col-sm-12">
+                <h2 class="text-center">{{ trans('global.create') }} {{ trans('cruds.lead.title_singular') }}</h2>
+            </div>
+        </div>
+        <!-- Phone Search Form -->
+        <form id="phoneSearchForm">
+            <div class="form-group">
+                <input type="text" id="phone-input" placeholder="Primary Phone" class="form-control form-control-lg">
+            </div>
+            <div class="form-group">
+                <input type="text" id="second-phone-input" placeholder="Secondary Phone"
+                    class="form-control form-control-lg">
+            </div>
+            <!-- Hidden input for lead_id -->
+            <input type="hidden" id="lead_id" value="">
+            <button type="submit" class="btn btn-primary btn-block btn-lg">Search</button>
+        </form>
+
+
+        <div id="disclaimer" class="text-danger text-center" style="display: none;"></div>
+
+        <!-- Lead Details Card -->
+        <div id="lead-details-card" class="lead-details-card mt-3" style="display: none;">
+            <h4 class="text-center">Lead Details</h4>
+            <div class="row">
+                <div class="col-6">
+                    <p><strong>Ref:</strong>
+                        <a id="ref_num_link" href="#">
+                            <span id="ref_num"></span>
+                        </a>
+                    </p>
                 </div>
-                <div class="form-group">
-                    <label for="comments">{{ trans('messages.customer_comments') }}</label>
-                    <textarea name="comments" class="form-control" id="comments" rows="2">{!! old('comments') !!}</textarea>
+                <div class="col-6">
+                    <p><strong>Father:</strong> <span id="father-name"></span></p>
+                    <p><strong>Phone:</strong> <span id="father-phone"></span></p>
+                    <p><strong>Email:</strong> <span id="father-email"></span></p>
                 </div>
-                {{-- @if (auth()->user()->is_channel_partner)
-                    <div class="form-group">
-                        <label for="cp_comments">{{ trans('messages.cp_comments') }}</label>
-                        <textarea name="cp_comments" class="form-control" id="cp_comments" rows="2">{!! old('cp_comments') !!}</textarea>
-                    </div>
-                @endif --}}
-                @if (!auth()->user()->is_channel_partner)
-                    <h4>
-                        {{ trans('cruds.lead.fields.lead_details') }}/@lang('messages.additional_fields')
-                        <i class="fas fa-info-circle" data-html="true" data-toggle="tooltip"
-                            title="{{ trans('messages.lead_details_help_text') }}"></i>
-                    </h4>
-                    <div class="lead_details">
-                        <!-- @includeIf('admin.leads.partials.lead_detail', [
-                            'key' => '',
-                            'value' => '',
-                            ($index = 0),
-                        ]) -->
-                    </div>
-                @endif
-                <input type="hidden" id="index_count" value="-1">
-                <div class="form-group">
-                    @if (!auth()->user()->is_channel_partner)
-                        <button type="button" class="btn btn-outline-primary add_lead_detail">
-                            @lang('messages.add_lead_detail')
-                        </button>
-                        <button type="button" class="btn btn-outline-primary add_prefilled_lead_detail">
-                            @lang('messages.add_prefilled_lead_detail')
-                        </button>
-                    @endif
-                    <button class="btn btn-primary float-right" type="submit">
-                        {{ trans('global.save') }}
-                    </button>
+                <div class="col-6">
+                    <p><strong>Mother:</strong> <span id="mother-name"></span></p>
+                    <p><strong>Phone:</strong> <span id="mother-phone"></span></p>
+                    <p><strong>Email:</strong> <span id="mother-email"></span></p>
                 </div>
+                <div class="col-6">
+                    <p><strong>Guardian:</strong> <span id="guardian-name"></span></p>
+                    <p><strong>Phone:</strong> <span id="guardian-phone"></span></p>
+                    <p><strong>Email:</strong> <span id="guardian-email"></span></p>
+                </div>
+                <div class="col-6">
+                    {{-- <p><strong>Stage:</strong> <span id="stage"></span></p> --}}
+
+                </div>
+            </div>
+        </div>
+
+        <!-- OTP Container -->
+        <div id="otp-container" class="mt-3" style="display: none;">
+            <h4 class="text-center">Enter OTP</h4>
+            <form id="otpForm">
+                <div class="form-group">
+                    <input type="text" id="otp-input" placeholder="Enter OTP" class="form-control form-control-lg">
+                </div>
+                <!-- Hidden input for lead_id -->
+                <input type="hidden" id="lead_id" value="">
+                <div id="otp-error" class="text-danger text-center" style="display: none;"></div>
+                <button type="submit" class="btn btn-primary btn-block btn-lg">Verify OTP</button>
             </form>
         </div>
-    </div>
-@endsection
-@section('scripts')
-    <script>
-        $(function() {
-            function getCampaigns() {
-                let data = {
-                    project_id: $('#project_id').val()
-                };
 
-                $.ajax({
-                    method: "GET",
-                    url: "{{ route('admin.get.campaigns') }}",
-                    data: data,
-                    dataType: "json",
-                    success: function(response) {
-                        $('#campaign_id').select2('destroy').empty().select2({
-                            data: response
-                        });
-                        getSource();
-                    }
-                });
-            }
 
-            function getSource() {
-                let data = {
-                    project_id: $('#project_id').val(),
-                    campaign_id: $('#campaign_id').val(),
-                };
-                $.ajax({
-                    method: "GET",
-                    url: "{{ route('admin.get.sources') }}",
-                    data: data,
-                    dataType: "json",
-                    success: function(response) {
-                        $('#source_id').select2('destroy').empty().select2({
-                            data: response
-                        });
-                    }
-                });
-            }
+        <!-- New Lead Form -->
 
-            $(document).on('change', '#project_id', function() {
-                getCampaigns();
-                let index = $("#index_count").val(-1);
-                $("div.lead_details").html('');
-                // getLeadDetailsRowHtml();
-            });
 
-            $(document).on('change', '#campaign_id', function() {
-                getSource();
-            });
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+        <script>
+        $(document).ready(function() {
+    // Handle phone search form submission
+    $('#phoneSearchForm').on('submit', function(e) {
+        e.preventDefault();
 
-            $(document).on('click', '.add_lead_detail', function() {
-                let index = $("#index_count").val();
-                $.ajax({
-                    method: "GET",
-                    url: "{{ route('admin.lead.detail.html') }}",
-                    data: {
-                        index: index
-                    },
-                    dataType: "html",
-                    success: function(response) {
-                        $("div.lead_details").append(response);
-                        $("#index_count").val(+index + 1);
-                    }
-                });
-            });
+        var primaryPhone = $('#phone-input').val();
+        var secondaryPhone = $('#second-phone-input').val();
 
-            $(document).on('click', '.delete_lead_detail_row', function() {
-                if (confirm('Do you want to remove?')) {
-                    $(this).closest('.row').remove();
+        $.ajax({
+            url: '{{ route('admin.search-lead') }}',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                primary_phone: primaryPhone,
+                secondary_phone: secondaryPhone
+            },
+            success: function(response) {
+                if (response.status === 'found') {
+                    var lead = response.lead;
+
+                    // Update lead details on the page
+                    $('#ref_num').text(lead.ref_num || '');
+                    $('#ref_num_link').attr('href', '/admin/leads/' + lead.id);
+                    $('#father-name').text(lead.father_details.name || '');
+                    $('#father-phone').text(lead.father_details.phone || '');
+                    $('#father-email').text(lead.father_details.email || '');
+                    $('#mother-name').text(lead.mother_details.name || '');
+                    $('#mother-phone').text(lead.mother_details.phone || '');
+                    $('#mother-email').text(lead.mother_details.email || '');
+                    $('#guardian-name').text(lead.guardian_details.name || '');
+                    $('#guardian-phone').text(lead.guardian_details.phone || '');
+                    $('#guardian-email').text(lead.guardian_details.email || '');
+                  //  $('#stage').text(lead.parent_stage_id || '');
+                    $('#lead-details-card').show();
+                    $('#otp-container').hide();
+                    $('#form-container').hide();
+                    $('#lead_id').val(lead.id);
+
+                } else if (response.show_otp_container) {
+                    $('#lead-details-card').hide();
+                    $('#otp-container').show();
+                    $('#form-container').hide();
+                    $('#disclaimer').text(response.message).show();
+                    $('#lead_id').val(response.lead_id);
+
+                } else {
+                    $('#lead-details-card').hide();
+                    $('#otp-container').hide();
+                    $('#form-container').show();
+                    $('#disclaimer').text(response.message).show();
                 }
-            });
-
-            // function getLeadDetailsRowHtml() {
-            //     $.ajax({
-            //         method:"GET",
-            //         url: "{{ route('admin.lead.details.rows') }}",
-            //         data: {
-            //             project_id: $('#project_id').val()
-            //         },
-            //         dataType: "json",
-            //         success: function(response) {
-            //             $("div.lead_details").html(response.html);
-            //             $("#index_count").val(response.count);
-            //         }
-            //     });
-            // }
-
-            $(document).on('click', '.add_prefilled_lead_detail', function() {
-                let index = $("#index_count").val();
-                $.ajax({
-                    method: "GET",
-                    url: "{{ route('admin.lead.detail.html') }}",
-                    data: {
-                        index: index,
-                        project_id: $('#project_id').val()
-                    },
-                    dataType: "html",
-                    success: function(response) {
-                        $("div.lead_details").append(response);
-                        $("#index_count").val(+index + 1);
-                        $(".select-tags").select2();
-                    }
-                });
-            });
+            }
         });
-    </script>
-@endsection
+    });
+
+    // Handle OTP form submission
+    $('#otpForm').on('submit', function(e) {
+        e.preventDefault();
+
+        var otp = $('#otp-input').val();
+        var leadId = $('#lead_id').val();
+
+        $.ajax({
+            url: '{{ route('admin.validate-otp') }}',
+            method: 'POST',
+            data: {
+                otp: otp,
+                lead_id: leadId,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.status === 'valid') {
+                    window.location.href = '{{ url('admin/update-form') }}/' + leadId;
+                } else {
+                    $('#otp-error').text(response.message).show();
+                }
+            },
+            error: function(xhr) {
+                $('#otp-error').text('Something went wrong. Please try again.').show();
+            }
+        });
+    });
+});
+
+        </script>
+
+
+</body>
+
+</html>

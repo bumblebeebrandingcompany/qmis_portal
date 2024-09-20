@@ -1,4 +1,4 @@
-<form id="AdmissionFormId" method="POST" action="{{ route('admin.admission.store') }}" class="myForm"
+<form id="AdmissionFormId" method="POST" action="{{ route('admin.admissions.store') }}" class="myForm"
 enctype="multipart/form-data">
 @csrf
 <div id="AdmissionContent" style="display: none;">
@@ -8,7 +8,7 @@ enctype="multipart/form-data">
 
         <div class="modal-body">
             <input type="hidden" name="stage_id" value="14">
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label for="Date">Select Date </label>
                 <input type="date"
                     class="form-control datepicker {{ $errors->has('form-control datepicker') ? 'is-invalid' : '' }}"
@@ -21,7 +21,7 @@ enctype="multipart/form-data">
                     class="form-control timepicker {{ $errors->has('form-control timepicker') ? 'is-invalid' : '' }}"
                     name="follow_up_time" id="follow_up_time" rows="3"
                     required>{{ old('follow_up_time') }}
-            </div>
+            </div> --}}
             <div class="form-group">
                 <label for="noteContent">Note Content</label>
                 <textarea class="form-control {{ $errors->has('notes') ? 'is-invalid' : '' }}" name="notes" id="notes"

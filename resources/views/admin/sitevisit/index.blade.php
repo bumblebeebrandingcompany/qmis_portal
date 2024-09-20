@@ -6,7 +6,7 @@
             <h3>Site Visit And Reschedule</h3>
         </div>
 
-        <div class="col-md-2 float-right" id="countdown1">Respond Within: <span id="timer"></span></div>
+        {{-- <div class="col-md-2 float-right" id="countdown1">Respond Within: <span id="timer"></span></div> --}}
         <div class="col-md-1"></div>
     </div>
 
@@ -21,39 +21,35 @@
     </ul>
 
     <div class="tab-content">
-        <!-- Site Visit Tab -->
 
         <div class="tab-pane fade show active" id="reschedule">
             <div class="card">
-
-                {{-- <div class="col-md-1 offset-md-10">
-
-                </div> --}}
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-walkin"
                             id="sitevisitTable">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>R.No</th>
-                                    <th>Parent Name</th>
-                                    <th>Site Visit Date</th>
-                                    <th>Site Visit Time</th>
-                                    {{-- <th>Supervise By</th> --}}
-                                    <th>Notes</th>
+                                    <th>No</th>
+                                    <th>Ref Num</th>
+                                    <th>Site Visit No</th>
+                                    <th>Student Name</th>
+                                    <th>Father Name</th>
+                                    <th>Mother Name</th>
+                                    <th>Date</th>
+                                    <th>Time Slot</th>
+                                    <th>Stage</th>
                                     <th>Created At</th>
-                                    <th>Actions</th>
-                                    <th>Timer</th>
+                                    {{-- <th>Timer</th> --}}
                                 </tr>
                             </thead>
                             <tbody>
                                 @php
-                                    $counter = 1;
-                                @endphp
+                                $counter = 1;
+                            @endphp
                                 @foreach ($sitevisits as $sitevisit)
                                     @php
-                                        $visitDate = \Carbon\Carbon::parse($sitevisit->follow_up_date);
+                                        $visitDate = \Carbon\Carbon::parse($sitevisit->date);
                                         $today = \Carbon\Carbon::today();
                                         $tomorrow = \Carbon\Carbon::tomorrow();
                                         $followUpTime = \Carbon\Carbon::parse($sitevisit->follow_up_time);
@@ -74,11 +70,18 @@
                                 {{-- Display today's data --}}
                                 @if (!empty($todayData))
                                     <tr>
+
                                         <td>
                                             <h4 class="custom-today-heading">Today</h4>
                                         </td>
                                     </tr>
+                                    @php
+                                    $counter = 0; // Initialize the counter outside the loop
+                                @endphp
                                     @foreach ($todayData as $sitevisit)
+                                    @php
+                                    $counter++; // Increment the counter for the next iteration
+                                @endphp
                                         @include('admin.sitevisit.partials.table_body')
                                     @endforeach
                                 @endif
@@ -86,12 +89,18 @@
                                 {{-- Display tomorrow's data --}}
                                 @if (!empty($tomorrowData))
                                     <tr>
+
                                         <td>
                                             <h4 class="custom-tomorrow-heading">Tomorrow</h4>
                                         </td>
                                     </tr>
-
+                                    @php
+                                    $counter = 0; // Initialize the counter outside the loop
+                                @endphp
                                     @foreach ($tomorrowData as $sitevisit)
+                                    @php
+                                    $counter++; // Increment the counter for the next iteration
+                                @endphp
                                         @include('admin.sitevisit.partials.table_body')
                                     @endforeach
                                 @endif
@@ -153,73 +162,27 @@
                                     </option>
                                     <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200
                                     </option>
-                                    {{-- <option value="1000"{{request('perpage',10) == 1000 ? 'selected' : '' }}>1000</option> --}}
                                 </select>
                             </form>
                         </div>
-                        <div class="col-md-1">
-                            <table class="table table-bordered table-striped" id="siteVisiticon">
 
-                                <tr>
-                                    <td>Conducted
-                                        <div class="float-right"
-                                            style="background-color: green; padding: 2px; display: inline-block; border-radius: 5px;"title="Conducted">
-                                            <i class="far fa fa-check nav-icon"></i>
-                                        </div>
-                                    </td>
-
-                                    <td>NotVisited
-
-                                        <div class="float-right"
-                                            style="background-color: rgb(119, 84, 214); padding: 2px; display: inline-block; border-radius: 5px;"title="NotVisited">
-                                            <i class="fa fa-eye-slash" style="font-size:16px"></i>
-                                        </div>
-                                    </td>
-                                    <td>Rescheduled
-                                        <div class="float-right"
-                                            style="background-color: rgb(236, 47, 220); padding: 2px; display: inline-block; border-radius: 5px;"title="Rescheduled">
-                                            <i class="fas fa-check-double" style="font-size:18px"></i>
-                                        </div>
-                                    </td>
-                                    <td>Cancelled
-                                        <div class="float-right"
-                                            style="background-color: rgb(240, 18, 18); padding: 2px; display: inline-block; border-radius: 5px;"title="Cancelled">
-                                            <i class="fa fa-close" style="font-size:20px"></i>
-                                        </div>
-                                    </td>
-                                    <td>Scheduled
-                                        <div class="float-right"
-                                            style="background-color: rgb(47, 230, 236); padding: 2px; display: inline-block; border-radius: 5px;"title="Scheduled">
-                                            <i class="fas fa-calendar-check nav-icon"></i>
-                                        </div>
-                                    </td>
-                                    <td>Application Purchased
-                                        <div style="background-color: rgb(235, 202, 19); padding: 5px; display: inline-block; border-radius: 5px;"
-                                            title="Application Purchased">
-                                            <i class="	fas fa-receipt nav-icon"></i>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
                         <div class="table-responsive">
 
-                            <table
-                                class="table table-bordered table-striped table-hover ajaxTable datatable datatable-lead"
+                            <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-lead"
                                 id="sitevisitTable">
                                 <thead>
                                     <tr>
                                         <th>No</th>
                                         <th>Ref Num</th>
-                                        <th>Parent Name</th>
-                                        {{-- <th>Campaign Name</th> --}}
-                                        <th>Site Visit Date</th>
-                                        <th>Site Visit Time</th>
-                                        <th>Created By</th>
-                                                                                <th>Notes</th>
+                                        <th>Site Visit No</th>
+                                        <th>Student Name</th>
+
+                                        <th>Father Name</th>
+                                        <th>Mother Name</th>
+                                        <th>Date</th>
+                                        <th>Time Slot</th>
+                                        <th>Stage</th>
                                         <th>Created At</th>
-                                        <th>Actions</th>
-                                        <th>Timer</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -349,13 +312,6 @@
 @endsection
 
 
-{{-- <style>
-    #countdown {
-        font-size: 24px;
-    }
-</style> --}}
-
-
 <script>
     const targetTime = new Date();
     targetTime.setHours(19, 0, 0); // 7:00 PM
@@ -434,5 +390,4 @@
             }
         }
     </script>
-
 @endsection

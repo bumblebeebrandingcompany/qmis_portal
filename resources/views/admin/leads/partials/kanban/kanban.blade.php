@@ -107,7 +107,7 @@
                                         </div>
                                         <div class="col-md-12">
                                             <strong> {{ trans('messages.intake_year') }}
-                                            </strong>:
+                                            </strong>
                                             <span class="display-value">{{ $lead->intake_year ?? '' }}</span>
                                         </div>
                                         <div class="col-md-12">
@@ -120,13 +120,10 @@
                                         </div>
                                         <div class="col-md-12">
                                             <strong>Front Office</strong>:
-
                                                 {{$lead->application->user->representative_name ?? 'not updated'}}
-
                                         </div>
                                         <div class="col-md-12">
                                             <strong>Admission Team</strong>:
-
                                                 {{ $lead->application->users->representative_name ?? 'not updated' }}
                                         </div>
 

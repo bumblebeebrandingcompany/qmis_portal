@@ -8,14 +8,19 @@
         "php": "^8.1",
         "ext-fileinfo": "*",
         "ext-gd": "*",
+        "abr4xas/clarity-laravel": "^1.5",
+        "barryvdh/laravel-dompdf": "^3.0",
         "guzzlehttp/guzzle": "^7.7",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "laraveldaily/laravel-charts": "^0.1.29",
         "maatwebsite/excel": "^3.1",
+        "mailersend/laravel-driver": "^2.6",
         "nuovo/spreadsheet-reader": "^0.5.11",
         "phpoffice/phpspreadsheet": "^1.29",
+        "razorpay/razorpay": "^2.9",
+        "simplesoftwareio/simple-qrcode": "^4.0",
         "spatie/laravel-activitylog": "^4.7",
         "spatie/laravel-medialibrary": "^10.7",
         "spatie/laravel-webhook-server": "^3.4",
@@ -75,7 +80,8 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
         }
     },
     "minimum-stability": "stable",

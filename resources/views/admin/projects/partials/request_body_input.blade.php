@@ -43,7 +43,6 @@
         @endif
     </div>
 </div>
-
 {{-- Custom Fields --}}
 <div class="row">
     <div class="col-md-5">

@@ -6,10 +6,13 @@
 
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
+                @if(!auth()->user()->is_agencyanalytics )
                     <h2>Create Parent Stage</h2>
                     <a href="{{ route('admin.stages.index') }}">
                         <button class="btn btn-primary ml-auto">Connect Stages</button>
                     </a>
+                    @endif
+
                 </div>
                 <div class="spacer"></div>
                 <div class="spacer"></div>
@@ -39,7 +42,9 @@
                                 <div class="spacer"></div>
                                 <div class="spacer"></div>
                                 <div class="spacer"></div>
+                                @if(!auth()->user()->is_agencyanalytics )
                                 <button type="submit" class="d-flex justify-content-between align-items-center btn btn-success ml-auto">Create Parent Stage</button>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -52,7 +57,7 @@
                             <th>ID</th>
                             <th>Name</th>
                             <th>Tag Name</th>
-                            @if(!auth()->user()->is_client )
+                            @if(!auth()->user()->is_agencyanalytics )
                             <th>Actions</th>
                             @endif
                         </tr>
@@ -66,7 +71,7 @@
                                 <td>{{ $counter++ }}</td>
                                 <td>{{ $parentStage->name }}</td>
                                 <td>{{ $parentStage->tag->name }}</td>
-                                @if(!auth()->user()->is_client )
+                                @if(!auth()->user()->is_agencyanalytics )
                                 <td>
                                     <div class="row">
                                         <div class="col-md-2">
@@ -103,14 +108,12 @@
                                                 <form action="{{ route('admin.parent-stages.update', $parentStage->id) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
-
                                                     <div class="form-group row">
                                                         <label for="name" class="col-md-4 col-form-label text-md-right">Name</label>
                                                         <div class="col-md-8">
                                                             <input type="text" name="name" id="name" required class="form-control" value="{{ $parentStage->name }}">
                                                         </div>
                                                     </div>
-
                                                     <div class="form-group row">
                                                         <label for="tag_id" class="col-md-4 col-form-label text-md-right">Select a Tag</label>
                                                         <div class="col-md-8">
@@ -123,9 +126,6 @@
                                                             </select>
                                                         </div>
                                                     </div>
-
-                                                    <!-- Add other fields in a similar manner -->
-
                                                     <div class="form-group row">
                                                         <div class="col-md-12 text-center">
                                                             <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
@@ -153,7 +153,6 @@
                                             <div class="modal-body d-flex">
                                                 <div>
                                                     <p>Are you sure you want to delete this parent stage?</p>
-
                                                 </div>
                                             </div>
                                             <div class="modal-footer">

@@ -24,30 +24,27 @@ class Project extends Model implements HasMedia
     ];
 
     protected $dates = [
-        // 'start_date',
-        // 'end_date',
+        'start_date',
+        'end_date',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
 
-
-
     protected $fillable = [
         'name',
-        // 'start_date',
-        // 'end_date',
-        'created_by',
+        'start_date',
+        'end_date',
+        'created_by_id',
         'client_id',
-
-
+        'location',
+        'description',
+        'webhook_fields',
+        'outgoing_apis',
         'created_at',
         'updated_at',
         'deleted_at',
-        // 'custom_fields',
-        // 'essential_fields',
-        // 'sales_fields',
-        // 'system_fields'
+
     ];
 
     /**
@@ -56,20 +53,15 @@ class Project extends Model implements HasMedia
      * @var array
      */
     protected $casts = [
-        'custom_fields' => 'array',
-        'essential_fields'=>'array',
-        'sales_fields'  => 'array',
-        'system_fields' => 'array',
         'webhook_fields' => 'array',
         'outgoing_apis' => 'array',
+        'fields'=>'array'
     ];
 
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
     }
-
-
 
     public function registerMediaConversions(Media $media = null): void
     {
@@ -82,6 +74,10 @@ class Project extends Model implements HasMedia
         return $this->hasMany(Lead::class, 'project_id', 'id');
     }
 
+    public function srds()
+    {
+        return $this->hasMany(Srd::class);
+    }
     public function projectCampaigns()
     {
         return $this->hasMany(Campaign::class, 'project_id', 'id');
@@ -107,13 +103,13 @@ class Project extends Model implements HasMedia
         $this->attributes['end_date'] = $value ? Carbon::createFromFormat(config('panel.date_format'), $value)->format('Y-m-d') : null;
     }
 
-    public function user()
+    public function created_by()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by_id');
     }
 
     public function client()
     {
-        return $this->belongsTo(Clients::class, 'client_id');
+        return $this->belongsTo(Client::class, 'client_id');
     }
 }

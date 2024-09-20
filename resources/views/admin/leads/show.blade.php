@@ -86,6 +86,13 @@
                                Notes
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="lead-razerpay-tab" data-toggle="tab" href="#lead-razerpay" role="tab"
+                                aria-controls="lead-razerpay" aria-selected="false">
+                                <i class="fas fa-sticky-note"></i> <!-- Change the class to your "notes" icon class -->
+                                Razer pay Log
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <div class="card-body">
@@ -115,6 +122,10 @@
                             aria-labelledby="lead-followup-tab">
                             @includeIf('admin.leads.partials.followup')
                         </div>
+                        <div class="tab-pane fade" id="lead-razerpay" role="tabpanel"
+                        aria-labelledby="lead-followup-tab">
+                        @includeIf('admin.leads.partials.razer_log')
+                    </div>
                     </div>
                 </div>
             </div>
@@ -182,7 +193,6 @@
                 }
             });
         }
-
         $(document).on('change', '#project_filter', function() {
             getDocuments();
         });

@@ -6,48 +6,48 @@
         <div class="card card-primary card-outline">
             <div class="card-body">
                 {{-- Form --}}
-                @if(!auth()->user()->is_client )
-                <form method="POST" action="{{ route('admin.stages.store') }}" enctype="multipart/form-data"
-                    class="my-custom-form">
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <label for="stage_id">Parent Stage:</label>
-                                <select name="stage_id" id="stage_id" class="form-control" required>
-                                    @foreach ($parentStages as $parentStage)
-                                        <option value="{{ $parentStage->id }}">{{ $parentStage->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <label for="selected_child_stages">Select Child Stages:</label>
-                                <br>
-                                <select multiple name="selected_child_stages[]" id="selected_child_stages"
-                                    class="form-control select2" required>
-                                    @foreach ($parentStages as $childStage)
-                                        <option value="{{ $childStage->id }}">{{ $childStage->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <label for="selected_child_stages"></label>
-                                <br>
+                @if (!auth()->user()->is_client)
+                    <form method="POST" action="{{ route('admin.stages.store') }}" enctype="multipart/form-data"
+                        class="my-custom-form">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-5">
                                 <div class="form-group">
-                                    <button class="btn btn-danger float-right" type="submit">
-                                        {{ trans('global.save') }}
-                                    </button>
+                                    <label for="stage_id">Parent Stage:</label>
+                                    <select name="parent_stage_id" id="stage_id" class="form-control" required>
+                                        @foreach ($parentStages as $parentStage)
+                                            <option value="{{ $parentStage->id }}">{{ $parentStage->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="selected_child_stages">Select Child Stages:</label>
+                                    <br>
+                                    <select multiple name="selected_child_stages[]" id="selected_child_stages"
+                                        class="form-control select2" required>
+                                        @foreach ($parentStages as $childStage)
+                                            <option value="{{ $childStage->id }}">{{ $childStage->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
 
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="selected_child_stages"></label>
+                                    <br>
+                                    <div class="form-group">
+                                        <button class="btn btn-danger float-right" type="submit">
+                                            {{ trans('global.save') }}
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
                 @endif
 
                 {{-- Display all created stages in a table --}}
@@ -58,9 +58,8 @@
                             <th>ID</th>
                             <th>Parent Stage</th>
                             <th>Selected Child Stages</th>
-                            @if(!auth()->user()->is_client )
-
-                            <th>Actions</th>
+                            @if (!auth()->user()->is_client)
+                                <th>Actions</th>
                             @endif
                         </tr>
                     </thead>
@@ -71,21 +70,21 @@
                         @foreach ($stages as $stage)
                             <tr>
                                 <td>{{ $counter++ }}</td>
-                                <td>{{ $stage->parentStage->name }}</td>
+                                <td>{{ $stage->parentStage->name ?? '' }}</td>
                                 <td>
                                     @foreach (json_decode($stage->selected_child_stages) as $childStageId)
                                         {{ $parentStages->firstWhere('id', $childStageId)->name }},
                                     @endforeach
                                 </td>
-                                @if(!auth()->user()->is_client )
-                                <td>
-                                    <!-- Edit Button -->
-                                    <button class="btn btn-sm btn-primary" data-toggle="modal"
-                                        data-target="#editStageModal{{ $stage->id }}">Edit</button>
-                                    <!-- Delete Button -->
-                                    <button class="btn btn-sm btn-danger" data-toggle="modal"
-                                        data-target="#deleteStageModal{{ $stage->id }}">Delete</button>
-                                </td>
+                                @if (!auth()->user()->is_agencyanalytics)
+                                    <td>
+                                        <!-- Edit Button -->
+                                        <button class="btn btn-sm btn-primary" data-toggle="modal"
+                                            data-target="#editStageModal{{ $stage->id }}">Edit</button>
+                                        <!-- Delete Button -->
+                                        <button class="btn btn-sm btn-danger" data-toggle="modal"
+                                            data-target="#deleteStageModal{{ $stage->id }}">Delete</button>
+                                    </td>
                                 @endif
                             </tr>
                         @endforeach
@@ -114,18 +113,16 @@
                             enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
-                            <!-- Add your form fields for editing here -->
                             <div class="form-group">
                                 <label for="stage_id">Edited Parent Stage:</label>
-                                <select name="stage_id" id="stage_id" class="form-control" required>
+                                <select name="parent_stage_id" id="parent_stage_id" class="form-control" required>
                                     @foreach ($parentStages as $parentStage)
                                         <option value="{{ $parentStage->id }}"
-                                            {{ $parentStage->id == $stage->stage_id ? 'selected' : '' }}>
+                                            {{ $parentStage->id == $stage->parent_stage_id ? 'selected' : '' }}>
                                             {{ $parentStage->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <!-- Add other fields as needed -->
                             <div class="form-group">
                                 <label for="selected_child_stages">Edited Child Stages:</label>
                                 <select name="selected_child_stages[]" id="selected_child_stages"

@@ -125,10 +125,6 @@ class WalkinController extends Controller
 
     return view('admin.walkinform.index')->with(compact('walkins'));
 }
-
-
-
-
     public function show($id)
     {
         $walkin = Walkin::findOrFail($id);

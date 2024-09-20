@@ -82,7 +82,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-8">
+    {{-- <div class="col-md-8">
         <div class="card card-primary card-outline">
             <div class="card-header">
                 <h3 class="card-title">
@@ -110,6 +110,6 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>
 @endsection

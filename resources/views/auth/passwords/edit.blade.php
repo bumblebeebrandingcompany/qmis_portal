@@ -34,6 +34,8 @@
                             </div>
                         @endif
                     </div>
+                    @if (auth()->user()->is_superadmin)
+
                     <div class="form-group">
                         <button class="btn btn-primary" type="submit">
                             {{ trans('global.save') }}
@@ -42,6 +44,7 @@
                             {{ trans('global.delete_account') }}
                         </button>
                     </div>
+                    @endif
                 </form>
                 <form method="POST" id="delete_account_form" action="{{ route("profile.password.destroyProfile") }}" onsubmit="return prompt('{{ __('global.delete_account_warning') }}') == '{{ auth()->user()->email }}'">
                     @csrf
@@ -49,6 +52,8 @@
             </div>
         </div>
     </div>
+    @if (auth()->user()->is_superadmin)
+
     <div class="col-md-6">
         <div class="card card-primary card-outline">
             <div class="card-header">
@@ -78,6 +83,7 @@
         </div>
     </div>
 </div>
+@endif
 @endsection
 @section('scripts')
 <script>

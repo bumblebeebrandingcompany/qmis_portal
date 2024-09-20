@@ -1,14 +1,13 @@
 <form id="FollowupFormId" method="POST" action="{{ route('admin.followups.store') }}"
 enctype="multipart/form-data">
 @csrf
-<div id="showfollowup" class="myDiv">
+<div id="showenquiryfollowup" class="myDiv">
     <!-- Your follow-up content goes here -->
     <div>
     </div>
     <div class="modal-body">
         <input type="hidden" name="lead_id" value="{{ $lead->id }}">
-        <input type="hidden" name="stage_id" value="9">
-
+        <input type="hidden" name="parent_stage_id" value="10">
         <div class="form-group">
             <label for="Date">Select Date </label>
             <input type="date"
@@ -34,7 +33,6 @@ enctype="multipart/form-data">
             Save
         </button>
     </div>
-
 </div>
 </form>
 

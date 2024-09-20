@@ -2,7 +2,9 @@
 
 namespace App\Utils;
 
+use App\Mail\SendOtpToMail;
 use App\Models\Campaign;
+use App\Models\EmailLog;
 use App\Models\Project;
 use App\Models\Lead;
 use App\Models\LeadEvents;
@@ -12,6 +14,10 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use App\Models\Source;
 use Illuminate\Support\Facades\Log;
+use App\Mail\ClientPortalLinkMail;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 
 class Util
 {
@@ -36,11 +42,9 @@ class Util
     public function addCountryCode($phoneNumber)
     {
         if (!Str::startsWith($phoneNumber, '+')) {
-            // Assuming the country code is +91 for India
             $phoneNumber = '+91' . ltrim($phoneNumber, '0');
         }
 
-        // Log the modified phone number for debugging
         Log::info('Modified phone number: ' . $phoneNumber);
 
         return $phoneNumber;
@@ -98,6 +102,89 @@ class Util
         $webhookSecret = (string) Str::uuid();
         return $webhookSecret;
     }
+
+
+    public function sendClientPortalLink(Request $request, $leadId)
+    {
+        try {
+            $lead = Lead::findOrFail($leadId);
+
+            Mail::to($lead->email)->send(new ClientPortalLinkMail($lead));
+
+            return response()->json(['message' => 'Client portal link sent to the lead\'s email.']);
+        } catch (\Exception $e) {
+            // Log the error message or handle it as needed
+            \Log::error('Failed to send client portal link: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to send email.'], 500);
+        }
+    }
+
+    public function sendOtpToEmail(Request $request, $leadId,$otp)
+    {
+        $validatedData = $request->validate([
+            'father.email' => 'nullable|email',
+            'mother.email' => 'nullable|email',
+            'guardian.email' => 'nullable|email',
+        ]);
+
+        try {
+            $lead = Lead::findOrFail($leadId);
+
+            // Determine which email to use
+            $emailToSendOtp = $validatedData['father']['email']
+                ?? $validatedData['mother']['email']
+                ?? $validatedData['guardian']['email'];
+
+            if (!$emailToSendOtp) {
+                return response()->json(['error' => 'No email address available for the lead.'], 400);
+            }
+            
+            // $mailersend = new MailerSend(['api_key' => 'key']);
+            $check_exist = EmailLog::where('email', $emailToSendOtp)->first();
+            if ($check_exist) {
+                Mail::to($emailToSendOtp)->send(new SendOtpToMail($lead, $otp));
+            } else {
+                $response = Http::post('https://api.mailersend.com/v1/email-verification/verify', [
+                    'email' => $emailToSendOtp
+                ]);
+                if ($response->successful()) {
+                    if ($response->json('status') === 'valid') {
+                        $mail = new EmailLog();
+                        $mail->lead_id = $lead->id;
+                        $mail->error = '';
+                        $mail->status = 1;
+                        $mail->page = 'Otp Verification';
+                        $mail->email = $emailToSendOtp;
+                        $mail->save();
+                        Mail::to($emailToSendOtp)->send(new SendOtpToMail($lead, $otp));
+                    } else {
+                        $mail = new EmailLog();
+                        $mail->lead_id = $lead->id;
+                        $mail->error = json_encode($response);
+                        $mail->status = 0;
+                        $mail->email = $emailToSendOtp;
+                        $mail->page = 'Otp Verification';
+                        $mail->save();
+                    }
+                } else {
+                    $mail = new EmailLog();
+                    $mail->lead_id = $lead->id;
+                    $mail->error = json_encode($response);
+                    $mail->status = 0;
+                    $mail->email = $emailToSendOtp;
+                    $mail->page = 'Otp Verification';
+                    $mail->save();
+                }
+            }
+
+
+            return response()->json(['message' => 'Client portal link sent to the lead\'s email.']);
+        } catch (\Exception $e) {
+            \Log::error('Failed to send client portal link: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to send email.'], 500);
+        }
+    }
+
 
     public function createLead($source, $payload)
     {
@@ -607,7 +694,7 @@ class Util
         if ($for_cp) {
             $projects_arr = [];
             foreach ($projects as $project) {
-                $projects_arr[$project->id] = $project->client->name . ' | ' . $project->name;
+                // $projects_arr[$project->id] = $project->client->name . ' | ' . $project->name;
             }
             return $projects_arr;
         }
@@ -761,19 +848,23 @@ class Util
      *
      * @param  $project_id
      */
-    public function generateReferenceNumber($ref_count, $ref_prefix)
+    public function generateReferenceNumber($ref_count): string
+    {
+        $ref_count = 1000 + $ref_count;
+        return (string) $ref_count; // Return as a string to maintain consistency
+    }
+ 
+    public function generateLeadRefNum($lead): string
+    {
+        return $this->generateReferenceNumber(ref_count: $lead->id);
+    }
+
+
+    public function generateUserReferenceNumber($ref_count, $ref_prefix)
     {
         $ref_digits = str_pad($ref_count, 4, 0, STR_PAD_LEFT);
         return $ref_prefix . $ref_digits;
     }
-
-    public function generateLeadRefNum($lead)
-    {
-        return $this->generateReferenceNumber($lead->id, 'LE');
-    }
-
-
-
     public function generateUserRefNum($user)
     {
         $prefixes = [
@@ -782,13 +873,12 @@ class Util
             'Agency' => 'AG',
             'Presales' => 'PR',
             'Admissionteam' => 'AD',
-            'Frontoffice' => 'FR'
-
-            // 'ChannelPartner' => 'CP',
-            // 'ChannelPartnerManager' => 'CPM',
-            // 'Elephantine' => 'EEPL'
+            'Frontoffice' => 'FR',
+            'Agencyanalytics' =>'AA',
+            'Qmisadmin'=>'QA',
+            'Mdadmin'=>'MD',
         ];
-        return $this->generateReferenceNumber($user->id, $prefixes[$user->user_type]);
+        return $this->generateUserReferenceNumber($user->id, $prefixes[$user->user_type]);
     }
 
     public function getFilteredLeads($request)
@@ -921,5 +1011,353 @@ class Util
             'event_type' => $type,
             'webhook_data' => $webhook_data,
         ]);
+    }
+
+
+
+    public function sendGroupMsg($lead) {
+        $body = [];
+        // if ($insta) {
+            $bot = "6022743104:AAHkqBKlPo_QV535JearoQYTIXJfbaLzcM8";
+            $chatId = "-818403912";
+            // $bot = "7292482513:AAG8q_123MD4kOS66JPZWQZCfjI7hqkUgbw";
+            // $chatId = "5592307888";
+
+            $text = "<b>Father Details:</b>\n";
+            foreach($lead->father_details as $f_k => $father) {
+                $text .= "<b>".$f_k.":</b>".$father."\n";
+            }
+            $text = "<b>Mother Details:</b>\n";
+            foreach($lead->father_details as $m_k => $mother) {
+                $text .= "<b>".$m_k.":</b>".$mother."\n";
+            }
+            $text .= "<b>Ref Num:</b>".@$lead['ref_num']."\n";
+            $headers = array(
+                'Accept: application/json',
+            );
+            // $url = "https://api.telegram.org/bot".$bot."/sendMessage?chat_id=".$chatId."&text=".$text;
+            $url = "https://api.telegram.org/bot".$bot."/sendMessage";
+            $data = [
+                'chat_id' => $chatId,
+                'text' => $text,
+                'parse_mode' => 'HTML'
+            ];
+            
+            // Use cURL to send the HTTP POST request
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+            
+            // Execute the request and get the response
+            $response = curl_exec($ch);
+            
+            // Check for errors
+            if (curl_errno($ch)) {
+                return false;
+            } else {
+                return true;
+            }
+        // }
+        return false;
+    }
+    
+    public function createautomation($lead)
+    {
+        $inbox_fields = json_decode($lead->inbox_fields, true);
+        if (@$inbox_fields["Inbox User Id"]) {
+            return false;
+        }
+        $essential_fields = json_decode($lead->essential_fields, true);
+        $system_fields = json_decode($lead->system_fields, true);
+        // $webhook_response = $lead->webhook_response;
+        $webhook_response = json_decode($lead->lead_event_webhook_response, true);
+
+        $sell_do_response = json_decode($lead->sell_do_response, true);
+        $sellDoFields = json_decode($lead->sell_do_fields, true);
+        $srd = Srd::where('sell_do_project_id', @$webhook_response['payload']['campaign_responses'][0]['project_id'])
+        ->where('campaign_name', @$system_fields[0]['Campaign Name'])
+        ->where('source', @$system_fields[0]['Source Name'])
+        ->where('sub_source', @$system_fields[0]['Sub Source'])
+        ->first();
+        // Check if decoding was successful and if "Phone Number" exists
+        // if ($essential_fields && isset($essential_fields->{'Phone Number'})) {
+        //     $phone_number = $essential_fields->{'Phone Number'};
+        // } else {
+            // Handle the case where "Phone Number" is not found or decoding fails
+            // You may log an error, throw an exception, or handle it in another appropriate way
+        //     return false;
+        // }
+        $postdata = [
+            "phone" => @$essential_fields['Phone Number'],
+            "first_name" => @$essential_fields['Full Name'],
+            "last_name" => "",
+            "gender" => "",
+            "actions" => [
+                [
+                    "action" => "send_flow",
+                    "flow_id" => 11111,
+                ],
+                [
+                    "action" => "add_tag",
+                    "tag_name" => "YOU_TAG_NAME",
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "Email",
+                    "value"=> @$essential_fields[0]['Email']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "alter_email",
+                    "value"=> @$essential_fields[0]['Addl Email']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "alter_phone",
+                    "value"=>  @$essential_fields[0]['Addl Number']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "campaign_name",
+                    "value"=> @$system_fields[0]['Campaign Name']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "funding_source",
+                    "value"=> ""
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "hotness",
+                    "value"=> @$webhook_response['payload']['hotness']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_cp_comments",
+                    "value"=> $lead->cp_comments
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_enquiry_browser",
+                    "value"=> ""
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_enquiry_city",
+                    "value"=> "0"
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_enquiry_comments",
+                    "value"=> $lead->comments
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_enquiry_os",
+                    "value"=> "0"
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_enquiry_remarks",
+                    "value"=> "0"
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_form_id",
+                    "value"=> @$system_fields[0]['Form id']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_form_name",
+                    "value"=> @$system_fields[0]['Form Name']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_form_url",
+                    "value"=> @$system_fields[0]['Form Url']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_ip_address",
+                    "value"=> "0"
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_lead_date",
+                    "value"=> $lead->created_at
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_lead_time",
+                    "value"=> $lead->created_at
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_notes",
+                    "value"=> $lead->comments
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_project_id",
+                    "value"=> $lead->project_id
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "lms_ref_num",
+                    "value"=> $lead->ref_num
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "max_budget",
+                    "value"=> $sellDoFields['Max Budget']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "min_budget",
+                    "value"=> $sellDoFields['Min Budget']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "notes",
+                    "value"=> $lead->comments
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "presales_sales_agent",
+                    "value"=> @$webhook_response['payload']['sales_name']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "presales_sales_agent_phone",
+                    "value"=> ""
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "project_name",
+                    "value"=> @$system_fields[0]['Project']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "selldo_lead_id",
+                    "value"=> @$sell_do_response['sell_do_lead_id']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "selldo_lead_pickup_date",
+                    "value"=> @$webhook_response['payload']['recieved_on']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "selldo_lead_pickup_time",
+                    "value"=> @$webhook_response['payload']['recieved_on']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "selldo_medium",
+                    "value"=> "weebhook"
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "selldo_medium_value",
+                    "value"=> ""
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "selldo_project_id",
+                    "value"=> @$webhook_response['payload']['campaign_responses'][0]['project_id']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "selldo_stage",
+                    "value"=> @$webhook_response['payload']['stage']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "selldo_status",
+                    "value"=> @$webhook_response['payload']['status']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "selldo_team_id",
+                    "value"=> @$webhook_response['payload']['team_id']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "selldo_team_name",
+                    "value"=> @$webhook_response['payload']['team_name']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "selldo_time",
+                    "value"=> @$webhook_response['payload']['recieved_on']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "selldo_user_id",
+                    "value"=> ""
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "site_visit_schedule_on",
+                    "value"=> @$webhook_response['payload']['meta']['next_site_visit_scheduled_on']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "site_visit_status",
+                    "value"=> ""
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "source_name",
+                    "value"=> @$system_fields[0]['Source Name']
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "srd_id",
+                    "value"=> @$srd->srd
+                ],
+                [
+                    "action" => "set_field_value",
+                    "field_name"=> "sub_source",
+                    "value"=> @$system_fields[0]['Sub Source']
+                ]
+            ],
+        ];
+        $token = '1907249.XtqlzdA7ZDUu5Hr2SQnzO0lN8yuEhYiudCGELk8Dm';
+        $headers = array(
+            'X-ACCESS-TOKEN: ' . $token,
+            'Accept: application/json',
+        );
+        $url = "https://inbox.thebumblebee.in/api/users";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,
+            json_encode($postdata));
+
+        // Receive server response ...
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $server_output = curl_exec($ch);
+        curl_close($ch);
+
+        // $url = "https://inbox.thebumblebee.in/api/users";
+        // $method = "post";
+        // $server_output = $this->postWebhook($url, $method, $headers, $postdata);
+
+        $server_output = json_decode($server_output, true);
+        $id = $server_output['data']['id'];
+        // dd($id);
+        $inboxFields = [
+            'Inbox User Id' => $id,
+            'Data Id' => $server_output['data'],
+        ];
+        $lead = Lead::find($lead->id);
+        $lead->inbox_fields = json_encode($inboxFields);
+        $lead->save();
+        return true;
     }
 }

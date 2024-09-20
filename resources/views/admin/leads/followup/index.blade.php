@@ -5,272 +5,125 @@
         <div class="card-header">
             <h3 class="card-title">Lead Follow-Up Table</h3>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="date_range">Select a date</label>
-                        <select class="form-control" id="date_range">
-                            <option value="today">Today</option>
-                            <option value="yesterday">Yesterday</option>
-                            <option value="tomorrow">Tomorrow</option>
-                            <option value="this_week">This Week</option>
-                            <option value="next_60_days" selected>Next 60 Days</option>
-                            <option value="next_30_days">Next 30 Days</option>
-                            <option value="last_week">Last Week</option>
-                            <option value="last_30_days">Last 30 Days</option>
-                            <option value="last_60_days" selected>Last 60 Days</option>
-                            <option value="last_year">Last One Year</option>
-                            <option value="custom">Custom Range</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-4" id="custom_range_container" style="display:none;">
-                    <div class="form-group">
-                        <label for="custom_range">Custom Range</label>
-                        <input class="form-control" type="text" name="custom_range" id="custom_range"
-                            value="{{ old('custom_range') }}">
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <form method="get" action="{{ url()->current() }}">
-                        <label for="recordsPerPage">Records Per Page:</label>
-                        <select class="form-control ml-2 select2" id="recordsPerPage" name="perPage"
-                            onchange="this.form.submit()">
-                            <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
-                            <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
-                            <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100</option>
-                            <option value="200" {{ request('perPage', 10) == 200 ? 'selected' : '' }}>200</option>
-                        </select>
-                    </form>
-                </div>
-                <div class="table-responsive">
-
-                    <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-followups"
-                        id="followUpTable">
+        <div class="container-fluid h-100 mt-3">
+            <div class="card-body">
+                <div class="card-body table-responsive p-0" style="height: 600px;">
+                    {{-- <input type="text" id="searchInput" class="form-control" placeholder="Search in table..."> --}}
+                    <br>
+                    <table class="table table-bordered table-striped table-hover ajaxTable datatable datatable-followup">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Reference Number</th>
+                                <th>Student Name</th>
                                 <th>Father Name</th>
                                 <th>Mother Name</th>
-                                <th>Child Name</th>
-                                <th>Grade</th>
-                                <th>Age</th>
-
-                                {{-- <th>Campaign Name</th> --}}
                                 <th>Follow-Up Date</th>
                                 <th>Follow-Up Time</th>
                                 <th>Notes</th>
+                                <th>Stage</th>
                                 <th>Created At</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="followupTable">
                             @php
                                 $counter = 1;
                             @endphp
-                            @foreach ($followUps->where('stage_id', 9) as $followUp)
-                                <tr data-created-at="{{ $followUp->follow_up_date }}">
-                                    <td>{{ $counter++ }}</td>
-                                    <td>
-                                        @foreach ($lead as $leads)
-                                            @if ($leads->id === $followUp->lead_id)
-                                                <a href="{{ route('admin.leads.show', ['lead' => $leads->id]) }}">
-                                                    {{ $leads->ref_num }}
-                                                </a>
-                                            @endif
-                                        @endforeach
-                                    </td>
-                                    <td>
-                                        @foreach ($lead as $leads)
-                                            @if ($leads->id === $followUp->lead_id)
-                                                {{ $leads->father_name ?? 'Not Updated' }}
-                                            @endif
-                                        @endforeach
-                                    </td>
-                                    <td>
-                                        @foreach ($lead as $leads)
-                                            @if ($leads->id === $followUp->lead_id)
-                                                {{ $leads->mother_name ?? 'Not Updated' }}
-                                            @endif
-                                        @endforeach
-                                    </td>
-                                    <td>
-                                        @foreach ($lead as $leads)
-                                            @if ($leads->id === $followUp->lead_id)
-                                                {{ $leads->child_name ?? 'Not Updated' }}
-                                            @endif
-                                        @endforeach
-                                    </td>
-                                    <td>
-                                        @foreach ($lead as $leads)
-                                            @if ($leads->id === $followUp->lead_id)
-                                                {{ $leads->grade_enquired ?? 'Not Updated' }}
-                                            @endif
-                                        @endforeach
-                                    </td>
-                                    <td>
-                                        @foreach ($lead as $leads)
-                                            @if ($leads->id === $followUp->lead_id)
-                                                {{ $leads->child_age ?? 'Not Updated' }}
-                                            @endif
-                                        @endforeach
-                                    </td>
-                                    {{-- <td>
-                                        @foreach ($lead as $leads)
-                                            @if ($leads->id === $followUp->lead_id)
-                                                {{ $leads->campaign->name }}
-                                            @endif
-                                        @endforeach
-                                    </td> --}}
-                                    <td>
-                                        {{ $followUp->follow_up_date }}
-                                    </td>
-                                    <td>
-                                        {{ $followUp->follow_up_time }}
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
-                                            data-target="#notesModal{{ $followUp->id }}">
-                                            View Notes
-                                        </button>
-                                        <div class="modal fade" id="notesModal{{ $followUp->id }}" tabindex="-1"
-                                            role="dialog" aria-labelledby="notesModalLabel{{ $followUp->id }}"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="notesModalLabel{{ $followUp->id }}">
-                                                            Notes</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
+                            @foreach ($followUps->where('parent_stage_id', 10||32||33) as $followUp)
+                                @foreach ($lead as $leads)
+                                    @if ($leads->id === $followUp->lead_id && $leads->parent_stage_id == $followUp->parent_stage_id)
+                                        <tr data-created-at="{{ $followUp->followup_date }}">
+                                            <td>{{ $counter++ }}</td>
+                                            <td>
+                                                @foreach ($lead as $leads)
+                                                    @if ($leads->id === $followUp->lead_id)
+                                                        <a href="{{ route('admin.leads.show', ['lead' => $leads->id]) }}">
+                                                            {{ $leads->ref_num }}
+                                                        </a>
+                                                    @endif
+                                                @endforeach
+                                            </td>
 
-                                                        <textarea id="notesTextArea{{ $followUp->id }}" class="form-control" rows="5" readonly>{{ $followUp->notes }}</textarea>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">Close</button>
+                                    <td>
+                                        @if (is_array($followUp->lead->student_details) && count($followUp->lead->student_details) > 0)
+                                            <ul>
+                                                @foreach ($followUp->lead->student_details as $student)
+                                                {{ $student['name'] ?? '' }}
+                                                @endforeach
+                                            </ul>
+                                        @else
+
+                                        @endif
+                                    </td>
+                                            <td>
+                                                @foreach ($lead as $leads)
+                                                    @if ($leads->id === $followUp->lead_id)
+                                                        {{ $leads->father_details['name'] ?? '' }}
+                                                    @endif
+                                                @endforeach
+                                            </td>
+                                            <td>
+                                                @foreach ($lead as $leads)
+                                                    @if ($leads->id === $followUp->lead_id)
+                                                        {{ $leads->mother_details['name'] ?? '' }}
+                                                    @endif
+                                                @endforeach
+                                            </td>
+
+                                            <td>
+                                                {{ $followUp->followup_date }}
+                                            </td>
+                                            <td>
+                                                {{ $followUp->followup_time }}
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                                                    data-target="#notesModal{{ $followUp->id }}">
+                                                    View Notes
+                                                </button>
+                                                <div class="modal fade" id="notesModal{{ $followUp->id }}" tabindex="-1"
+                                                    role="dialog" aria-labelledby="notesModalLabel{{ $followUp->id }}"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title"
+                                                                    id="notesModalLabel{{ $followUp->id }}">
+                                                                    Notes</h5>
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <textarea id="notesTextArea{{ $followUp->id }}" class="form-control" rows="5" readonly>{{ $followUp->notes }}</textarea>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
 
-                                    </td>
-                                    <td>
-                                        {{ $followUp->created_at->format('Y-m-d') }}
-                                    </td>
-                                </tr>
+                                            </td>
+                                            <td>{{$parentstages[$followUp->parent_stage_id]}}</td>
+                                            <td>
+                                                {{ $followUp->created_at }}
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endforeach
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-                <div class="d-flex justify-content-end">
-                    {{ $followUps->links('pagination::bootstrap-4') }}
-                </div>
+
             </div>
         </div>
     @endsection
 
-    @section('scripts')
-        @parent
-        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-
-        <script>
-            $(document).ready(function() {
-                // Initialize the date range picker
-                $('#custom_range').daterangepicker();
-
-                // Show/hide the custom range container based on the selected option
-                $('#date_range').change(function() {
-                    var selectedOption = $(this).val();
-                    if (selectedOption === 'custom') {
-                        $('#custom_range_container').show();
-                    } else {
-                        $('#custom_range_container').hide();
-                        filterTable(selectedOption);
-                    }
-                });
-
-                // Handle filtering when the custom range is selected
-                $('#custom_range').change(function() {
-                    var customRange = $(this).val();
-                    filterTable('custom', customRange);
-                });
-
-                // Function to filter the table based on the selected date range
-                function filterTable(selectedOption, customRange = null) {
-                    var startDate, endDate;
-
-                    // Logic to determine the start and end dates based on the selected option
-                    switch (selectedOption) {
-                        case 'today':
-                            startDate = moment().startOf('day');
-                            endDate = moment().endOf('day');
-                            break;
-                        case 'yesterday':
-                            startDate = moment().subtract(1, 'days').startOf('day');
-                            endDate = moment().subtract(1, 'days').endOf('day');
-                            break;
-                        case 'last_30_days':
-                            startDate = moment().subtract(29, 'days').startOf('day');
-                            endDate = moment().endOf('day');
-                            break;
-                        case 'last_60_days':
-                            startDate = moment().subtract(59, 'days').startOf('day');
-                            endDate = moment().endOf('day');
-                            break;
-                        case 'next_60_days':
-                            startDate = moment().startOf('day');
-                            endDate = moment().add(59, 'days').startOf('day');
-
-                            break;
-                        case 'last_year':
-                            startDate = moment().subtract(1, 'year').startOf('day');
-                            endDate = moment().endOf('day');
-                            break;
-                        case 'last_week':
-                            startDate = moment().subtract(1, 'week').startOf('week');
-                            endDate = moment().subtract(1, 'week').endOf('week');
-                            break;
-                        case 'next_30_days':
-                            startDate = moment().startOf('day');
-                            endDate = moment().add(29, 'days').endOf('day');
-                            break;
-                        case 'this_week':
-                            startDate = moment().add(1, 'week').startOf('week');
-                            endDate = moment().add(1, 'week').endOf('week');
-                            break;
-                        case 'tomorrow':
-                            startDate = moment().add(1, 'day').startOf('day');
-                            endDate = moment().add(1, 'day').endOf('day');
-                            break;
-                        case 'custom':
-                            if (customRange) {
-                                var dates = customRange.split(' - ');
-                                startDate = moment(dates[0], 'YYYY-MM-DD').startOf('day');
-                                endDate = moment(dates[1], 'YYYY-MM-DD').endOf('day');
-                            }
-                            break;
-                    }
-
-                    // Filter the table rows based on the calculated start and end dates
-                    $('#followUpTable tbody tr').hide().filter(function() {
-                        var createdDate = $(this).data('created-at');
-                        return moment(createdDate, 'YYYY-MM-DD').isBetween(startDate, endDate, null, '[]');
-                    }).show();
-                }
-            });
-        </script>
-    @endsection
-
-    @section('scripts')
+    {{-- @section('scripts')
         @parent
         <script>
             $(function() {
@@ -334,4 +187,42 @@
                 });
             });
         </script>
+    <script>
+        document.getElementById('select-all').onclick = function() {
+            var checkboxes = document.getElementsByName('lead_ids[]');
+            for (var checkbox of checkboxes) {
+                checkbox.checked = this.checked;
+            }
+        }
+        // Search Functionality
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            var input, filter, table, tr, td, i, j, txtValue;
+            input = document.getElementById('searchInput');
+            filter = input.value.toUpperCase();
+            table = document.getElementById('leadTable');
+            tr = table.getElementsByTagName('tr');
+            for (i = 0; i < tr.length; i++) {
+                tr[i].style.display = 'none';
+                td = tr[i].getElementsByTagName('td');
+                for (j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        if (td[j].innerText.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = '';
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    @endsection --}}
+    @section('scripts')
+        @parent
+        <script>
+            $(function() {
+                let table = $('.datatable-followup').DataTable();
+                table.on('draw.dt', function() {});
+            });
+        </script>
     @endsection
+

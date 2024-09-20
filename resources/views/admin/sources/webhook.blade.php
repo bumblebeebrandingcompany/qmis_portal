@@ -128,22 +128,47 @@
                                                 @php
                                                     $lead_info = $lead->lead_info;
                                                     $existing_keys = array_keys($lead->lead_info);
-                                                    if (!empty($lead->source) && !empty($lead->source->name_key) && isset($lead_info[$lead->source->name_key]) && !empty($lead_info[$lead->source->name_key])) {
+                                                    if (
+                                                        !empty($lead->source) &&
+                                                        !empty($lead->source->name_key) &&
+                                                        isset($lead_info[$lead->source->name_key]) &&
+                                                        !empty($lead_info[$lead->source->name_key])
+                                                    ) {
                                                         unset($lead_info[$lead->source->name_key]);
                                                     }
-                                                    if (!empty($lead->source) && !empty($lead->source->email_key) && isset($lead_info[$lead->source->email_key]) && !empty($lead_info[$lead->source->email_key])) {
+                                                    if (
+                                                        !empty($lead->source) &&
+                                                        !empty($lead->source->email_key) &&
+                                                        isset($lead_info[$lead->source->email_key]) &&
+                                                        !empty($lead_info[$lead->source->email_key])
+                                                    ) {
                                                         unset($lead_info[$lead->source->email_key]);
                                                     }
 
-                                                    if (!empty($lead->source) && !empty($lead->source->phone_key) && isset($lead_info[$lead->source->phone_key]) && !empty($lead_info[$lead->source->phone_key])) {
+                                                    if (
+                                                        !empty($lead->source) &&
+                                                        !empty($lead->source->phone_key) &&
+                                                        isset($lead_info[$lead->source->phone_key]) &&
+                                                        !empty($lead_info[$lead->source->phone_key])
+                                                    ) {
                                                         unset($lead_info[$lead->source->phone_key]);
                                                     }
 
-                                                    if (!empty($lead->source) && !empty($lead->source->additional_email_key) && isset($lead_info[$lead->source->additional_email_key]) && !empty($lead_info[$lead->source->additional_email_key])) {
+                                                    if (
+                                                        !empty($lead->source) &&
+                                                        !empty($lead->source->additional_email_key) &&
+                                                        isset($lead_info[$lead->source->additional_email_key]) &&
+                                                        !empty($lead_info[$lead->source->additional_email_key])
+                                                    ) {
                                                         unset($lead_info[$lead->source->additional_email_key]);
                                                     }
 
-                                                    if (!empty($lead->source) && !empty($lead->source->secondary_phone_key) && isset($lead_info[$lead->source->secondary_phone_key]) && !empty($lead_info[$lead->source->secondary_phone_key])) {
+                                                    if (
+                                                        !empty($lead->source) &&
+                                                        !empty($lead->source->secondary_phone_key) &&
+                                                        isset($lead_info[$lead->source->secondary_phone_key]) &&
+                                                        !empty($lead_info[$lead->source->secondary_phone_key])
+                                                    ) {
                                                         unset($lead_info[$lead->source->secondary_phone_key]);
                                                     }
                                                 @endphp
@@ -200,16 +225,20 @@
                                             <div class="row mb-3">
                                                 <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label for="essential_fields">{{ $essentialField['name_data'] }}</label>
-                                                        <input type="hidden" name="sales_fields[{{ $key }}][name_data]"
+                                                        <label
+                                                            for="essential_fields">{{ $essentialField['name_data'] }}</label>
+                                                        <input type="hidden"
+                                                            name="sales_fields[{{ $key }}][name_data]"
                                                             value="{{ $essentialField['name_data'] }}">
                                                         <span class="help-block">{{ $essentialField['name_value'] }}</span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-8">
                                                     <div class="form-group">
-                                                        <input type="text" class="lead-input" name="essential_fields[{{ $key }}][value]"
-                                                            value="{{ isset($essentialField['value']) ? $essentialField['value'] : '' }}" readonly>
+                                                        <input type="text" class="lead-input"
+                                                            name="essential_fields[{{ $key }}][value]"
+                                                            value="{{ isset($essentialField['value']) ? $essentialField['value'] : '' }}"
+                                                            readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -244,7 +273,8 @@
                                                         <select class="form-control select2" required>
                                                             <option value="">@lang('messages.please_select')</option>
                                                             @php
-                                                                $existing_keys = optional($source->project)->webhook_fields ?? [];
+                                                                $existing_keys =
+                                                                    optional($source->project)->webhook_fields ?? [];
                                                             @endphp
                                                             @foreach ($existing_keys as $existingKey)
                                                                 <option value="{{ $existingKey }}">
@@ -293,7 +323,8 @@
                                                         <select class="form-control select2" required>
                                                             <option value="">@lang('messages.please_select')</option>
                                                             @php
-                                                                $existing_keys = optional($source->project)->webhook_fields ?? [];
+                                                                $existing_keys =
+                                                                    optional($source->project)->webhook_fields ?? [];
                                                             @endphp
                                                             @foreach ($existing_keys as $existingKey)
                                                                 <option value="{{ $existingKey }}">
@@ -371,7 +402,8 @@
                                                         <select class="form-control select2" required>
                                                             <option value="">@lang('messages.please_select')</option>
                                                             @php
-                                                                $tags = optional($source->project)->webhook_fields ?? [];
+                                                                $tags =
+                                                                    optional($source->project)->webhook_fields ?? [];
                                                             @endphp
                                                             @foreach ($existing_keys as $existingKey)
                                                                 <option value="{{ $existingKey }}">

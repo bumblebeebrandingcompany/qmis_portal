@@ -19,14 +19,13 @@ class StageNotesController extends Controller
 
         if ($lead) {
             $parentStageId = $request->input('stage_id');
-
             $note = new StageNotes();
             $note->lead_id = $lead->id;
             $note->stage_id = $parentStageId;
             $note->notes = $request->input('notes');
             $note->stage = $request->input('stage');
             $note->save();
-            $lead->stage_id = $parentStageId;
+            $lead->parent_stage_id = $parentStageId;
             $lead->save();
 
             $this->logTimeline($lead, $note, 'Stage Changed', "Stage was updated to {$parentStageId}");

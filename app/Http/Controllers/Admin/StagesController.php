@@ -20,32 +20,27 @@ class StagesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'stage_id' => 'required|exists:parent_stages,id',
+            'parent_stage_id',
             'selected_child_stages' => 'required|array',
         ]);
-
         $stage = new Stage([
-            'stage_id' => $request->stage_id,
+            'parent_stage_id' => $request->parent_stage_id,
             'selected_child_stages' => json_encode($request->selected_child_stages),
         ]);
-
         $stage->save();
-
         return redirect()->route('admin.stages.index')->with('success', 'Stage created successfully.');
     }
     public function update(Request $request, $id)
     {
         $request->validate([
-            'stage_id' => 'required|exists:parent_stages,id',
+            'parent_stage_id',
             'selected_child_stages' => 'required|array',
         ]);
-
         $stage = Stage::findOrFail($id);
         $stage->update([
-            'stage_id' => $request->stage_id,
+            'parent_stage_id' => $request->parent_stage_id,
             'selected_child_stages' => json_encode($request->selected_child_stages),
         ]);
-
         return redirect()->route('admin.stages.index')->with('success', 'Stage updated successfully.');
     }
 

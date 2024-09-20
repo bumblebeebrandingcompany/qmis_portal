@@ -10,10 +10,9 @@ class Note extends Model
 
     protected $dates = [
         'created_at',
-        'note_text'
     ];
 
-    protected $fillable = ['lead_id','stage_id']; // Specify the fillable attributes
+    protected $fillable = ['lead_id','note_text','stage_id']; // Specify the fillable attributes
 
 
     public function rules()
@@ -32,4 +31,20 @@ class Note extends Model
 {
     return $this->hasMany(LeadTimeline::class);
 }
+public function logTimeline($lead, $note, $activityType, $description)
+{
+    $timeline = new LeadTimeline();
+    $timeline->lead_id = $lead->id;
+    $timeline->activity_type = $activityType;
+    $payload = [
+        'lead' => $lead->toArray(),
+        'notes' => $note->toArray()
+    ];
+    $timeline->payload = json_encode($payload); // Convert array to JSON
+    $timeline->description = $description;
+    $timeline->created_at = now();
+    $timeline->save();
+}
+
+
 }

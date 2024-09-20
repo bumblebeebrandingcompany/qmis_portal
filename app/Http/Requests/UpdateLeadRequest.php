@@ -39,7 +39,14 @@ class UpdateLeadRequest extends FormRequest
                 // 'required',
                 'integer',
             ],
-            'stage_id'=>['integer'],
+
+        // 'father_details.name' => 'nullable|string|max:255',
+        // 'father_details.phone' => 'nullable|string|max:15',
+        // 'father_details.email' => 'nullable|email|max:255',
+        // 'mother_details.name' => 'nullable|string|max:255',
+        // Add other rules as necessary
+
+
         ];
     }
 }

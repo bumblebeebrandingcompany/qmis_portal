@@ -24,12 +24,6 @@
                         <th>
                             {{ trans('cruds.campaign.fields.name') }}
                         </th>
-                        {{-- <th>
-                            {{ trans('cruds.campaign.fields.start_date') }}
-                        </th>
-                        <th>
-                            {{ trans('cruds.campaign.fields.end_date') }}
-                        </th> --}}
                         <th>
                             {{ trans('cruds.campaign.fields.project') }}
                         </th>

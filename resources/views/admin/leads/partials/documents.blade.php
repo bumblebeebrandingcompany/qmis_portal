@@ -1,4 +1,4 @@
-<div class="row">
+{{-- <div class="row">
     <div class="col-md-12" id="document_list">
         <div class="form-group row">
             <div class="col-md-6">
@@ -17,4 +17,4 @@
         <div id="document_accordion" class="list">
         </div>
     </div>
-</div>
+</div> --}}

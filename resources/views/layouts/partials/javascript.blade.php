@@ -67,29 +67,25 @@
             scrollX: true,
             pageLength: 50,
             dom: 'lBfrtip<"actions">',
-            buttons: [{
-                    extend: 'selectAll',
-                    className: 'btn-primary',
-                    text: selectAllButtonTrans,
-                    exportOptions: {
-                        columns: ':visible'
-                    },
-                    action: function(e, dt) {
-                        e.preventDefault()
-                        dt.rows().deselect();
-                        dt.rows({
-                            search: 'applied'
-                        }).select();
-                    }
-                },
-                {
-                    extend: 'selectNone',
-                    className: 'btn-primary',
-                    text: selectNoneButtonTrans,
-                    exportOptions: {
-                        columns: ':visible'
-                    }
-                },
+            buttons: [
+            {
+                extend: 'selectAll',
+                className: 'btn-primary',
+                text: '{{ trans('global.select_all') }}',
+                action: function(e, dt, node, config) {
+                    dt.rows().select();
+                    $('input[name="lead_ids[]"]').prop('checked', true); // Check all checkboxes
+                }
+            },
+            {
+                extend: 'selectNone',
+                className: 'btn-primary',
+                text: '{{ trans('global.deselect_all') }}',
+                action: function(e, dt, node, config) {
+                    dt.rows().deselect();
+                    $('input[name="lead_ids[]"]').prop('checked', false); // Uncheck all checkboxes
+                }
+            },
                 {
                     extend: 'copy',
                     className: 'btn-default',
@@ -140,9 +136,7 @@
                 }
             ]
         });
-
         $.fn.dataTable.ext.classes.sPageButton = '';
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -354,8 +348,8 @@ $(document).on('input', 'input.input_number', function(event) {
                                 sidebar: d(g).height()
                             },
                             t = this._max(e);
-                        d(m).css("min-height", e.window - e.header - e.footer), d(g).css("min-height", e
-                            .window - e.header)
+                        // d(m).css("max-height", e.window - e.header - e.footer), d(g).css("max-height", e
+                        //     .window - e.header)
                     }, n.prototype._init = function() {
                         var e = this;
                         d("body").removeClass(C), this.fixLayoutHeight(), d(g).on(

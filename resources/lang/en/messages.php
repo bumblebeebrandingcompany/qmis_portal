@@ -136,5 +136,21 @@ return [
 'presales'=>'PreSales',
 'admissionteam'=>'AdmissionTeam',
 'frontoffice'=>'FrontOffice',
-'call_logs'=>'Call Logs'
+'call_logs'=>'Call Logs',
+
+
+
+'Welcome_to_Queen_Mira_International_School' => 'Welcome to Queen Mira International School',
+'2024-2025 Vijayadasami Admissions Now Open: Up to 50% OFF' => '2024-2025 Vijayadasami Admissions Now Open: Up to 50% OFF',
+'Sign Up for QMIS' => 'Sign Up for QMIS',
+'Who am I?' => 'Who am I?',
+'Select The Relation Type' => 'Select The Relation Type',
+'Father' => 'Father',
+'Mother' => 'Mother',
+'Guardian' => 'Guardian',
+'Student' => 'Student',
+'If you are a student, please have your parent or guardian fill out the form.' => 'If you are a student, please have your parent or guardian fill out the form.',
+'Father\'s Name' => 'Father\'s Name',
+'Sign In Here' => 'Sign In Here',
+'If_you_already_have_an_account' => 'If you already have an account'
 ];
